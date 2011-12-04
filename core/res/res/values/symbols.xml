@@ -1840,6 +1840,9 @@
 
   <!-- From PinyinIME(!!!) -->
   <java-symbol type="string" name="inputMethod" />
+  
+  <!-- Telephony -->
+  <java-symbol type="string" name="config_legacyUmsLunFile" />
 
   <!-- Always show battery status on lockscreen -->
   <java-symbol type="string" name="lockscreen_always_battery" />
