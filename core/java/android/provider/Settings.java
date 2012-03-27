@@ -1818,6 +1818,12 @@ public final class Settings {
         public static final String STATUS_BAR_IME_SWITCHER = "status_bar_ime_switcher";
 
         /**
+         * Whether to route USB Audio when docked.
+         * @hide
+         */
+        public static final String DOCK_USB_AUDIO_ENABLED = "dock_usb_audio_enabled";
+
+        /**
          * Whether to play a sound for dock events.
          * @hide
          */
