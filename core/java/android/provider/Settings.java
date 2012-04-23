@@ -2055,6 +2055,8 @@ public final class Settings {
         
         /**
          *
+         * Stores values for custom lockscreen targets
+	Lockscreen : Customizable shortcuts
          * @hide
          */
         public static final String LOCKSCREEN_TARGETS = "lockscreen_targets";
@@ -2222,6 +2224,7 @@ public final class Settings {
         public static final String HORIZONTAL_RECENTS_TASK_PANEL = "horizontal_recents_task_panel";
 
         /**
+	Lockscreen : Customizable shortcuts
          * Boolean value whether to link ringtone and notification volumes
          * 
          * @hide
