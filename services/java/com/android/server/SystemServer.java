@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
+ * This code has been modified.  Portions copyright (C) 2010, T-Mobile USA, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +78,7 @@ class ServerThread extends Thread {
         Log.wtf(TAG, "BOOT FAILURE " + msg, e);
     }
 
+
     @Override
     public void run() {
         EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_SYSTEM_RUN,
@@ -133,7 +135,7 @@ class ServerThread extends Thread {
         RecognitionManagerService recognition = null;
         ThrottleService throttle = null;
         NetworkTimeUpdateService networkTimeUpdater = null;
-
+		
         // Critical services...
         try {
             Slog.i(TAG, "Entropy Service");
@@ -556,6 +558,13 @@ class ServerThread extends Thread {
                 networkTimeUpdater = new NetworkTimeUpdateService(context);
             } catch (Throwable e) {
                 reportWtf("starting NetworkTimeUpdate service", e);
+            }
+
+            try {
+                Slog.i(TAG, "AssetRedirectionManager Service");
+                ServiceManager.addService("assetredirection", new AssetRedirectionManagerService(context));
+            } catch (Throwable e) {
+                Slog.e(TAG, "Failure starting AssetRedirectionManager Service", e);
             }
         }
 

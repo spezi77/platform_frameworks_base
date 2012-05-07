@@ -235,6 +235,7 @@ public class ActivityManager {
         return false;
     }
 
+
     /**
      * Use to decide whether the running device can be considered a "large
      * RAM" device.  Exactly what memory limit large RAM is will vary, but

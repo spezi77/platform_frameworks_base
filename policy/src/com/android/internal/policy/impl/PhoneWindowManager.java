@@ -1354,7 +1354,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             //Log.i(TAG, "addStartingWindow " + packageName + ": nonLocalizedLabel="
             //        + nonLocalizedLabel + " theme=" + Integer.toHexString(theme));
 
-
             try {
                 context = context.createPackageContext(packageName, 0);
                 if (theme != context.getThemeResId()) {

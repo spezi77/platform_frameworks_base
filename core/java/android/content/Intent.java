@@ -2321,6 +2321,7 @@ public class Intent implements Parcelable, Cloneable {
      * Used to indicate that the activity can be used in a car environment.
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
+
     public static final String CATEGORY_CAR_MODE = "android.intent.category.CAR_MODE";
 
     /**
@@ -2621,7 +2622,7 @@ public class Intent implements Parcelable, Cloneable {
      * to represent that the phone is in a digital (high end) dock.
      */
     public static final int EXTRA_DOCK_STATE_HE_DESK = 4;
-
+	
     /**
      * Boolean that can be supplied as meta-data with a dock activity, to
      * indicate that the dock should take over the home key when it is active.

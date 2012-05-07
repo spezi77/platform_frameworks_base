@@ -641,12 +641,13 @@ public class RingtoneManager {
      * @see #getRingtone(Context, Uri)
      */
     private static Ringtone getRingtone(final Context context, Uri ringtoneUri, int streamType) {
-
+ 
         try {
             Ringtone r = new Ringtone(context);
             if (streamType >= 0) {
                 r.setStreamType(streamType);
             }
+           
             r.open(ringtoneUri);
             return r;
 
