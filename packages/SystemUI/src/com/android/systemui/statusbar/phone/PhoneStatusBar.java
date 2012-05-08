@@ -2494,7 +2494,11 @@ public class PhoneStatusBar extends StatusBar {
         copyNotifications(notifications, mNotificationData);
         mNotificationData.clear();
 
+        if (mNavigationBarView != null) {
+            WindowManagerImpl.getDefault().removeView(mNavigationBarView);
+        }
         View newStatusBarView = makeStatusBarView();
+        addNavigationBar();
 
         // recreate StatusBarIconViews.
         for (int i = 0; i < nIcons; i++) {
