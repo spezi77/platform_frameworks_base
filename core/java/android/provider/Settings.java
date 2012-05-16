@@ -2295,12 +2295,6 @@ public final class Settings {
         public static final int     WM_LEGAL_ROTATION_FLAG_180DEG = 0x04;
         public static final int     WM_LEGAL_ROTATION_FLAG_270DEG = 0x08;
 
-        /**
-         * Whether to wake the screen with the volume keys, the value is boolean.
-         * @hide
-         */
-        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
-
         /** @hide */
         public static final String STATUS_BAR_BATTERY = "status_bar_battery";
 
