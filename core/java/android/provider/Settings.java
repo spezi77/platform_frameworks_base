@@ -2744,7 +2744,14 @@ public final class Settings {
          * so we can change custom colors per app
          * @hide
          */
-        public static final String LED_CUSTOM_VALUES = "led_custom_values";	
+        public static final String LED_CUSTOM_VALUES = "led_custom_values";
+
+	/**
+         * How long to wait between playing notification sounds from a package
+         * Should be in milliseconds. 0 to disable
+         * @hide
+         */
+        public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD = "mute_annoying_notifications_threshold";
     }
 
     /**
