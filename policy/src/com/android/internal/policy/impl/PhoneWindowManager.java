@@ -3171,11 +3171,26 @@ public class PhoneWindowManager implements WindowManagerPolicy {
      * Tell the audio service to adjust the volume appropriate to the event.
      * @param keycode
      */
-    void handleVolumeKey(int stream, int keycode) {
+    void handleVolumeKey(int stream, int key) {
+        int keycode = key;
+
         IAudioService audioService = getAudioService();
         if (audioService == null) {
             return;
         }
+
+        try {
+            int rotation = mWindowManager.getRotation();
+            if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_180) {
+                // Switch the volume keys around.
+                if (keycode == KeyEvent.KEYCODE_VOLUME_UP)
+                    keycode = KeyEvent.KEYCODE_VOLUME_DOWN;
+                else
+                    keycode = KeyEvent.KEYCODE_VOLUME_UP;
+            }
+        } catch (RemoteException e1) {
+        }
+
         try {
             // since audio is playing, we shouldn't have to hold a wake lock
             // during the call, but we do it as a precaution for the rare possibility

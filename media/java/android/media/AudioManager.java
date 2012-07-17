@@ -34,7 +34,9 @@ import android.os.ServiceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Surface;
 import android.view.VolumePanel;
+import android.view.WindowManager;
 
 import java.util.HashMap;
 
@@ -458,6 +460,17 @@ public class AudioManager {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
+                int rotation = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE))
+                        .getDefaultDisplay().getRotation();
+                if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_180) {
+                    // Switch the volume keys around.
+                    if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                        keyCode = KeyEvent.KEYCODE_VOLUME_DOWN;
+                    }
+                    else {
+                        keyCode = KeyEvent.KEYCODE_VOLUME_UP;
+                    }
+                }
                 /*
                  * Adjust the volume in on key down since it is more
                  * responsive to the user.
