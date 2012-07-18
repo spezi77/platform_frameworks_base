@@ -2370,6 +2370,8 @@ public final class Settings {
          * 2 - Normal Day
          */
         public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
+
+        public static final String STATUS_BAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
     }
 
     /**
