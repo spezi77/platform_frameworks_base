@@ -2770,6 +2770,13 @@ public final class Settings {
         * @hide 
         */
         public static final String TORCH_STATE = "torch_state";
+        
+        /**
+         * whether to enable end app on back longpress functionality
+         *
+         * @hide
+         */
+        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
        /**
         * Lefty mode
