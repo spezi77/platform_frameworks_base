@@ -162,7 +162,7 @@ status_t BootAnimation::initTexture(void* buffer, size_t len)
     codec->setDitherImage(false);
     if (codec) {
         codec->decode(&stream, &bitmap,
-                SkBitmap::kARGB_8888_Config,
+                SkBitmap::kRGB_565_Config,
                 SkImageDecoder::kDecodePixels_Mode);
         delete codec;
     }
