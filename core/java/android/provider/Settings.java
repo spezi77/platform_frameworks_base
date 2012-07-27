@@ -2712,6 +2712,27 @@ public final class Settings {
 	 * @hide
 	 */
         public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
+
+        /**
+         * How long to keep the notification LED on (in milliseconds)
+         * 
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_ON = "notification_light_on";
+
+        /**
+         * How long to keep the notification LED off (in milliseconds)
+         * 
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_OFF = "notification_light_off";
+
+        /**
+         * What color to use for the notificaion LED
+         *
+         * @hide
+         */
+        public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
     }
 
     /**
