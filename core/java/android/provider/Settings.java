@@ -2679,6 +2679,12 @@ public final class Settings {
          * @hide
          */
         public static final String WEATHER_SHOW_LOCATION = "weather_show_location";
+
+        /**
+	 *
+	 * @hide
+	 */
+        public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
     }
 
     /**
