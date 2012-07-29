@@ -620,6 +620,24 @@ public class NotificationManagerService extends INotificationManager.Stub
                 mNotificationPulseEnabled = pulseEnabled;
                 updateNotificationPulse();
             }
+            
+            Resources resources = mContext.getResources();
+            mDefaultNotificationColor = Settings.System
+                    .getInt(mContext.getContentResolver(),
+                            Settings.System.NOTIFICATION_LIGHT_COLOR,
+                            resources.getColor(
+                                    com.android.internal.R.color.config_defaultNotificationColor));
+            
+            mDefaultNotificationLedOff = Settings.System
+                    .getInt(mContext.getContentResolver(),
+                            Settings.System.NOTIFICATION_LIGHT_OFF,
+                            resources.getInteger(com.android.internal.R.integer.config_defaultNotificationLedOff));
+
+            mDefaultNotificationLedOn = Settings.System
+                    .getInt(mContext.getContentResolver(),
+                            Settings.System.NOTIFICATION_LIGHT_ON,
+                            resources
+                                    .getInteger(com.android.internal.R.integer.config_defaultNotificationLedOn));
         }
     }
 
@@ -640,24 +658,6 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         mNotificationLight = lights.getLight(LightsService.LIGHT_ID_NOTIFICATIONS);
         mAttentionLight = lights.getLight(LightsService.LIGHT_ID_ATTENTION);
-
-        Resources resources = mContext.getResources();
-        mDefaultNotificationColor = Settings.System
-                .getInt(mContext.getContentResolver(),
-                        Settings.System.NOTIFICATION_LIGHT_COLOR,
-                        resources.getColor(
-                                com.android.internal.R.color.config_defaultNotificationColor));
-        
-        mDefaultNotificationLedOff = Settings.System
-                .getInt(mContext.getContentResolver(),
-                        Settings.System.NOTIFICATION_LIGHT_OFF,
-                        resources.getInteger(com.android.internal.R.integer.config_defaultNotificationLedOff));
-
-        mDefaultNotificationLedOn = Settings.System
-                .getInt(mContext.getContentResolver(),
-                        Settings.System.NOTIFICATION_LIGHT_ON,
-                        resources
-                                .getInteger(com.android.internal.R.integer.config_defaultNotificationLedOn));
 
         // Don't start allowing notifications until the setup wizard has run once.
         // After that, including subsequent boots, init with notifications turned on.
