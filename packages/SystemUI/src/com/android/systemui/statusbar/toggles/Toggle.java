@@ -20,7 +20,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.Settings;
@@ -160,7 +159,6 @@ public abstract class Toggle implements OnCheckedChangeListener {
         if (mSystemChange)
             return;
         onCheckChanged(isChecked);
-        showToggleIsToggled();
     }
 
     public View getView() {
@@ -180,26 +178,6 @@ public abstract class Toggle implements OnCheckedChangeListener {
     public void setIcon(int res) {
         if (mIcon != null) {
             mIcon.setImageResource(res);
-        }
-    }
-    
-    /**
-     * this method is called when the user manually toggles,
-     * and shows that the toggle was clicked by changing the color
-     */
-    public void showToggleIsToggled() {
-        if (!useAltButtonLayout)
-            return;
-        
-    	Handler handler = new Handler();
-		if (mIcon != null) {
-            mIcon.setColorFilter(defaultColor, PorterDuff.Mode.MULTIPLY);
-			// add delay to switch color back to normal
-			handler.postDelayed(new Runnable() {
-				public void run() {
-					mIcon.setColorFilter(null);
-				}
-			}, 100); 
         }
     }
 
