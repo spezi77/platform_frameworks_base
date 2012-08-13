@@ -3729,6 +3729,10 @@
   <java-symbol type="string" name="lockscreen_always_battery" />
   <java-symbol type="string" name="lockscreen_always_low_battery" />
 
+<!--Screenshot in power menu -->
+  <java-symbol type="string" name="global_action_screenshot" />
+  <java-symbol type="drawable" name="ic_lock_screenshot" />
+
 <!-- ===============================================================
      AVRCP 1.3 Meta Data Resources
      =============================================================== -->
