@@ -16,8 +16,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/jelly_bean_dream_name">
     <CheckBoxPreference
-        android:key="beanbag_dream_cid"
-        android:title="@string/bean_dream_settings_cid_title"
-        android:summary="@string/bean_dream_settings_cid_summary"
+        android:key="beanbag_dream_xe"
+        android:title="@string/bean_dream_settings_xe_title"
+        android:summary="@string/bean_dream_settings_xe_summary"
         android:defaultValue="false" />
 </PreferenceScreen>

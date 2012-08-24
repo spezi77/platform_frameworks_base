@@ -137,17 +137,17 @@ public class BeanBag extends Activity {
             0xFF333333,
         };
 
-        static int CIDS[] = {
-            R.drawable.cid_angry,
-            R.drawable.cid_angry,
-            R.drawable.cid_angry,
-            R.drawable.cid_angry,
-            R.drawable.cid_normal,
-            R.drawable.cid_normal,
-            R.drawable.cid_confused,
+        static int XE[] = {
+            R.drawable.xe_angry,
+            R.drawable.xe_angry,
+            R.drawable.xe_angry,
+            R.drawable.xe_angry,
+            R.drawable.xe_normal,
+            R.drawable.xe_normal,
+            R.drawable.xe_confused,
         };
 
-        static int CIDCOLORS[] = {
+        static int XECOLORS[] = {
             0xFF0099CC,
             0xFF33B5E5,
             0xFF669900,
@@ -189,7 +189,7 @@ public class BeanBag extends Activity {
             }
 
             private void pickBean() {
-                int beanId = pickInt(mIsCid ? CIDS : BEANS);
+                int beanId = pickInt(mIsXe ? XE : BEANS);
                 if (randfrange(0,1) <= LUCKY) {
                     beanId = R.drawable.jandycane;
                 }
@@ -204,7 +204,7 @@ public class BeanBag extends Activity {
                 this.setImageDrawable(bean);
 
                 Paint pt = new Paint();
-                final int color = pickInt(mIsCid ? CIDCOLORS : COLORS);
+                final int color = pickInt(mIsXe ? XECOLORS : COLORS);
                 ColorMatrix CM = new ColorMatrix();
                 float[] M = CM.getArray();
                 // we assume the color information is in the red channel
@@ -288,11 +288,11 @@ public class BeanBag extends Activity {
         TimeAnimator mAnim;
         private int boardWidth;
         private int boardHeight;
-        private boolean mIsCid;
+        private boolean mIsXe;
 
-        public Board(Context context, AttributeSet as, boolean isCid) {
+        public Board(Context context, AttributeSet as, boolean isXe) {
             super(context, as);
-            mIsCid = isCid;
+            mIsXe = isXe;
             setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
 
             setWillNotDraw(!DEBUG);
@@ -436,7 +436,7 @@ public class BeanBag extends Activity {
                   WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                 );
-        mBoard = new Board(this, null,  getIntent().getBooleanExtra("is_cid", false));
+        mBoard = new Board(this, null,  getIntent().getBooleanExtra("is_xe", false));
         setContentView(mBoard);
     }
 

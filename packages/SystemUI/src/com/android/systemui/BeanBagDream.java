@@ -32,7 +32,7 @@ public class BeanBagDream extends DreamService {
         setInteractive(true);
         setFullscreen(true);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        mBoard = new Board(this, null, prefs.getBoolean("beanbag_dream_cid", false));
+        mBoard = new Board(this, null, prefs.getBoolean("beanbag_dream_xe", false));
         setContentView(mBoard);
     }
 
