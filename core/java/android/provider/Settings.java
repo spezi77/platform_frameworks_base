@@ -2876,6 +2876,14 @@ public final class Settings {
         public static final String WEATHER_SHOW_LOCATION = "weather_show_location";
 
         /**
+         * What brightness to use for the notificaion LED
+         *
+         * @hide
+         */
+        public static final String LED_BRIGHTNESS = "led_brightness";
+
+
+        /**
 	 *
 	 * @hide
 	 */
