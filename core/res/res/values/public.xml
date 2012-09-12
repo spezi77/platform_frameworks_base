@@ -2053,4 +2053,9 @@
   <public type="style" name="Theme.DeviceDefault.NoActionBar.Overscan" id="0x010301df" />
   <public type="style" name="Theme.DeviceDefault.Light.NoActionBar.Overscan" id="0x010301e0" />
 
+  <!-- Custom Vibrations -->
+  <java-symbol type="string" name="vibration_picker_title"/>
+  <java-symbol type="string" name="vibration_picker_del_title"/>
+  <java-symbol type="layout" name="vibration_picker_dialog"/>
+
 </resources>
