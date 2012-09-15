@@ -112,6 +112,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mFitThumbnailToXY;
     private int mRecentItemLayoutId;
     private boolean mHighEndGfx;
+<<<<<<< HEAD
     boolean ramBarEnabled;
     boolean mRecentsKillAllEnabled;
     boolean mRecentsGoogEnabled;
@@ -147,6 +148,9 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     RunningState mState;
 
     MemInfoReader mMemInfoReader = new MemInfoReader();
+=======
+    private ImageView mClearRecents;
+>>>>>>> cdd9edf... "Clear all" button on recent apps
 
     public static interface RecentsScrollView {
         public int numItemsInOneScreenful();
@@ -417,7 +421,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                     && (mRecentTaskDescriptions.size() == 0);
             mRecentsNoApps.setAlpha(1f);
             mRecentsNoApps.setVisibility(noApps ? View.VISIBLE : View.INVISIBLE);
-
+            mClearRecents.setVisibility(noApps ? View.GONE : View.VISIBLE);
             onAnimationEnd(null);
             setFocusable(true);
             setFocusableInTouchMode(true);
@@ -538,6 +542,16 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mRecentsScrim = findViewById(R.id.recents_bg_protect);
         mRecentsNoApps = findViewById(R.id.recents_no_apps);
         mRecentsRamBar = findViewById(R.id.recents_ram_bar);
+
+        mClearRecents = (ImageView) findViewById(R.id.recents_clear);
+        if (mClearRecents != null){
+            mClearRecents.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mRecentsContainer.removeAllViewsInLayout();
+                }
+            });
+        }
 
         if (mRecentsScrim != null) {
             mHighEndGfx = ActivityManager.isHighEndGfx();
