@@ -877,4 +877,7 @@
          kill the foreground app. -->
     <integer name="config_backKillTimeout">750</integer>
 
+	<!-- Set to true for Tegra3 devices -->
+	<bool name="config_isTegra3">false</bool>
+
 </resources>
