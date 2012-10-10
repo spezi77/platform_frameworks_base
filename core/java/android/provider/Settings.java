@@ -2785,6 +2785,14 @@ public final class Settings {
 
         /**
          * @hide
+         * Vibrate when expanding notifications
+         * 0 - no vibrate
+         * 1 - vibrate
+         */
+        public static final String VIBRATE_NOTIF_EXPAND = "vibrate_notif_expand";
+
+        /**
+         * @hide
          * Style of Battery
          * 0 - Icon Only
          * 1 - Text Only
