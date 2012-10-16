@@ -1126,6 +1126,27 @@ public final class Settings {
         }
 
         /**
+<<<<<<< HEAD
+=======
+         * @hide
+         * Convenience function for updating a single settings value as a
+         * boolean. This will either create a new entry in the table if the
+         * given name does not exist, or modify the value of the existing row
+         * with that name.  Note that internally setting values are always
+         * stored as strings, so this function converts the given value to a
+         * string (1 or 0) before storing it.
+         *
+         * @param cr The ContentResolver to access.
+         * @param name The name of the setting to modify.
+         * @param value The new value for the setting.
+         * @return true if the value was set, false on database errors
+         */
+        public static boolean putBoolean(ContentResolver cr, String name, boolean value) {
+            return putString(cr, name, value ? "1" : "0");
+        }
+
+        /**
+>>>>>>> 3a36b2b... SystemUI: Recents Ram Bar
          * Convenience function for retrieving a single system settings value
          * as a {@code long}.  Note that internally setting values are always
          * stored as strings; this function converts the string to a {@code long}
@@ -2259,19 +2280,6 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
-        /**
-         * Whether to wake the screen with the volume keys, the value is boolean.
-         * @hide
-         */
-        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
-
-		/**
-         * Whether or not volume button music controls should be enabled to seek media tracks
-         * 
-         * @hide
-         */
-        public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
-
 		/**
          * Style of Battery
          * 0 - Icon Only
@@ -2368,6 +2376,25 @@ public final class Settings {
          * @hide
          */
         public static final String VIBRATE_NOTIF_EXPAND = "vibrate_notif_expand";
+
+        /**
+         * Whether the volume keys wake the screen.
+         * @hide
+         */
+        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
+
+        /**
+         * Whether volume up/down can be long pressed to skip tracks
+         * @hide
+         */
+        public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
+
+        /**
+         * whether to hide the Ram Usage Bar on recent switcher
+         *
+         * @hide
+         */
+        public static final String RAM_USAGE_BAR = "ram_usage_bar";
 
        /**
         * Key to store Torch state.
