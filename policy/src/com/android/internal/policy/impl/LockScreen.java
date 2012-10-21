@@ -16,19 +16,6 @@
 
 package com.android.internal.policy.impl;
 
-<<<<<<< HEAD
-=======
-import com.android.internal.R;
-import com.android.internal.policy.impl.KeyguardUpdateMonitor.InfoCallbackImpl;
-import com.android.internal.policy.impl.KeyguardUpdateMonitor.SimStateCallback;
-import com.android.internal.telephony.IccCard.State;
-import com.android.internal.widget.DigitalClock;
-import com.android.internal.widget.LockPatternUtils;
-import com.android.internal.widget.SlidingTab;
-import com.android.internal.widget.WaveView;
-import com.android.internal.widget.multiwaveview.GlowPadView;
-
->>>>>>> 0d8e511... framework: add lockscreen text color 1/2 [WIP]
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.SearchManager;
@@ -42,7 +29,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-<<<<<<< HEAD
 import android.content.res.Resources.NotFoundException;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -51,11 +37,9 @@ import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.media.AudioManager;
-=======
 import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.os.Handler;
->>>>>>> 0d8e511... framework: add lockscreen text color 1/2 [WIP]
 import android.os.RemoteException;
 import android.os.Vibrator;
 import android.provider.MediaStore;
@@ -67,7 +51,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-<<<<<<< HEAD
 
 import com.android.internal.R;
 import com.android.internal.policy.impl.KeyguardUpdateMonitor.InfoCallbackImpl;
@@ -78,8 +61,6 @@ import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.TargetDrawable;
-=======
->>>>>>> 0d8e511... framework: add lockscreen text color 1/2 [WIP]
 
 import java.io.File;
 import java.net.URISyntaxException;
