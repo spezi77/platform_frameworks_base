@@ -56,6 +56,7 @@ import com.android.internal.R;
 import com.android.internal.policy.impl.KeyguardUpdateMonitor.InfoCallbackImpl;
 import com.android.internal.policy.impl.KeyguardUpdateMonitor.SimStateCallback;
 import com.android.internal.telephony.IccCard.State;
+import com.android.internal.widget.DigitalClock;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
