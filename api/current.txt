@@ -74,6 +74,7 @@ package android {
     field public static final java.lang.String MOUNT_UNMOUNT_FILESYSTEMS = "android.permission.MOUNT_UNMOUNT_FILESYSTEMS";
     field public static final java.lang.String NFC = "android.permission.NFC";
     field public static final deprecated java.lang.String PERSISTENT_ACTIVITY = "android.permission.PERSISTENT_ACTIVITY";
+    field public static final java.lang.String PREVENT_POWER_KEY = "android.permission.PREVENT_POWER_KEY";
     field public static final java.lang.String PROCESS_OUTGOING_CALLS = "android.permission.PROCESS_OUTGOING_CALLS";
     field public static final java.lang.String READ_CALENDAR = "android.permission.READ_CALENDAR";
     field public static final java.lang.String READ_CALL_LOG = "android.permission.READ_CALL_LOG";
@@ -1210,6 +1211,8 @@ package android {
     field public static final int divider_horizontal_dim_dark = 17301525; // 0x1080015
     field public static final int divider_horizontal_textfield = 17301523; // 0x1080013
     field public static final int edit_text = 17301526; // 0x1080016
+    field public static final int edit_text_holo_dark = 17301685; // 0x10800b5
+    field public static final int edit_text_holo_light = 17301684; // 0x10800b4
     field public static final int editbox_background = 17301528; // 0x1080018
     field public static final int editbox_background_normal = 17301529; // 0x1080019
     field public static final int editbox_dropdown_dark_frame = 17301530; // 0x108001a
@@ -6911,6 +6914,7 @@ package android.content.res {
     method public void parseBundleExtra(java.lang.String, android.util.AttributeSet, android.os.Bundle) throws org.xmlpull.v1.XmlPullParserException;
     method public void parseBundleExtras(android.content.res.XmlResourceParser, android.os.Bundle) throws java.io.IOException, org.xmlpull.v1.XmlPullParserException;
     method public void updateConfiguration(android.content.res.Configuration, android.util.DisplayMetrics);
+    method public final void updateStringCache();
   }
 
   public static class Resources.NotFoundException extends java.lang.RuntimeException {
@@ -18482,6 +18486,7 @@ package android.provider {
     field public static final java.lang.String DTMF_TONE_WHEN_DIALING = "dtmf_tone";
     field public static final java.lang.String END_BUTTON_BEHAVIOR = "end_button_behavior";
     field public static final java.lang.String FONT_SCALE = "font_scale";
+    field public static final java.lang.String FORCE_DUAL_PANEL = "force_dualpanel";
     field public static final java.lang.String HAPTIC_FEEDBACK_ENABLED = "haptic_feedback_enabled";
     field public static final deprecated java.lang.String HTTP_PROXY = "http_proxy";
     field public static final deprecated java.lang.String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
@@ -18492,7 +18497,9 @@ package android.provider {
     field public static final deprecated java.lang.String LOGGING_ID = "logging_id";
     field public static final java.lang.String MODE_RINGER = "mode_ringer";
     field public static final java.lang.String MODE_RINGER_STREAMS_AFFECTED = "mode_ringer_streams_affected";
+    field public static final java.lang.String MODE_TABLET_UI = "mode_tabletui";
     field public static final java.lang.String MUTE_STREAMS_AFFECTED = "mute_streams_affected";
+    field public static final java.lang.String NAVIGATION_BAR_WIDGETS = "navigation_bar_widgets";
     field public static final deprecated java.lang.String NETWORK_PREFERENCE = "network_preference";
     field public static final java.lang.String NEXT_ALARM_FORMATTED = "next_alarm_formatted";
     field public static final java.lang.String NOTIFICATION_SOUND = "notification_sound";
@@ -18513,10 +18520,17 @@ package android.provider {
     field public static final java.lang.String SETUP_WIZARD_HAS_RUN = "setup_wizard_has_run";
     field public static final java.lang.String SHOW_GTALK_SERVICE_STATUS = "SHOW_GTALK_SERVICE_STATUS";
     field public static final java.lang.String SHOW_PROCESSES = "show_processes";
-    field public static final java.lang.String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
     field public static final deprecated java.lang.String SHOW_WEB_SUGGESTIONS = "show_web_suggestions";
     field public static final java.lang.String SOUND_EFFECTS_ENABLED = "sound_effects_enabled";
     field public static final java.lang.String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
+    field public static final java.lang.String SYSTEMUI_SOFTKEY_IME_SWITCHER = "ime_switcher";
+    field public static final java.lang.String SYSTEMUI_SOFTKEY_KILL_PROCESS = "killcurrent";
+    field public static final java.lang.String SYSTEMUI_SOFTKEY_REBOOT = "reboot";
+    field public static final java.lang.String SYSTEMUI_SOFTKEY_RING_SILENT = "ring_silent";
+    field public static final java.lang.String SYSTEMUI_SOFTKEY_RING_VIB = "ring_vib";
+    field public static final java.lang.String SYSTEMUI_SOFTKEY_RING_VIB_SILENT = "ring_vib_silent";
+    field public static final java.lang.String SYSTEMUI_SOFTKEY_SCREENOFF = "screenoff";
+    field public static final java.lang.String SYSTEMUI_SOFTKEY_SCREENSHOT = "screenshot";
     field public static final java.lang.String SYS_PROP_SETTING_VERSION = "sys.settings_system_version";
     field public static final java.lang.String TEXT_AUTO_CAPS = "auto_caps";
     field public static final java.lang.String TEXT_AUTO_PUNCTUATE = "auto_punctuate";
@@ -25157,6 +25171,7 @@ package android.view {
     field public static final deprecated int MEMORY_TYPE_HARDWARE = 1; // 0x1
     field public static final deprecated int MEMORY_TYPE_NORMAL = 0; // 0x0
     field public static final deprecated int MEMORY_TYPE_PUSH_BUFFERS = 3; // 0x3
+    field public static final int PREVENT_POWER_KEY = -2147483648; // 0x80000000
     field public static final int SCREEN_BRIGHTNESS_CHANGED = 2048; // 0x800
     field public static final int SCREEN_ORIENTATION_CHANGED = 1024; // 0x400
     field public static final int SOFT_INPUT_ADJUST_NOTHING = 48; // 0x30
