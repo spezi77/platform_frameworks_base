@@ -2711,6 +2711,16 @@ public final class Settings {
          */
         public static final String STATUSBAR_TOGGLES_USE_BUTTONS = "statusbar_toggles_use_buttons";
 
+		/**
+         * @hide
+         */
+        public static final String STATUSBAR_SETTINGS_BEHAVIOR = "statusbar_settings_behavior";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_TOGGLES_AUTOHIDE = "statusbar_toggles_autohide";
+
         /**
          * @hide
          */
