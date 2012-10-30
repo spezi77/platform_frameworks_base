@@ -2409,12 +2409,6 @@ public final class Settings {
         @Deprecated
         public static final String USB_MASS_STORAGE_ENABLED = Secure.USB_MASS_STORAGE_ENABLED;
 
-	/**
-         * Torch state (flashlight)
-         * @hide
-         */
-        public static final String TORCH_STATE = "torch_state";
-
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#USE_GOOGLE_MAIL} instead
          */
