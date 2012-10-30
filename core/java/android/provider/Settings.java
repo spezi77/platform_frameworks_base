@@ -2837,12 +2837,6 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
 
-		/**
-         * Whether to use lockscreen theming
-         * @hide
-         */
-        public static final String USE_LOCKSCREEN_THEMES = "use_lockscreen_themes";
-
         /**
          * Whether to show the battery bar
          * 
