@@ -441,32 +441,6 @@ public class NotificationManagerService extends INotificationManager.Stub
                 mBlockedPackages.clear();
                 readPolicy(mPolicyFile, TAG_BLOCKED_PKGS, mBlockedPackages);
 
-                FileInputStream infile = null;
-                try {
-                    infile = mPolicyFile.openRead();
-                    final XmlPullParser parser = Xml.newPullParser();
-                    parser.setInput(infile, null);
-
-                    int type;
-                    String tag;
-                    int version = DB_VERSION;
-                    while ((type = parser.next()) != END_DOCUMENT) {
-                        tag = parser.getName();
-                        if (type == START_TAG) {
-                            if (TAG_BODY.equals(tag)) {
-                                version = Integer.parseInt(parser.getAttributeValue(null,
-                                        ATTR_VERSION));
-                            } else if (TAG_BLOCKED_PKGS.equals(tag)) {
-                                while ((type = parser.next()) != END_DOCUMENT) {
-                                    tag = parser.getName();
-                                    if (TAG_PACKAGE.equals(tag)) {
-                                        mBlockedPackages.add(parser.getAttributeValue(null,
-                                                ATTR_NAME));
-                                    } else if (TAG_BLOCKED_PKGS.equals(tag) && type == END_TAG) {
-                                        break;
-                                    }
-                                }
-                            }
             }
         }
     }

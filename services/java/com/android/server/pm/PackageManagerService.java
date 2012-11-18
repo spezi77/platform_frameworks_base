@@ -547,6 +547,9 @@ public class PackageManagerService extends IPackageManager.Stub {
     // Stores a list of users whose package restrictions file needs to be updated
     private HashSet<Integer> mDirtyUsers = new HashSet<Integer>();
 
+    WindowManager mWindowManager;
+    private final WindowManagerPolicy mPolicy; // to set packageName
+
     final private DefaultContainerConnection mDefContainerConn =
             new DefaultContainerConnection();
     class DefaultContainerConnection implements ServiceConnection {
@@ -3734,9 +3737,8 @@ public class PackageManagerService extends IPackageManager.Stub {
             mDeferredDexOpt = null;
         }
         if (pkgs != null) {
-            int i = 0;
-            for (PackageParser.Package pkg : pkgs) {
-                PackageParser.Package p = pkg;
+            for (int i=0; i<pkgs.size(); i++) {
+                PackageParser.Package p = pkgs.get(i);
                 if (!isFirstBoot()) {
                     i++;
                     try {
