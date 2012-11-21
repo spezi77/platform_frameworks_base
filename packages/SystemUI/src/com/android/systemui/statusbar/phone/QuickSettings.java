@@ -51,6 +51,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.WifiDisplayStatus;
+import android.location.LocationManager;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -81,6 +82,9 @@ class QuickSettings {
     static final boolean DEBUG_GONE_TILES = false;
     private static final String TAG = "QuickSettings";
     public static final boolean SHOW_IME_TILE = false;
+    
+    public String strGPSoff = "GPS Off";
+    public String strGPSon = "GPS On";
 
     public static final boolean LONG_PRESS_TOGGLES = true;
 
@@ -92,6 +96,7 @@ class QuickSettings {
     private DisplayManager mDisplayManager;
     private WifiDisplayStatus mWifiDisplayStatus;
     private WifiManager wifiManager;
+    private LocationManager locationManager;
     private PhoneStatusBar mStatusBarService;
     private BluetoothState mBluetoothState;
     private BluetoothAdapter mBluetoothAdapter;
@@ -129,6 +134,7 @@ class QuickSettings {
         mModel = new QuickSettingsModel(context);
         mWifiDisplayStatus = new WifiDisplayStatus();
         wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+        locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         mBluetoothState = new QuickSettingsModel.BluetoothState();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -325,25 +331,8 @@ class QuickSettings {
         });
         parent.addView(userTile);
         mDynamicSpannedTiles.add(userTile);
-
-        // Brightness
-        final QuickSettingsBasicTile brightnessTile
-                = new QuickSettingsBasicTile(mContext);
-        brightnessTile.setImageResource(R.drawable.ic_qs_brightness_auto_off);
-        brightnessTile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                collapsePanels();
-                showBrightnessDialog();
-            }
-        });
-        mModel.addBrightnessTile(brightnessTile,
-                new QuickSettingsModel.BasicRefreshCallback(brightnessTile));
-        parent.addView(brightnessTile);
-        mDynamicSpannedTiles.add(brightnessTile);
-
+        
         // Time tile
-        /*
         QuickSettingsTileView timeTile = (QuickSettingsTileView)
                 inflater.inflate(R.layout.quick_settings_tile, parent, false);
         timeTile.setContent(R.layout.quick_settings_tile_time, inflater);
@@ -360,7 +349,61 @@ class QuickSettings {
         });
         parent.addView(timeTile);
         mDynamicSpannedTiles.add(timeTile);
-        */
+
+        if (mModel.deviceSupportsTelephony()) {
+            // Mobile Network state
+            QuickSettingsTileView rssiTile = (QuickSettingsTileView)
+                    inflater.inflate(R.layout.quick_settings_tile, parent, false);
+            rssiTile.setContent(R.layout.quick_settings_tile_rssi, inflater);
+            rssiTile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.setComponent(new ComponentName(
+                            "com.android.settings",
+                            "com.android.settings.Settings$DataUsageSummaryActivity"));
+                    startSettingsActivity(intent);
+                }
+            });
+            mModel.addRSSITile(rssiTile, new QuickSettingsModel.RefreshCallback() {
+                @Override
+                public void refreshView(QuickSettingsTileView view, State state) {
+                    RSSIState rssiState = (RSSIState) state;
+                    ImageView iv = (ImageView) view.findViewById(R.id.rssi_image);
+                    ImageView iov = (ImageView) view.findViewById(R.id.rssi_overlay_image);
+                    TextView tv = (TextView) view.findViewById(R.id.rssi_textview);
+                    iv.setImageResource(rssiState.signalIconId);
+
+                    if (rssiState.dataTypeIconId > 0) {
+                        iov.setImageResource(rssiState.dataTypeIconId);
+                    } else {
+                        iov.setImageDrawable(null);
+                    }
+                    tv.setText(state.label);
+                    view.setContentDescription(mContext.getResources().getString(
+                            R.string.accessibility_quick_settings_mobile,
+                            rssiState.signalContentDescription, rssiState.dataContentDescription,
+                            state.label));
+                }
+            });
+            parent.addView(rssiTile);
+        }
+
+        // Brightness
+        final QuickSettingsBasicTile brightnessTile
+                = new QuickSettingsBasicTile(mContext);
+        brightnessTile.setImageResource(R.drawable.ic_qs_brightness_auto_off);
+        brightnessTile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                collapsePanels();
+                showBrightnessDialog();
+            }
+        });
+        mModel.addBrightnessTile(brightnessTile,
+                new QuickSettingsModel.BasicRefreshCallback(brightnessTile));
+        parent.addView(brightnessTile);
+        mDynamicSpannedTiles.add(brightnessTile);
 
         // Settings tile
         final QuickSettingsBasicTile settingsTile = new QuickSettingsBasicTile(mContext);
@@ -651,22 +694,6 @@ class QuickSettings {
         });
         parent.addView(alarmTile);
 
-        // Location
-        final QuickSettingsBasicTile locationTile
-                = new QuickSettingsBasicTile(mContext);
-        locationTile.setImageResource(R.drawable.ic_qs_location);
-        locationTile.setTextResource(R.string.quick_settings_location_label);
-        locationTile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startSettingsActivity(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            }
-        });
-        mModel.addLocationTile(locationTile,
-                new QuickSettingsModel.BasicRefreshCallback(locationTile)
-                        .setShowWhenEnabled(true));
-        parent.addView(locationTile);
-
         // Wifi Display
         QuickSettingsBasicTile wifiDisplayTile
                 = new QuickSettingsBasicTile(mContext);
@@ -681,6 +708,44 @@ class QuickSettings {
                 new QuickSettingsModel.BasicRefreshCallback(wifiDisplayTile)
                         .setShowWhenEnabled(true));
         parent.addView(wifiDisplayTile);
+        
+        // GPS
+            QuickSettingsTileView locationTile = (QuickSettingsTileView)
+                    inflater.inflate(R.layout.quick_settings_tile, parent, false);
+            locationTile.setContent(R.layout.quick_settings_tile_location, inflater);
+            locationTile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(
+                       mContext.getContentResolver(), LocationManager.GPS_PROVIDER);
+                Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
+                       LocationManager.GPS_PROVIDER, gpsEnabled ? false : true);
+                TextView tv = (TextView) v.findViewById(R.id.location_textview);
+                tv.setText(gpsEnabled ? strGPSoff : strGPSon);
+                }
+            });
+            locationTile.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    startSettingsActivity(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    return true;
+                }
+            });
+            mModel.addLocationTile(locationTile, new QuickSettingsModel.RefreshCallback() {
+                @Override
+                public void refreshView(QuickSettingsTileView view, State state) {
+                    boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(
+                        mContext.getContentResolver(), LocationManager.GPS_PROVIDER);
+                    TextView tv = (TextView) view.findViewById(R.id.location_textview);
+                    String newString = state.label;
+                    if ((newString == null) || (newString.equals(""))) {
+                        tv.setText(gpsEnabled ? strGPSon : strGPSoff);
+                    } else {
+                        tv.setText(state.label);
+                    }
+                }
+            });
+            parent.addView(locationTile);
 
         if (SHOW_IME_TILE || DEBUG_GONE_TILES) {
             // IME
