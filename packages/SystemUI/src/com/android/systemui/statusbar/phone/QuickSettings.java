@@ -63,6 +63,7 @@ import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.location.LocationManager;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Profile;
@@ -127,6 +128,8 @@ class QuickSettings {
 	private String DATA = "QS_Data";
 	private String BT = "QS_BT";
 	private String SCREEN = "QS_Screen";
+	private String LOCATION = "QS_Location";
+	private String RINGER = "QS_Ringer";
 
     // The set of QuickSettingsTiles that have dynamic spans (and need to be updated on
     // configuration change)
@@ -376,6 +379,62 @@ class QuickSettings {
 			parent.addView(settingsTile);
 			mDynamicSpannedTiles.add(settingsTile);
 		}
+		
+		// Ringer tile
+		if (isToggleEnabled(RINGER)) {
+			QuickSettingsTileView ringerTile = (QuickSettingsTileView)
+					inflater.inflate(R.layout.quick_settings_tile, parent, false);
+			ringerTile.setContent(R.layout.quick_settings_tile_ringer, inflater);
+			ringerTile.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);				
+					switch (am.getRingerMode()) {
+						case AudioManager.RINGER_MODE_NORMAL:
+							am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+							break;
+						case AudioManager.RINGER_MODE_VIBRATE:
+							am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+							break;	
+						case AudioManager.RINGER_MODE_SILENT:
+							am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+							break;	
+					}
+				}
+			});
+			ringerTile.setOnLongClickListener(new View.OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+					startSettingsActivity(android.provider.Settings.ACTION_SOUND_SETTINGS);
+					return true;
+				}
+			});
+			mModel.addRingerTile(ringerTile, new QuickSettingsModel.RefreshCallback() {
+				@Override
+				public void refreshView(QuickSettingsTileView view, State state) {
+					TextView tv = (TextView) view.findViewById(R.id.ringer_textview);
+					ImageView iv = (ImageView) view.findViewById(R.id.ringer_overlay_image);
+					
+					AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);				
+					switch (am.getRingerMode()) {
+						case AudioManager.RINGER_MODE_NORMAL:
+							tv.setText("Normal");
+							iv.setImageResource(R.drawable.stat_ring_on);
+							break;
+						case AudioManager.RINGER_MODE_VIBRATE:
+							tv.setText("Vibrate");
+							iv.setImageResource(R.drawable.stat_sys_ringer_vibrate);
+							break;	
+						case AudioManager.RINGER_MODE_SILENT:
+							tv.setText("Silent");
+							iv.setImageResource(R.drawable.stat_sys_ringer_silent);
+							break;	
+					}					
+				}
+			});
+			parent.addView(ringerTile);
+			mDynamicSpannedTiles.add(ringerTile);
+		}
 
         // Brightness
 		if (isToggleEnabled(BRIGHTNESS)) {
@@ -422,11 +481,11 @@ class QuickSettings {
 					return true;
 				}
 			});
-			mModel.addSettingsTile(volumeTile, new QuickSettingsModel.RefreshCallback() {
+			mModel.addVolumeTile(volumeTile, new QuickSettingsModel.RefreshCallback() {
 				@Override
 				public void refreshView(QuickSettingsTileView view, State state) {
 					TextView tv = (TextView) view.findViewById(R.id.volume_tileview);
-					tv.setText("Volume");
+					tv.setText("Media Volume");
 				}
 			});
 			parent.addView(volumeTile);
@@ -591,11 +650,12 @@ class QuickSettings {
 			rssiTile.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    Intent intent = new Intent();
-                    intent.setComponent(new ComponentName(
-                            "com.android.settings",
-                            "com.android.settings.Settings$DataUsageSummaryActivity"));
-                    startSettingsActivity(intent);
+					
+					Intent roamingMenuIntent = new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS);
+					roamingMenuIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					mContext.startActivity(roamingMenuIntent);
+					
+					mBar.collapseAllPanels(true);
 					return true;
                 }
             });
@@ -677,6 +737,48 @@ class QuickSettings {
             parent.addView(bluetoothTile);
         }
 		
+		// Location
+		if (isToggleEnabled(LOCATION)) {
+			QuickSettingsTileView locationTile = (QuickSettingsTileView)
+					inflater.inflate(R.layout.quick_settings_tile, parent, false);
+			locationTile.setContent(R.layout.quick_settings_tile_location, inflater);
+			locationTile.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					boolean locationEnabled = Settings.Secure.isLocationProviderEnabled(mContext.getContentResolver(),
+							LocationManager.GPS_PROVIDER);
+							
+					Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
+							LocationManager.GPS_PROVIDER, !locationEnabled);
+				}
+			});
+			locationTile.setOnLongClickListener(new View.OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+					startSettingsActivity(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+					return true;
+				}
+			});
+			mModel.addLocationTile(locationTile, new QuickSettingsModel.RefreshCallback() {
+				@Override
+				public void refreshView(QuickSettingsTileView view, State state) {
+					boolean locationEnabled = Settings.Secure.isLocationProviderEnabled(mContext.getContentResolver(),
+							LocationManager.GPS_PROVIDER);
+							
+					TextView tv = (TextView) view.findViewById(R.id.location_textview);
+					ImageView iv = (ImageView) view.findViewById(R.id.location_image);
+					if (locationEnabled) {
+						tv.setText("GPS ON");
+						iv.setImageResource(R.drawable.ic_qs_location_on);
+					} else {
+						tv.setText("GPS OFF");
+						iv.setImageResource(R.drawable.ic_qs_location_on);
+					}
+				}
+			}); 
+			parent.addView(locationTile);
+		}
+		
 		// Screen Off tile
 		if (isToggleEnabled(SCREEN)) {
 			QuickSettingsTileView screenTile = (QuickSettingsTileView)
@@ -689,7 +791,7 @@ class QuickSettings {
 					pm.goToSleep(SystemClock.uptimeMillis());
 				}
 			});
-			mModel.addSettingsTile(screenTile, new QuickSettingsModel.RefreshCallback() {
+			mModel.addScreenTile(screenTile, new QuickSettingsModel.RefreshCallback() {
 				@Override
 				public void refreshView(QuickSettingsTileView view, State state) {
 					TextView tv = (TextView) view.findViewById(R.id.screen_tileview);
@@ -697,7 +799,6 @@ class QuickSettings {
 				}
 			});
 			parent.addView(screenTile);
-			mDynamicSpannedTiles.add(screenTile);
 		}
     }
 
@@ -728,26 +829,6 @@ class QuickSettings {
             }
         });
         parent.addView(alarmTile);
-
-        // Location
-        QuickSettingsTileView locationTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        locationTile.setContent(R.layout.quick_settings_tile_location, inflater);
-        locationTile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startSettingsActivity(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            }
-        });
-        mModel.addLocationTile(locationTile, new QuickSettingsModel.RefreshCallback() {
-            @Override
-            public void refreshView(QuickSettingsTileView view, State state) {
-                TextView tv = (TextView) view.findViewById(R.id.location_textview);
-                tv.setText(state.label);
-                view.setVisibility(state.enabled ? View.VISIBLE : View.GONE);
-            }
-        });
-        parent.addView(locationTile);
 
         // Wifi Display
         QuickSettingsTileView wifiDisplayTile = (QuickSettingsTileView)
