@@ -236,6 +236,14 @@ public class PanelView extends FrameLayout {
     private boolean mBrightnessSliderEnabled = true;
     private boolean mShouldReactToBrightnessSlider = false;
 
+    // brightness slider stuff
+    private Handler mHandler = new Handler();
+    private Float mPropFactor;
+    private Integer mBrightnessValue;
+    private int lastBrightnessChanged = -1;
+    private boolean mBrightnessSliderEnabled = true;
+    private boolean mShouldReactToBrightnessSlider = false;
+
     public void setRubberbandingEnabled(boolean enable) {
         mRubberbandingEnabled = enable;
     }
@@ -401,13 +409,14 @@ public class PanelView extends FrameLayout {
 
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                        	mShouldReactToBrightnessSlider = false;
+                            mShouldReactToBrightnessSlider = false;
                             mTracking = true;
                             mHandleView.setPressed(true);
                             postInvalidate(); // catch the press state change
                             mInitialTouchY = y;
                             mVelocityTracker = FlingTracker.obtain();
                             trackMovement(event);
+
                             mTimeAnimator.cancel(); // end any outstanding animations
                             mBar.onTrackingStarted(PanelView.this);
                             mTouchOffset = (rawY - mAbsPos[1]) - PanelView.this.getExpandedHeight();
@@ -685,7 +694,8 @@ public class PanelView extends FrameLayout {
                 mTimeAnimator, ((mTimeAnimator!=null && mTimeAnimator.isStarted())?" (started)":"")
         ));
     }
-    private void setPropFactor() {
+
+	private void setPropFactor() {
 		Display display = getDisplay();
 		if(display == null)
 			return;
