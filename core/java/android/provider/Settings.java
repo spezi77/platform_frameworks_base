@@ -4114,6 +4114,12 @@ public final class Settings {
          */
         public static final String POWER_MENU_SILENT_ENABLED = "power_menu_silent_enabled";
 
+        /**
+         * Show the pending notification counts as overlays on the status bar
+         * @hide
+         */
+        public static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
+
         /**	
          * Allows to show the background activity back the lockscreen
          * @hide
@@ -5758,6 +5764,12 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS =
                 Global.WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS;
+
+        /**
+         * Whether the Wimax should be on.  Only the WiMAX service should touch this.
+         * @hide
+         */	
+         public static final String WIMAX_ON = "wimax_on";
 
         /**
          * Whether background data usage is allowed.
