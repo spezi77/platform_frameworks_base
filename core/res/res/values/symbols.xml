@@ -2021,6 +2021,12 @@
 
   <!-- Package Manager -->
   <java-symbol type="array" name="config_disabledComponents" />
+  
+  <!--CM Profiles -->
+  <java-symbol type="string" name="wildcardProfile" />
+  <java-symbol type="string" name="global_action_choose_profile" />
+  <java-symbol type="drawable" name="ic_lock_profile" />
+  <java-symbol type="xml" name="profile_default" />
 
   <!-- Active Display -->
   <java-symbol type="dimen" name="glowpad_notification_font_size" />
