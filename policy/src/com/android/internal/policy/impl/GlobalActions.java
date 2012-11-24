@@ -268,7 +268,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
         };
         onExpandDesktopModeChanged();
-        
         mEnableNavBarHideToggle= Settings.System.getBoolean(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_NAVBAR_HIDE, false);
         mNavBarHideToggle = new NavBarAction(mHandler);
@@ -373,7 +372,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     public void onPress() {
                         createRebootDialog().show();
                     }
-                });
+        });
+        
+        // next: expanded desktop toggle
+        // only shown if enabled, disabled by default
+        if(Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_EXPANDED_DESKTOP_ENABLED, 0) == 1){
+            mItems.add(mExpandDesktopModeOn);
+        }
 
         // next: airplane mode
         if (mEnableAirplaneToggle) {
@@ -1327,8 +1333,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mAirplaneState = on ? ToggleAction.State.On : ToggleAction.State.Off;
         }
     }
-
-	/**
+    
+    /**
      * Change the expand desktop mode system setting
      */
     private void changeExpandDesktopModeSystemSetting(boolean on) {
