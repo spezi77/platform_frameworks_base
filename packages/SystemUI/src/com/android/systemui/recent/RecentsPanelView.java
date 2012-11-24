@@ -144,7 +144,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
     MemInfoReader mMemInfoReader = new MemInfoReader();
 
-    private ImageView mClearRecents;
+    private RecentsActivity mRecentsActivity;
 
     public static interface RecentsScrollView {
         public int numItemsInOneScreenful();
@@ -448,12 +448,10 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     }
 
     public void dismiss() {
-	mState.pause()
         mRecentsActivity.dismissAndGoHome();
     }
 
     public void dismissAndGoBack() {
-	mState.pause()
         mRecentsActivity.dismissAndGoBack();
     }
 
