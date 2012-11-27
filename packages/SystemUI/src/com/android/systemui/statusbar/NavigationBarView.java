@@ -26,8 +26,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilterMaker;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
@@ -804,7 +810,13 @@ public class NavigationBarView extends LinearLayout {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-          
+
+			resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BACKGROUND_STYLE), false,
+                    this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR), false,
+                    this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.MENU_LOCATION), false,
                     this);
@@ -884,8 +896,23 @@ public class NavigationBarView extends LinearLayout {
                 Settings.System.putString(resolver,
                         Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j], "");
             }
+		// NavigationBar background color
+        int defaultBg = Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.NAVIGATION_BAR_BACKGROUND_STYLE, 2);
+        int navbarBackgroundColor = Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR, 0xFF000000);
+
+        if (defaultBg == 0) {
+            setBackgroundColor(navbarBackgroundColor);
+        } else if (defaultBg == 1) {
+            setBackgroundResource(R.drawable.nav_bar_bg);
+            getBackground().setColorFilter(ColorFilterMaker.
+                    changeColorAlpha(navbarBackgroundColor, .32f, 0f));
+        } else {
+            setBackground(mContext.getResources().getDrawable(R.drawable.nav_bar_bg));
         }
-        makeBar();
+    }
+    	makeBar();
         setMenuVisibility(mShowMenu);
     }
 

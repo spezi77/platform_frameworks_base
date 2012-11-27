@@ -2721,6 +2721,36 @@ public final class Settings {
          */
         public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
 
+		/**
+         * Sets the navbar background style
+         * 1 - Color/alpha
+         * 2 - Default drawable plus color/alpha
+         * 3 - Default drawable
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BACKGROUND_STYLE = "navigation_bar_background_style";
+
+        /**
+         * Sets navbar background color/alpha
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BACKGROUND_COLOR = "navigation_bar_background_color";
+
+        /**
+         * Statusbar background color/alpha chooser
+         * @hide
+         */
+        public static final String STATUSBAR_BACKGROUND_COLOR = "status_bar_color";
+
+        /**
+         * Statusbar background style
+         * 0 - Color/alpha only
+         * 1 - Default drawable with color/alpha
+         * 2 - Default drawable only
+         * @hide
+         */
+        public static final String STATUSBAR_BACKGROUND_STYLE = "statusbar_background_style";
+
         /**
          * @hide
          */
