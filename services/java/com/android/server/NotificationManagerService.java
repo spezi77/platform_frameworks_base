@@ -120,7 +120,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     private static final boolean ENABLE_BLOCKED_TOASTS = true;
 
     final Context mContext;
-	Context mUiContext;
+    Context mUiContext;
     final IActivityManager mAm;
     final IBinder mForegroundToken = new Binder();
 
@@ -533,7 +533,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
     };
 
-	private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             mUiContext = null;
@@ -723,8 +723,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         mContext.registerReceiver(mIntentReceiver, pkgFilter);
         IntentFilter sdFilter = new IntentFilter(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
         mContext.registerReceiver(mIntentReceiver, sdFilter);
-
-		ThemeUtils.registerThemeChangeReceiver(mContext, mThemeChangeReceiver);
+        ThemeUtils.registerThemeChangeReceiver(mContext, mThemeChangeReceiver);
 
         SettingsObserver observer = new SettingsObserver(mHandler);
         observer.observe();
@@ -1184,7 +1183,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                 final boolean convertSoundToVibration =
                            notification.vibrate == null
                         && (useDefaultSound || notification.sound != null)
-                        && (audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE);
+                        && (audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE)
+                        && (Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.NOTIFICATION_CONVERT_SOUND_TO_VIBRATION, false));
 
                 final boolean useDefaultVibrate =
                     (notification.defaults & Notification.DEFAULT_VIBRATE) != 0
@@ -1591,7 +1591,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         return -1;
     }
 
-	private Context getUiContext() {
+    private Context getUiContext() {
         if (mUiContext == null) {
             mUiContext = ThemeUtils.createUiContext(mContext);
         }
