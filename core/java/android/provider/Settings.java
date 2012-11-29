@@ -2394,17 +2394,17 @@ public final class Settings {
          */
         public static final String VIBRATE_NOTIF_EXPAND = "vibrate_notif_expand";
 
-        /**
-         * Whether the volume keys wake the screen.
+		/**
+         * Whether to wake the screen with the volume keys, the value is boolean.
          * @hide
          */
         public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
 
         /**
-         * Whether volume up/down can be long pressed to skip tracks
+         * Whether or not volume button music controls should be enabled to seek media tracks
          * @hide
          */
-        public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
+        public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
 
         /**
          * whether to hide the Ram Usage Bar on recent switcher
