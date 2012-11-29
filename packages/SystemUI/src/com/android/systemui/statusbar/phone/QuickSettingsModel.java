@@ -29,10 +29,8 @@ import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.WifiDisplayStatus;
-import android.media.AudioManager;
 import android.os.Handler;
 import android.os.UserHandle;
-import android.location.LocationManager;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.text.TextUtils;
@@ -172,18 +170,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private final NextAlarmObserver mNextAlarmObserver;
     private final BugreportObserver mBugreportObserver;
     private final BrightnessObserver mBrightnessObserver;
-	
-	private QuickSettingsTileView mRingerTile;
-	private RefreshCallback mRingerCallback;
-	private State mRingerState = new State();
-	
-	private QuickSettingsTileView mVolumeTile;
-	private RefreshCallback mVolumeCallback;
-	private State mVolumeState = new State();
-	
-	private QuickSettingsTileView mScreenTile;
-	private RefreshCallback mScreenCallback;
-	private State mScreenState = new State();
 
     private QuickSettingsTileView mUserTile;
     private RefreshCallback mUserCallback;
@@ -255,8 +241,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 	private String DATA = "QS_Data";
 	private String BT = "QS_BT";
 	private String SCREEN = "QS_Screen";
-	private String LOCATION = "QS_Location";
-	private String RINGER = "QS_Ringer";
 
     public QuickSettingsModel(Context context) {
         mContext = context;
@@ -279,11 +263,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         IntentFilter alarmIntentFilter = new IntentFilter();
         alarmIntentFilter.addAction(Intent.ACTION_ALARM_CHANGED);
         context.registerReceiver(mAlarmIntentReceiver, alarmIntentFilter);
-		
-		IntentFilter tileFilter = new IntentFilter();
-		tileFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
-		tileFilter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);		
-        context.registerReceiver(tileReceiver, tileFilter);
     }
 
     void updateResources() {
@@ -292,27 +271,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         refreshBluetoothTile();
         refreshBrightnessTile();
         refreshRotationLockTile();
-    }
-	
-	// Ringer
-	void addRingerTile(QuickSettingsTileView view, RefreshCallback cb) {
-        mRingerTile = view;
-        mRingerCallback = cb;
-		mRingerCallback.refreshView(mRingerTile, mRingerState);
-    }
-	
-	// Volume
-	void addVolumeTile(QuickSettingsTileView view, RefreshCallback cb) {
-        mVolumeTile = view;
-        mVolumeCallback = cb;
-		mVolumeCallback.refreshView(mVolumeTile, mVolumeState);
-    }
-	
-	// Screen
-	void addScreenTile(QuickSettingsTileView view, RefreshCallback cb) {
-        mScreenTile = view;
-        mScreenCallback = cb;
-		mScreenCallback.refreshView(mScreenTile, mScreenState);
     }
 
     // Settings
@@ -582,7 +540,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     public void onLocationGpsStateChanged(boolean inUse, String description) {
         mLocationState.enabled = inUse;
         mLocationState.label = description;
-        //mLocationCallback.refreshView(mLocationTile, mLocationState);
+        mLocationCallback.refreshView(mLocationTile, mLocationState);
     }
 
     // Bug report
@@ -772,19 +730,4 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 	private boolean isToggleEnabled(String toggle) {
 		return Settings.System.getInt(mContext.getContentResolver(), toggle , 1) == 1;	
 	}
-	
-	private final BroadcastReceiver tileReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-        	if (intent.getAction().equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
-				if (isToggleEnabled(LOCATION)) {
-					mLocationCallback.refreshView(mLocationTile, mLocationState);
-				}
-        	} else if (intent.getAction().equals(AudioManager.RINGER_MODE_CHANGED_ACTION)) {
-				if (isToggleEnabled(RINGER)) {
-					mRingerCallback.refreshView(mRingerTile, mRingerState);
-				}
-			}
-        }
-    };
 }
