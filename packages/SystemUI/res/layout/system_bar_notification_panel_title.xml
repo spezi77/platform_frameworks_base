@@ -199,12 +199,6 @@
 
             <include layout="@layout/battery_cluster_view"
                 android:id="@+id/battery_cluster"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerInside"
-                android:layout_gravity="left|center_vertical"
-                android:layout_alignBaseline="@id/wifi_signal"
-                android:paddingRight="6dp"
             />
 
             <!-- this will stretch to eat up available space -->
