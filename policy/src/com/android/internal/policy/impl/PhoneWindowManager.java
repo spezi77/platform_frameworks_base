@@ -1056,10 +1056,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case KEY_ACTION_IN_APP_SEARCH:
                 triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH);
                 break;
-            case KEY_ACTION_KILL_APP:
-                    KillTask mKillTask = new KillTask(mContext);
-                    mHandler.postDelayed(mKillTask, mBackKillTimeout - 500);
-                    break;
             default:
                 break;
         }
