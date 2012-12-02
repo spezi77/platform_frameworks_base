@@ -67,6 +67,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.ContactsContract;
@@ -122,7 +124,7 @@ class QuickSettings {
     private static final int BATTERY_TILE = 9;
     private static final int AIRPLANE_TILE = 10;
     private static final int BLUETOOTH_TILE = 11;
-    private static final int SWAGGER_TILE = 12;
+    // private static final int SWAGGER_TILE = 12;
     private static final int VIBRATE_TILE = 13;
     private static final int SILENT_TILE = 14;
     private static final int FCHARGE_TILE = 15;
@@ -135,6 +137,7 @@ class QuickSettings {
     private static final int LTE_TILE = 22;
     private static final int FAV_CONTACT_TILE = 23;
    // private static final int BT_TETHER_TILE = 23;
+	private static final int SCREEN_TILE = 24;
 
     public static final String USER_TOGGLE = "USER";
     public static final String BRIGHTNESS_TOGGLE = "BRIGHTNESS";
@@ -148,7 +151,7 @@ class QuickSettings {
     public static final String BATTERY_TOGGLE = "BATTERY";
     public static final String AIRPLANE_TOGGLE = "AIRPLANE_MODE";
     public static final String BLUETOOTH_TOGGLE = "BLUETOOTH";
-    public static final String SWAGGER_TOGGLE = "SWAGGER";
+    // public static final String SWAGGER_TOGGLE = "SWAGGER";
     public static final String VIBRATE_TOGGLE = "VIBRATE";
     public static final String SILENT_TOGGLE = "SILENT";
     public static final String FCHARGE_TOGGLE = "FCHARGE";
@@ -161,6 +164,7 @@ class QuickSettings {
     public static final String TWOG_TOGGLE = "2G";
     public static final String LTE_TOGGLE = "LTE";
     public static final String FAV_CONTACT_TOGGLE = "FAVCONTACT";
+	public static final String SCREEN_TOGGLE = "SCREEN";
 
     private static final String DEFAULT_TOGGLES = "default";
 
@@ -236,7 +240,7 @@ class QuickSettings {
             toggleMap.put(BATTERY_TOGGLE, BATTERY_TILE);
             toggleMap.put(AIRPLANE_TOGGLE, AIRPLANE_TILE);
             toggleMap.put(BLUETOOTH_TOGGLE, BLUETOOTH_TILE);
-            toggleMap.put(SWAGGER_TOGGLE, SWAGGER_TILE);
+            //toggleMap.put(SWAGGER_TOGGLE, SWAGGER_TILE);
             toggleMap.put(VIBRATE_TOGGLE, VIBRATE_TILE);
             toggleMap.put(SILENT_TOGGLE, SILENT_TILE);
             toggleMap.put(FCHARGE_TOGGLE, FCHARGE_TILE);
@@ -248,6 +252,7 @@ class QuickSettings {
             toggleMap.put(TWOG_TOGGLE, TWOG_TILE);
             toggleMap.put(LTE_TOGGLE, LTE_TILE);
             toggleMap.put(FAV_CONTACT_TOGGLE, FAV_CONTACT_TILE);
+			toggleMap.put(SCREEN_TOGGLE, SCREEN_TILE);
             //toggleMap.put(BT_TETHER_TOGGLE, BT_TETHER_TILE);
         }
         return toggleMap;
@@ -1267,7 +1272,28 @@ class QuickSettings {
                     }
                 });
                 break;
-            case SWAGGER_TILE:
+			case SCREEN_TILE:
+                quick = (QuickSettingsTileView)
+                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                quick.setContent(R.layout.quick_settings_tile_screen, inflater);
+                TextView tv = (TextView) quick.findViewById(R.id.screen_textview);
+                tv.setTextSize(1, mTileTextSize);
+                quick.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+                        pm.goToSleep(SystemClock.uptimeMillis());
+                       }
+                    });
+                    mModel.addScreenTile(quick, new QuickSettingsModel.RefreshCallback() {
+		        @Override
+			public void refreshView(QuickSettingsTileView view, State state) {
+		       	    TextView tv = (TextView) view.findViewById(R.id.screen_textview);
+			    tv.setText("Screen Off");
+                        }
+                 });
+                 break;
+           /** case SWAGGER_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
                 quick.setBackgroundResource(mTileBG);
@@ -1304,7 +1330,7 @@ class QuickSettings {
                         return true;
                     }
                 });
-                break;
+                break; **/
             case FAV_CONTACT_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);

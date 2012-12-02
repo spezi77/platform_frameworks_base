@@ -288,6 +288,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mWifiTetherCallback;
     private State mWifiTetherState = new State();
 
+    private QuickSettingsTileView mScreenTile;
+    private RefreshCallback mScreenCallback;
+    private State mScreenState = new State();
+
  /*   private QuickSettingsTileView mBTTetherTile;
     private RefreshCallback mBTTetherCallback;
     private State mBTTetherState = new State(); */
@@ -693,6 +697,13 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mLocationState.label = description;
         if (togglesContain(QuickSettings.GPS_TOGGLE))
             mLocationCallback.refreshView(mLocationTile, mLocationState);
+    }
+
+    // Screen
+    void addScreenTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mScreenTile = view;
+        mScreenCallback = cb;
+    mScreenCallback.refreshView(mScreenTile, mScreenState);
     }
 
     // Bug report
