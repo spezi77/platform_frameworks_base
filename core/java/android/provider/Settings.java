@@ -1978,14 +1978,12 @@ public final class Settings {
          */
         public static final String FORCE_DUAL_PANEL = "force_dualpanel";
 
-        /**
-         * Whether to wake the screen with the volume keys, the value is boolean.
+         /* Whether the phone ringtone should be played in an increasing manner
          * @hide
          */
         public static final String INCREASING_RING = "increasing_ring";
 
-        /**
-		 * Whether the phone ringtone should be played in an increasing manner
+	/*
          * Minimum volume index for increasing ring volume
          * @hide
          */
