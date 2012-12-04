@@ -565,6 +565,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 			resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_SHOW), false, this);
 			resolver.registerContentObserver(Settings.System.getUriFor(
+					Settings.System.NAVIGATION_BAR_SHOW_NOW), false, this);
+			resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_HEIGHT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE), false, this);
@@ -1264,6 +1266,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mUserNavBarWidth = NavWidth;
             if(mDisplay != null)
                 setInitialDisplaySize(mDisplay, mUnrestrictedScreenWidth, mUnrestrictedScreenHeight, density);
+        }
+		if (mHasNavigationBar != showNavBarNow) {
+            mHasNavigationBar = showNavBarNow;
+            if(mDisplay != null)
+                setInitialDisplaySize(mDisplay, mUnrestrictedScreenWidth, mUnrestrictedScreenHeight,
+ 			density);
         }
     }
 
