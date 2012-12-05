@@ -98,6 +98,8 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected static final int MSG_SHOW_INTRUDER = 1026;
     protected static final int MSG_HIDE_INTRUDER = 1027;
 
+    private boolean mTabletui;
+
     private WidgetView mWidgetView;
 
     protected static final boolean ENABLE_INTRUDERS = false;
@@ -210,6 +212,9 @@ public abstract class BaseStatusBar extends SystemUI implements
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
 
         mStatusBarContainer = new FrameLayout(mContext);
+
+        mTabletui = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.CURRENT_UI_MODE,0) == 1;
 
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();
@@ -446,8 +451,13 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         // Provide SearchPanel with a temporary parent to allow layout params to work.
         LinearLayout tmpRoot = new LinearLayout(mContext);
-        mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+        if (mTabletui) {
+            mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+                    R.layout.status_bar_search_panel_tablet, tmpRoot, false);
+        } else {
+            mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
                  R.layout.status_bar_search_panel, tmpRoot, false);
+        }
         mSearchPanelView.setOnTouchListener(
                  new TouchOutsideListener(MSG_CLOSE_SEARCH_PANEL, mSearchPanelView));
         mSearchPanelView.setVisibility(View.GONE);
