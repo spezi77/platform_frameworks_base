@@ -407,11 +407,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     void setUserTileInfo(String name, Drawable avatar) {
-        if (mUserCallback != null) {
-            mUserState.label = name;
-            mUserState.avatar = avatar;
-            mUserCallback.refreshView(mUserTile, mUserState);
-        }
+        mUserState.label = name;
+        mUserState.avatar = avatar;
+        mUserCallback.refreshView(mUserTile, mUserState);
     }
 
     // Time
