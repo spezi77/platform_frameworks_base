@@ -1764,7 +1764,9 @@ class QuickSettings {
         int columnCount = Settings.System.getInt(resolver, Settings.System.QUICK_TOGGLES_PER_ROW,
                 mContext.getResources().getInteger(R.integer.quick_settings_num_columns));
         mUseDefaultTheme = (Settings.System.getInt(resolver, Settings.System.QUICK_THEME_STYLE, 1) == 1);
-        mTileText = mContext.getResources().getColor(mUseDefaultTheme ?R.color.quicksettings_text_color_dark : R.color.quicksettings_text_color_light);
+        mTileText = Settings.System.getInt(resolver, Settings.System.QUICK_TEXT_COLOR,
+                mContext.getResources().getColor(mUseDefaultTheme ? R.color.quicksettings_text_color_dark:
+                R.color.quicksettings_text_color_light));
         mTileBG = (mUseDefaultTheme ? R.drawable.qs_tile_background : R.drawable.qs_tile_background_light);
         mTileTextBG = mContext.getResources().getColor(mUseDefaultTheme ? R.color.quicksettings_text_background_dark : R.color.quicksettings_text_background_light);
         mModel.setDefaultTheme(mUseDefaultTheme);
@@ -1794,6 +1796,9 @@ class QuickSettings {
                     false, this);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.QUICK_THEME_STYLE),
+                    false, this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.QUICK_TEXT_COLOR),
                     false, this);
             updateSettings();
         }
