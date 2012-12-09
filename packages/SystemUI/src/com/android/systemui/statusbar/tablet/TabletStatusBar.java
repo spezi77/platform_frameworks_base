@@ -33,10 +33,18 @@ import android.content.res.Configuration;
 import android.content.res.CustomTheme;
 import android.content.res.Resources;
 import android.database.ContentObserver;
-import android.graphics.ColorFilterMaker;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
@@ -75,7 +83,6 @@ import com.android.systemui.statusbar.NotificationData;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBarIconView;
-import com.android.systemui.statusbar.phone.NavigationBarView;
 import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.CompatModeButton;
 import com.android.systemui.statusbar.policy.LocationController;
@@ -140,8 +147,6 @@ public class TabletStatusBar extends BaseStatusBar implements
     View mMenuButton;
     View mRecentButton;
     private boolean mAltBackButtonEnabledForIme;
-
-	NavigationBarView mNavBarView;
 
     ViewGroup mFeedbackIconArea; // notification icons, IME icon, compat icon
     InputMethodButton mInputMethodSwitchButton;
@@ -1595,45 +1600,5 @@ public class TabletStatusBar extends BaseStatusBar implements
     protected boolean shouldDisableNavbarGestures() {
         return mNotificationPanel.getVisibility() == View.VISIBLE
                 || (mDisabled & StatusBarManager.DISABLE_HOME) != 0;
-    }
-
-	class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_BACKGROUND_STYLE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-    }
-
-    protected void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-
-        // NavigationBar background color
-        int defaultBg = Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.NAVIGATION_BAR_BACKGROUND_STYLE, 2);
-        int navbarBackgroundColor = Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR, 0xFF000000);
-
-        if (defaultBg == 0) {
-            mNavBarView.setBackgroundColor(navbarBackgroundColor);
-        } else if (defaultBg == 1) {
-            mNavBarView.setBackgroundResource(R.drawable.system_bar_background);
-            mNavBarView.getBackground().setColorFilter(ColorFilterMaker.
-                    changeColorAlpha(navbarBackgroundColor, .32f, 0f));
-        } else {
-            mNavBarView.setBackground(mContext.getResources().getDrawable(
-                    R.drawable.system_bar_background));
-        }
     }
 }
