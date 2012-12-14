@@ -1927,4 +1927,6 @@
   
   <java-symbol type="bool" name="config_hasDockBattery" />
 
+  <!-- Wifi -->
+  <java-symbol type="bool" name="config_wifiApStartInterface" />
 </resources>
