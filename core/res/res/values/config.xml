@@ -1023,4 +1023,8 @@
         <item>250</item>
         <item>250</item>
     </integer-array>
+
+	<!-- empty string to disable, or like: /sys/kernel/fast_charge/force_fast_charge
+         it is disabled by default so devices need to add an overlay to enable-->
+    <string name="config_fastChargePath" translatable="false"></string>
 </resources>
