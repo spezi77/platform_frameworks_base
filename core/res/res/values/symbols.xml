@@ -1845,6 +1845,10 @@
   <!-- Telephony -->
   <java-symbol type="string" name="config_legacyUmsLunFile" />
 
+  <!-- Hardware Rotation Lock -->
+  <java-symbol type="bool" name="config_forceDisableHardwareKeyboard" />
+  <java-symbol type="bool" name="config_hasRotationLockSwitch" />
+
   <!-- Always show battery status on lockscreen -->
   <java-symbol type="string" name="lockscreen_always_battery" />
   <java-symbol type="string" name="lockscreen_always_low_battery" />
@@ -1916,5 +1920,9 @@
 
   <!-- Wifi -->
   <java-symbol type="bool" name="config_wifiApFirmwareReload" />
+
+  <!-- HW rotation lock -->
+  <java-symbol type="string" name="toast_rotation_unlocked" />
+  <java-symbol type="string" name="toast_rotation_locked" />
 
 </resources>
