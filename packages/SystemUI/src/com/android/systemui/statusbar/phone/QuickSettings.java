@@ -1290,6 +1290,7 @@ class QuickSettings {
 			public void refreshView(QuickSettingsTileView view, State state) {
 		       	    TextView tv = (TextView) view.findViewById(R.id.screen_textview);
 			    tv.setText("Screen Off");
+						tv.setTextSize(1, mTileTextSize);
                         }
                  });
                  break;
