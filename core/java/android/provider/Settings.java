@@ -2383,8 +2383,11 @@ public final class Settings {
          * 2 - Icon Text
          * 3 - Icon Centered Text
          * 4 - Icon Circle
-         * 5 - Hide
+         * 5 - CMCircle
+         * 6 - CMCircle %
+         * 7 - Hide
          */
+         public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
 
         /**
          * Control the display of the action overflow button within app UI.
@@ -2394,7 +2397,6 @@ public final class Settings {
          */
         public static final String UI_FORCE_OVERFLOW_BUTTON = "ui_force_overflow_button";
 
-        public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
         /**
          * AM/PM Style for clock options
          * 0 - Normal AM/PM
