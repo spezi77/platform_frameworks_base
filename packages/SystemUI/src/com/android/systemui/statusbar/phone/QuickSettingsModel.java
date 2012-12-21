@@ -970,18 +970,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
     }
 
-    public boolean isFastChargeOn() {
-        try {
-            File fastcharge = new File(FAST_CHARGE_DIR, FAST_CHARGE_FILE);
-            FileReader reader = new FileReader(fastcharge);
-            BufferedReader breader = new BufferedReader(reader);
-            return (breader.readLine().equals("1"));
-        } catch (IOException e) {
-            Log.e("FChargeToggle", "Couldn't read fast_charge file");
-            return false;
-        }
-    }
-
     // Sync
     void addSyncTile(QuickSettingsTileView view, RefreshCallback cb) {
         mSyncTile = view;
