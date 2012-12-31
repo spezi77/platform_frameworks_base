@@ -267,11 +267,11 @@ public class SignalClusterView
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
+        showingSignalText = (Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_SIGNAL_TEXT,STYLE_HIDE) > 0);
+        showingWiFiText = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, 0) != 0;
         boolean clustdefault = getResources().getBoolean(R.bool.statusbar_alt_signal_layout);
-        showingSignalText = Settings.System.getBoolean(resolver,
-                Settings.System.STATUSBAR_SIGNAL_TEXT, false);
-        showingWiFiText = Settings.System.getBoolean(resolver,
-                Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, false);
         showingAltCluster = Settings.System.getBoolean(resolver,
                 Settings.System.STATUSBAR_SIGNAL_CLUSTER_ALT, clustdefault);
         apply();
