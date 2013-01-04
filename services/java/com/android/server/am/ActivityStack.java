@@ -330,13 +330,14 @@ final class ActivityStack {
                     int pid = -1;
                     long pauseTime = 0;
                     String m = null;
-                    synchronized (mService) {
-                        if (r.app != null) {
-                           pid = r.app.pid;
-                        }
-                        pauseTime = r.pauseTime;
-                        m = "pausing " + r;
+                    //no need to synchronize this on mService
+                    if (r.app != null) {
+                       pid = r.app.pid;
                     }
+                    pauseTime = r.pauseTime;
+                    m = "pausing " + r;
+    
+                    //would need to synchronize this on mService, if logAppTooSlow wasn't an if(true) return;
                     if (pid > 0) {
                         mService.logAppTooSlow(pid, pauseTime, m);
                     }
@@ -362,15 +363,15 @@ final class ActivityStack {
                     int pid = -1;
                     long launchTickTime = 0;
                     String m = null;
-                    synchronized (mService) {
-                        if (r.continueLaunchTickingLocked()) {
-                           if (r.app != null) {
-                                pid = r.app.pid;
-                            }
-                            launchTickTime = r.launchTickTime;
-                            m = "launching " + r;
+                    //no need to synchronize this on mService
+                    if (r.continueLaunchTickingLocked()) {
+                       if (r.app != null) {
+                            pid = r.app.pid;
                         }
+                        launchTickTime = r.launchTickTime;
+                        m = "launching " + r;
                     }
+                    //would need to synchronize this on mService, if logAppTooSlow wasn't an if(true) return;
                     if (pid > 0) {
                         mService.logAppTooSlow(pid, launchTickTime, m);
                     }
@@ -398,7 +399,7 @@ final class ActivityStack {
                             Slog.w(TAG, "Launch timeout has expired, giving up wake lock!");
                             mLaunchingActivity.release();
                         }
-                    }
+                    }                    
                 } break;
                 case RESUME_TOP_ACTIVITY_MSG: {
                     synchronized (mService) {
@@ -3596,9 +3597,9 @@ final class ActivityStack {
 
         // Stop any activities that are scheduled to do so but have been
         // waiting for the next one to start.
-        for (i=0; i<NS; i++) {
-            ActivityRecord r = (ActivityRecord)stops.get(i);
-            synchronized (mService) {
+        synchronized (mService) {
+            for (i=0; i<NS; i++) {
+                ActivityRecord r = (ActivityRecord)stops.get(i);
                 if (r.finishing) {
                     finishCurrentActivityLocked(r, FINISH_IMMEDIATELY, false);
                 } else {
@@ -3607,11 +3608,12 @@ final class ActivityStack {
             }
         }
 
+
         // Finish any activities that are scheduled to do so but have been
         // waiting for the next one to start.
-        for (i=0; i<NF; i++) {
-            ActivityRecord r = (ActivityRecord)finishes.get(i);
-            synchronized (mService) {
+        synchronized (mService) {
+            for (i=0; i<NF; i++) {
+                ActivityRecord r = (ActivityRecord)finishes.get(i);
                 activityRemoved = destroyActivityLocked(r, true, false, "finish-idle");
             }
         }
