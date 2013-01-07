@@ -3067,6 +3067,13 @@ public final class Settings {
          * Use alternative application resolver
          */
         public static final String ACTIVITY_RESOLVER_USE_ALT = "activity_resolver_use_alt";
+        
+        /**
+         * whether to hide the Ram Usage Bar on recent switcher
+         *
+         * @hide
+         */
+        public static final String RECENTS_RAM_BAR = "recents_ram_bar";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
