@@ -98,7 +98,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected static final int MSG_SHOW_INTRUDER = 1026;
     protected static final int MSG_HIDE_INTRUDER = 1027;
 
-    private boolean mTabletui;
+	private boolean mTabletui;
 
     private WidgetView mWidgetView;
 
@@ -211,10 +211,10 @@ public abstract class BaseStatusBar extends SystemUI implements
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
 
-        mStatusBarContainer = new FrameLayout(mContext);
-
-        mTabletui = Settings.System.getInt(mContext.getContentResolver(),
+		mTabletui = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.CURRENT_UI_MODE,0) == 1;
+
+        mStatusBarContainer = new FrameLayout(mContext);
 
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();
