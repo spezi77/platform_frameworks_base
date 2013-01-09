@@ -279,7 +279,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 	int mUserNavBarHeight;
     int mUserNavBarHeightLand;
     int mUserNavBarWidth;
-    int mUserUIMode; //User selected UI Mode (Phablet/Tablet, etc)
+	int mUserUIMode; //User selected UI Mode (Phablet/Tablet, etc)
     int mStockUIMode; // UI Mode as dictated by screen size.
 
     WindowState mKeyguard = null;
@@ -588,8 +588,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_WIDTH), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.USER_UI_MODE), false, this);
+			resolver.registerContentObserver(Settings.System.getUriFor(
+					Settings.System.USER_UI_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     "fancy_rotation_anim"), false, this,
                     UserHandle.USER_ALL);
@@ -1109,7 +1109,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // SystemUI (status bar) layout policy
         int shortSizeDp = shortSize * DisplayMetrics.DENSITY_DEFAULT / density;
 
-        if (shortSizeDp < 600) {
+		if (shortSizeDp < 600) {
             mStockUIMode = 0; // Phone Mode
         } else if (shortSizeDp < 720) {
             mStockUIMode = 2; // Phablet Mode
@@ -1137,6 +1137,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
         Settings.System.putInt(mContext.getContentResolver(),
                 Settings.System.CURRENT_UI_MODE, mUserUIMode);
+
         if (!mHasSystemNavBar) {
              final boolean showByDefault = mContext.getResources().getBoolean(
                      com.android.internal.R.bool.config_showNavigationBar);
@@ -1291,7 +1292,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mUserNavBarWidth = NavWidth;
             resetScreenHelper();
         }
-		if (mHasNavigationBar != showNavBarNow) {
+        if (mHasNavigationBar != showNavBarNow) {
             mHasNavigationBar = showNavBarNow;
             resetScreenHelper();
         }
