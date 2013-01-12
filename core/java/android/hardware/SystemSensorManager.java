@@ -148,18 +148,19 @@ public class SystemSensorManager extends SensorManager {
                         final Sensor sensorObject = sHandleToSensor.get(sensor);
 
                         if (sensorObject != null) {
-	                  final float mag = FloatMath.sqrt(values[0] * values[0] + values[1] * values[1] + values[2] * values[2]);
-       		          if (Math.abs(mag - SensorManager.STANDARD_GRAVITY) > MAGNITUDE_THRESHOLD) {
-                            // report the sensor event to all listeners that
-                            // care about it.
-                            final int size = sListeners.size();
-                            for (int i=0 ; i<size ; i++) {
-                                ListenerDelegate listener = sListeners.get(i);
-                                if (listener.hasSensor(sensorObject)) {
-                                    // this is asynchronous (okay to call
-                                    // with sListeners lock held).
-                                    listener.onSensorChangedLocked(sensorObject,
-                                            values, timestamp, accuracy);
+                            final float mag = FloatMath.sqrt(values[0] * values[0] + values[1] * values[1] + values[2] * values[2]);
+                            if (Math.abs(mag - SensorManager.STANDARD_GRAVITY) > MAGNITUDE_THRESHOLD) {
+                                // report the sensor event to all listeners that
+                                // care about it.
+                                final int size = sListeners.size();
+                                for (int i=0 ; i<size ; i++) {
+                                    ListenerDelegate listener = sListeners.get(i);
+                                    if (listener.hasSensor(sensorObject)) {
+                                        // this is asynchronous (okay to call
+                                        // with sListeners lock held).
+                                        listener.onSensorChangedLocked(sensorObject,
+                                                values, timestamp, accuracy);
+                                    }
                                 }
                             }
                           }

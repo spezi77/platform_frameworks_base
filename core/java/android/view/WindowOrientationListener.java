@@ -537,7 +537,7 @@ public abstract class WindowOrientationListener {
                     Slog.v(TAG, "Proposed rotation changed!  proposedRotation=" + mProposedRotation
                             + ", oldProposedRotation=" + oldProposedRotation);
                 }
-		mAccelerationTimestampNanos = now;
+                mAccelerationTimestampNanos = now;
                 mOrientationListener.onProposedRotationChanged(mProposedRotation);
             }
         }
