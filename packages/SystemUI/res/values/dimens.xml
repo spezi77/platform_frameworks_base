@@ -220,6 +220,12 @@
     <!--  Amount of Margin to offset NavRing in Landscape Mode -->
     <dimen name="navring_left_margin_land">-800dp</dimen>
 
+    <!-- Height of the quick navigation bar trigger -->
+    <dimen name="quick_nav_trigger_height">5dp</dimen>
+
+    <!-- Height of the quick navigation bar-->
+    <dimen name="quick_nav_panel_height">150dp</dimen>
+
     <!-- Quick Nav Panel -->
     <dimen name="qc_radius_start">65dip</dimen>
     <dimen name="qc_radius_increment">80dip</dimen>
