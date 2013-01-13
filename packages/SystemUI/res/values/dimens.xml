@@ -220,7 +220,7 @@
     <!--  Amount of Margin to offset NavRing in Landscape Mode -->
     <dimen name="navring_left_margin_land">-800dp</dimen>
 
-    <!-- Height of the quick navigation bar trigger -->
+    <!-- Height of the pie controls bar trigger -->
     <dimen name="pie_trigger_height">10dp</dimen>
 
     <!-- Height of the pie controls bar-->
