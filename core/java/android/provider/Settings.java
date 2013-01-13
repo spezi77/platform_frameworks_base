@@ -2878,6 +2878,19 @@ public final class Settings {
         public static final String NAVIGATION_BAR_BACKGROUND_STYLE = "navigation_bar_background_style";
 
         /**
+         * Whether to enable or not pie controls
+         * The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String PIE_CONTROLS = "pie_controls";
+
+       /**
+        * Key to store Torch state.
+        * @hide 
+        */
+        public static final String TORCH_STATE = "torch_state";
+
+        /**
          * Sets navbar background color/alpha
          * @hide
          */
