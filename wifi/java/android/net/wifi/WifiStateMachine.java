@@ -775,7 +775,6 @@ public class WifiStateMachine extends StateMachine {
             /* Argument is the state that is entered prior to load */
             sendMessage(CMD_START_SUPPLICANT);
         } else {
-            mWifiConfigStore.setStateFromAutoConnectAllNetworks();
             sendMessage(CMD_STOP_SUPPLICANT);
         }
     }
