@@ -278,7 +278,6 @@
   <java-symbol type="bool" name="config_safe_media_volume_enabled" />
   <java-symbol type="bool" name="config_camera_sound_forced" />
   <java-symbol type="bool" name="config_dontPreferApn" />
-  <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
   <java-symbol type="bool" name="config_speed_up_audio_on_mt_calls" />
 
   <java-symbol type="integer" name="config_cursorWindowSize" />
@@ -1900,6 +1899,11 @@
   <java-symbol type="string" name="action_ribbon"/>
   <java-symbol type="string" name="action_widgets"/>
 
+  <!-- Telephony -->
+  <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
+  <java-symbol type="bool" name="config_samsung_stk" />
+  <java-symbol type="array" name="config_telephony_set_audioparameters" />
+
   <!--  AOKP Ribbon -->
   <java-symbol type="layout" name="target_button" />
   <java-symbol type="id" name="ribbon" />
@@ -1912,7 +1916,5 @@
 
   <!-- Wifi -->
   <java-symbol type="bool" name="config_wifiApFirmwareReload" />
-
-  <java-symbol type="bool" name="config_samsung_stk" />
 
 </resources>
