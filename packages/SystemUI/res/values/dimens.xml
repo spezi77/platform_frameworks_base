@@ -263,5 +263,8 @@
 
     <dimen name="pie_panel_padding">20dp</dimen>
     <!-- PIE PIE PIE PIE PIE PIE PIE PIE PIE PIE PIE PIE PIE PIE -->
+    
+    <!-- Constant for hidden navbar drag handle -->
+    <dimen name="drag_handle_height">10dp</dimen>
 
 </resources>
