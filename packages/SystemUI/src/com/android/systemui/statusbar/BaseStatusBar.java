@@ -172,10 +172,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected Display mDisplay;
 
     private boolean mDeviceProvisioned = false;
-    
-    public WindowManager getWindowManager() {
-        return mWindowManager;
-    }
 
     public NotificationRowLayout getNotificationRowLayout() {
         return mPile;
