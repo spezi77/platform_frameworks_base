@@ -105,5 +105,7 @@
 
     <!-- default Navigation Bar transparency. 0-255 -->
     <integer name="navigation_bar_transparency">255</integer>
-</resources>
 
+    <!-- configurable height dimension for the status bar trigger -->
+    <dimen name="config_trigger_view_height">4dip</dimen>
+</resources>
