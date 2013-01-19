@@ -319,42 +319,50 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             });
             
         // next: reboot
-        mItems.add(
-                new SinglePressAction(
-                        com.android.internal.R.drawable.ic_lock_reboot,
-                        com.android.internal.R.string.reboot) {
+        // only shown if enabled, enabled by default
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_REBOOT_ENABLED, 1) == 1) {
+            mItems.add(
+                new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
+                    public void onPress() {
+                        mWindowManagerFuncs.reboot();
+                    }
 
-                    @Override
+                    public boolean onLongPress() {
+                        mWindowManagerFuncs.rebootSafeMode(true);
+                        return true;
+                    }
+
                     public boolean showDuringKeyguard() {
                         return true;
                     }
 
-                    @Override
                     public boolean showBeforeProvisioning() {
                         return true;
                     }
+                });
+        }
 
-                    @Override
+
+        // next: screenshot
+        // only shown if enabled, disabled by default
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0) == 1) {
+            mItems.add(
+                new SinglePressAction(R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
                     public void onPress() {
-                        createRebootDialog().show();
+                        takeScreenshot();
+                    }
+
+                    public boolean showDuringKeyguard() {
+                        return true;
+                    }
+
+                    public boolean showBeforeProvisioning() {
+                        return true;
                     }
                 });
-                
-        // next: screenshot
-        mItems.add(
-            new SinglePressAction(R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
-                public void onPress() {
-                    takeScreenshot();
-                }
-
-                public boolean showDuringKeyguard() {
-                    return true;
-                }
-
-                public boolean showBeforeProvisioning() {
-                    return true;
-                }
-            });
+        }
             
         // next: expanded desktop toggle
         // only shown if enabled, disabled by default
@@ -364,7 +372,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         // next: airplane mode
-        mItems.add(mAirplaneModeOn);
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_AIRPLANE_ENABLED, 1) == 1) {
+            mItems.add(mAirplaneModeOn);
+        }
 
 		// Next NavBar Hide
         if(mEnableNavBarHideToggle) {
@@ -421,7 +432,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         // last: silent mode
-        if (mShowSilentToggle) {
+        if ((Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_SILENT_ENABLED, 1) == 1) &&
+                (SHOW_SILENT_TOGGLE)) {
             mItems.add(mSilentModeAction);
         }
 
