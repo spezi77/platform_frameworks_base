@@ -1909,4 +1909,6 @@
   <java-symbol type="dimen" name="notification_ribbon_padding" />
   <java-symbol type="dimen" name="lockscreen_ribbon_padding" />
 
+  <!-- Wifi -->
+  <java-symbol type="bool" name="config_wifiApFirmwareReload" />
 </resources>
