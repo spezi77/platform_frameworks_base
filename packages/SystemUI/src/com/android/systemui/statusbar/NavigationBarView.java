@@ -60,11 +60,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.android.internal.statusbar.IStatusBarService;
+import com.android.systemui.aokp.AwesomeAction;
+import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
 import com.android.systemui.statusbar.policy.KeyButtonView;
-import com.android.systemui.statusbar.policy.ExtensibleKeyButtonView;
-import com.android.systemui.aokp.AwesomeAction;
+import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
 import com.android.systemui.statusbar.policy.key.RecentsKeyButtonView;
 
 public class NavigationBarView extends LinearLayout {
