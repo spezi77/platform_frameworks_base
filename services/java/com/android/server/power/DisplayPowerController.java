@@ -237,9 +237,9 @@ final class DisplayPowerController {
     // a stylish electron beam animation instead.
     private boolean mElectronBeamFadesConfig;
 
-    // Slim settings - override config for ElectronBeam
+    // Eos settings - override config for ElectronBeam on or off
+    private boolean mElectronBeamOnEnabled;
     private boolean mElectronBeamOffEnabled;
-    private int mElectronBeamMode;
 
     // The pending power request.
     // Initially null until the first call to requestPowerState.
@@ -687,7 +687,8 @@ final class DisplayPowerController {
             mustNotify = !mDisplayReadyLocked;
         }
 
-        // update crt settings here
+        // update crt settings here, it's only two bools
+        mElectronBeamOnEnabled = mPowerRequest.electronBeamOnEnabled;
         mElectronBeamOffEnabled = mPowerRequest.electronBeamOffEnabled;
 
         // update crt mode settings and force initialize if value changed
@@ -788,12 +789,12 @@ final class DisplayPowerController {
                         blockScreenOn();
                     } else {
                         unblockScreenOn();
-                        if (USE_ELECTRON_BEAM_ON_ANIMATION) {
+                        if (mElectronBeamOffEnabled) {
                             if (!mElectronBeamOnAnimator.isStarted()) {
                                 if (mPowerState.getElectronBeamLevel() == 1.0f) {
                                     mPowerState.dismissElectronBeam();
                                 } else if (mPowerState.prepareElectronBeam(
-                                        mElectronBeamFadesConfig ?
+                                        !mElectronBeamOnEnabled ?
                                                 ElectronBeam.MODE_FADE :
                                                         ElectronBeam.MODE_WARM_UP)) {
                                     mElectronBeamOnAnimator.start();

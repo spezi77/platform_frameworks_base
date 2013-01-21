@@ -67,9 +67,10 @@ final class DisplayPowerRequest {
     // potentially higher CPU usage and flicker.
     public float responsitivityFactor;
 
-    // Slim settings - override config for ElectronBeam on or off
     public int electronBeamMode;
-    public boolean electronBeamOffEnabled;
+    // Eos settings - override config for ElectronBeam on or off
+    public boolean electronBeamOnEnabled;
+    public boolean electronBeamOffEnabled;    
 
     public DisplayPowerRequest() {
         screenState = SCREEN_STATE_BRIGHT;
@@ -80,6 +81,7 @@ final class DisplayPowerRequest {
         blockScreenOn = false;
         responsitivityFactor = 1.0f;
         electronBeamMode = 0;
+        electronBeamOnEnabled = false;
         electronBeamOffEnabled = false;
     }
 
@@ -97,6 +99,7 @@ final class DisplayPowerRequest {
         responsitivityFactor = other.responsitivityFactor;
         electronBeamMode = other.electronBeamMode;
         electronBeamOffEnabled = other.electronBeamOffEnabled;
+	electronBeamOnEnabled = other.electronBeamOnEnabled;
     }
 
     public int getElectronBeamMode() {
@@ -119,6 +122,7 @@ final class DisplayPowerRequest {
                 && blockScreenOn == other.blockScreenOn
                 && Math.abs(responsitivityFactor - other.responsitivityFactor) < 1E-6
                 && electronBeamMode == other.electronBeamMode
+                && electronBeamOnEnabled == other.electronBeamOnEnabled
                 && electronBeamOffEnabled == other.electronBeamOffEnabled;
     }
 
@@ -137,6 +141,7 @@ final class DisplayPowerRequest {
                 + ", blockScreenOn=" + blockScreenOn
                 + ", responsitivityFactor=" + responsitivityFactor
                 + ", electronBeamMode=" + electronBeamMode
+                + ", electronBeamOnEnabled=" + electronBeamOnEnabled
                 + ", electronBeamOffEnabled=" + electronBeamOffEnabled;
     }
 }
