@@ -84,7 +84,7 @@ import com.android.systemui.statusbar.NavigationBarView;
 import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.policy.BatteryController;
-import com.android.systemui.statusbar.policy.BatteryControllerStock;
+import com.android.systemui.statusbar.policy.SbBatteryController;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.CompatModeButton;
@@ -744,14 +744,13 @@ public class TabletStatusBar extends BaseStatusBar implements
         mWindowManager.updateViewLayout(mStatusBarView, lp);
     }
 
-    @Override
     protected void onBarTouchEvent(MotionEvent ev) {
     }
 
-    @Override
     protected void showBar(){
     }
-
+    
+    private int mShowSearchHoldoff = 0;
     private Runnable mShowSearchPanel = new Runnable() {
         public void run() {
             showSearchPanel();

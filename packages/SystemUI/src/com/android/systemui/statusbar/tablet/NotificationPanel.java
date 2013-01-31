@@ -59,11 +59,12 @@ import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.phone.QuickSettings;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.phone.SettingsPanelView;
-import com.android.systemui.statusbar.policy.BatteryControllerStock;
+import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
+import com.android.systemui.statusbar.policy.SbBatteryController;
 
 public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         View.OnClickListener {
@@ -143,7 +144,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         if (mQS != null && mBar != null) {
             mQS.setService(mBar);
             mQS.setBar(mCallback);
-            mQS.setup(mBar.mNetworkController, mBar.mBluetoothController, mBar.mBatteryControllerStock,
+            mQS.setup(mBar.mNetworkController, mBar.mBluetoothController, mBar.mBatteryController,
                 mBar.mLocationController);
         }
     }

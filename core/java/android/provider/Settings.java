@@ -2969,12 +2969,6 @@ public final class Settings {
 
        // PIE COLORS EVERYWHERE! //
 
-       /**
-        * Key to store Torch state.
-        * @hide 
-        */
-        public static final String TORCH_STATE = "torch_state";
-
         /**
          * Sets navbar background color/alpha
          * @hide
