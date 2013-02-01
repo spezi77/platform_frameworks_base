@@ -2927,6 +2927,12 @@ public final class Settings {
          */
         public static final String PIE_NOTIFICATIONS = "pie_notifications";
 
+        /**
+         * Pie Notification Ability
+         * @hide
+         */
+        public static final String PIE_NOTIFICATIONS = "pie_notifications";
+
        // PIE COLORS EVERYWHERE! //
 
         /**
