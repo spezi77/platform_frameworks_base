@@ -2920,6 +2920,12 @@ public final class Settings {
          * @hide
          */
         public static final String PIE_SIZE = "pie_size";
+        
+        /**
+         * Pie Notification Ability
+         * @hide
+         */
+        public static final String PIE_NOTIFICATIONS = "pie_notifications";
 
        // PIE COLORS EVERYWHERE! //
 
@@ -3027,6 +3033,19 @@ public final class Settings {
         public static final String STATUSBAR_SIGNAL_TEXT = "statusbar_signal_text";
 
         /**
+         * Pie gap angle, should default to 1
+         * Pie menu, should default to 0 (no, show only when needed)
+         * @hide
+         */
+        public static final String PIE_MENU = "pie_menu";
+
+        /**
+         * Pie search, should default to 1 (yes, show)
+         * @hide
+         */
+        public static final String PIE_SEARCH = "pie_search";
+
+       /**
          * statusbar signal text color
          *
          * @hide
