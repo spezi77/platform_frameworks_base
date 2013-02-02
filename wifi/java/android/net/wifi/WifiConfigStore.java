@@ -1026,6 +1026,23 @@ class WifiConfigStore {
                 loge("failed to set BSSID: "+config.BSSID);
                 break setVariables;
             }
+            if (config.isIBSS) {	
+                if(!mWifiNative.setNetworkVariable(	
+                        netId,	
+                        WifiConfiguration.modeVarName,
+                        "1")) {
+                    loge("failed to set adhoc mode");
+                    break setVariables;
+                }
+                if(!mWifiNative.setNetworkVariable(
+                        netId,
+                        WifiConfiguration.frequencyVarName,
+                        Integer.toString(config.frequency))) {
+                    loge("failed to set frequency");
+                    break setVariables;
+                }
+            }
+
 
             String allowedKeyManagementString =
                 makeString(config.allowedKeyManagement, WifiConfiguration.KeyMgmt.strings);
@@ -1386,6 +1403,24 @@ class WifiConfigStore {
          * be doing a round trip to the supplicant daemon for each variable.
          */
         String value;
+
+        value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.modeVarName);
+        config.isIBSS = false;
+        if (!TextUtils.isEmpty(value)) {
+            try {
+                config.isIBSS = Integer.parseInt(value) != 0;
+            } catch (NumberFormatException ignore) {
+            }
+        }
+1382
+        value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.frequencyVarName);
+        config.frequency = 0;
+        if (!TextUtils.isEmpty(value)) {
+            try {
+                config.frequency = Integer.parseInt(value);
+            } catch (NumberFormatException ignore) {
+            }
+        
 
         value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.ssidVarName);
         if (!TextUtils.isEmpty(value)) {
