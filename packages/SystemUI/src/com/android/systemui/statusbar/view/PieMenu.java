@@ -120,8 +120,6 @@ public class PieMenu extends FrameLayout {
     private static final int EMPTY_ANGLE_BASE = 12;
     private static final float SIZE_BASE = 1f;
 
-    private static final long ANIMATION = 80;
-
     // System
     private Context mContext;
     private Resources mResources;
@@ -133,11 +131,6 @@ public class PieMenu extends FrameLayout {
     private List<PieItem> mItems;
     private PieControlPanel mPanel;
     private PieStatusPanel mStatusPanel;
-
-    // sub menus
-    private List<PieItem> mCurrentItems;
-    private PieItem mOpenItem;
-    private boolean mAnimating;
 
     private int mOverallSpeed = BASE_SPEED;
     private int mPanelDegree;
@@ -579,14 +572,6 @@ public class PieMenu extends FrameLayout {
         mItems.add(item);
     }
 
-    public void removeItem(PieItem item) {
-        mItems.remove(item);
-    }
-
-    public void clearItems() {
-        mItems.clear();
-    }
-
     public void show(boolean show) {
         mOpen = show;
         if (mOpen) {
@@ -594,36 +579,17 @@ public class PieMenu extends FrameLayout {
             // Get fresh dimensions
             getDimensions();
 
-            // ensure clean state
-            mAnimating = false;
+            // De-select all items
             mCurrentItem = null;
             mOpenItem = null;
-            mCurrentItems = mItems;
-            for (PieItem item : mCurrentItems) {
+            for (PieItem item : mItems) {
                 item.setSelected(false);
             }
 
             // Calculate pie's
             layoutPie();
-            animateOpen();
         }
         invalidate();
-    }
-
-    private void animateOpen() {
-        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                for (PieItem item : mCurrentItems) {
-                    item.setAnimationAngle((1 - animation.getAnimatedFraction()) * (- item.getStart()));
-                }
-                invalidate();
-            }
-
-        });
-        anim.setDuration(2*ANIMATION);
-        anim.start();
     }
 
     public void setCenter(int x, int y) {
@@ -661,7 +627,7 @@ public class PieMenu extends FrameLayout {
         float angle = 0;
         float total = 0;
 
-        for (PieItem item : mCurrentItems) {
+        for (PieItem item : mItems) {
             if (!canItemDisplay(item)) continue;
 
             sweep = ((float) (Math.PI - 2 * emptyangle) / itemCount) * (item.isLesser() ? 0.65f : 1 + adjustedSweep);
@@ -775,17 +741,9 @@ public class PieMenu extends FrameLayout {
             }
 
             // Draw base menu
-            PieItem last = mCurrentItem;
-            if (mOpenItem != null) {
-                last = mOpenItem;
-            }
-            for (PieItem item : mCurrentItems) {
-                if (item != last) {
-                    drawItem(canvas, item);
-                }
-            }
-            if (last != null) {
-                drawItem(canvas, last);
+            for (PieItem item : mItems) {
+                if (!canItemDisplay(item)) continue;
+                drawItem(canvas, item);
             }
 
             // Paint status report only if settings allow
@@ -961,9 +919,6 @@ public class PieMenu extends FrameLayout {
                     }
                 }
 
-                if (!mAnimating) {
-                    deselect();
-                }
                 // Check for click actions
                 if (item != null && item.getView() != null && mCenterDistance < shadeTreshold) {
                     if(hapticFeedback) mVibrator.vibrate(3);
@@ -975,14 +930,8 @@ public class PieMenu extends FrameLayout {
             deselect();
             animateOut();
             return true;
-        } else if (MotionEvent.ACTION_CANCEL == action) {
-            if (!mAnimating) {
-                deselect();
-                invalidate();
-            }
-            return false;
         } else if (MotionEvent.ACTION_MOVE == action) {
-            if (mAnimating) return false;
+
             boolean snapActive = false;
             for (int i = 0; i < 4; i++) {
                 SnapPoint snap = mSnapPoint[i];                
@@ -1055,15 +1004,6 @@ public class PieMenu extends FrameLayout {
             }
 
             // Take back shade trigger if user decides to abandon his gesture
-            if (mCenterDistance > shadeTreshold) {
-                if (mOpenItem != null) {
-                    closeSub();
-                } else if (!mAnimating) {
-                    deselect();
-                    invalidate();
-                }
-            }
-
             if (mCenterDistance < shadeTreshold) {
                 mStatusPanel.setFlipViewState(-1);
                 mGlowOffsetLeft = 150;
@@ -1071,8 +1011,7 @@ public class PieMenu extends FrameLayout {
 
                 // Check for onEnter separately or'll face constant deselect
                 PieItem item = findItem(getPolar(x, y));
-                if (item == null) {
-                } else if (mCurrentItem != item) {
+                if (item != null) {
                     if (mCenterDistance < shadeTreshold && mCenterDistance > (mInnerPieRadius/2)) {
                         onEnter(item);
                     } else {
@@ -1098,133 +1037,14 @@ public class PieMenu extends FrameLayout {
             playSoundEffect(SoundEffectConstants.CLICK);
             item.setSelected(true);
             mCurrentItem = item;
-            if ((mCurrentItem != mOpenItem) && mCurrentItem.hasItems()) {
-                openSub(mCurrentItem);
-                mOpenItem = item;
-            }
         } else {
             mCurrentItem = null;
         }
     }
 
-    private void animateOut(final PieItem fixed, AnimatorListener listener) {
-        if ((mCurrentItems == null) || (fixed == null)) return;
-        final float target = fixed.getStartAngle();
-        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                for (PieItem item : mCurrentItems) {
-                    item.setColor(mEnableColor ? Settings.System.getInt(mContext.getContentResolver(),
-                                    Settings.System.PIE_BUTTON_COLOR, COLOR_PIE_BUTTON) : COLOR_PIE_BUTTON);
-                    if (item != fixed) {
-                        item.setAnimationAngle(animation.getAnimatedFraction()
-                                * (target - item.getStart()));
-                    }
-                }
-                invalidate();
-            }
-        });
-        anim.setDuration(ANIMATION);
-        anim.addListener(listener);
-        anim.start();
-    }
-
-    private void animateIn(final PieItem fixed, AnimatorListener listener) {
-        if ((mCurrentItems == null) || (fixed == null)) return;
-        final float target = fixed.getStartAngle();
-        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                for (PieItem item : mCurrentItems) {
-                    item.setColor(mEnableColor ? Settings.System.getInt(mContext.getContentResolver(),
-                                    Settings.System.PIE_BUTTON_COLOR, COLOR_PIE_BUTTON) : COLOR_PIE_BUTTON);
-                    if (item != fixed) {
-                        item.setAnimationAngle((1 - animation.getAnimatedFraction())
-                                * (target - item.getStart()));
-                    }
-                }
-                invalidate();
-
-            }
-
-        });
-        anim.setDuration(ANIMATION);
-        anim.addListener(listener);
-        anim.start();
-    }
-
-    private void openSub(final PieItem item) {
-        mAnimating = true;
-        animateOut(item, new AnimatorListenerAdapter() {
-            public void onAnimationEnd(Animator a) {
-                for (PieItem item : mCurrentItems) {
-                    item.setColor(mEnableColor ? Settings.System.getInt(mContext.getContentResolver(),
-                              Settings.System.PIE_BUTTON_COLOR, COLOR_PIE_BUTTON) : COLOR_PIE_BUTTON);
-                    item.setAnimationAngle(0);
-                }
-                mCurrentItems = new ArrayList<PieItem>(mItems.size());
-                int i = 0, j = 0;
-                while (i < mItems.size()) {
-                    if (mItems.get(i) == item) {
-                        mCurrentItems.add(item);
-                    } else {
-                        mCurrentItems.add(item.getItems().get(j++));
-                    }
-                    i++;
-                }
-                layoutPie();
-                animateIn(item, new AnimatorListenerAdapter() {
-                    public void onAnimationEnd(Animator a) {
-                        for (PieItem item : mCurrentItems) {
-                            item.setColor(mEnableColor ? Settings.System.getInt(mContext.getContentResolver(),
-                                    Settings.System.PIE_BUTTON_COLOR, COLOR_PIE_BUTTON) : COLOR_PIE_BUTTON);
-                            item.setAnimationAngle(0);
-                        }
-                        mAnimating = false;
-                    }
-                });
-            }
-        });
-    }
-
-    private void closeSub() {
-        mAnimating = true;
-        if (mCurrentItem != null) {
-            mCurrentItem.setSelected(false);
-        }
-        animateOut(mOpenItem, new AnimatorListenerAdapter() {
-            public void onAnimationEnd(Animator a) {
-                for (PieItem item : mCurrentItems) {
-                    item.setColor(mEnableColor ? Settings.System.getInt(mContext.getContentResolver(),
-                                    Settings.System.PIE_BUTTON_COLOR, COLOR_PIE_BUTTON) : COLOR_PIE_BUTTON);
-                    item.setAnimationAngle(0);
-                }
-                mCurrentItems = mItems;
-                animateIn(mOpenItem, new AnimatorListenerAdapter() {
-                    public void onAnimationEnd(Animator a) {
-                        for (PieItem item : mCurrentItems) {
-                            item.setColor(mEnableColor ? Settings.System.getInt(mContext.getContentResolver(),
-                                    Settings.System.PIE_BUTTON_COLOR, COLOR_PIE_BUTTON) : COLOR_PIE_BUTTON);
-                            item.setAnimationAngle(0);
-                        }
-                        mAnimating = false;
-                        mOpenItem = null;
-                        mCurrentItem = null;
-                    }
-                });
-            }
-        });
-    }
-
     private void deselect() {
         if (mCurrentItem != null) {
             mCurrentItem.setSelected(false);
-        }
-        if (mOpenItem != null) {
-            mOpenItem = null;
-            mCurrentItems = mItems;
         }
         mCurrentItem = null;
     }
@@ -1248,9 +1068,9 @@ public class PieMenu extends FrameLayout {
     }
 
     private PieItem findItem(float polar) {
-        if (mCurrentItems != null) {
+        if (mItems != null) {
             int c = 0;
-            for (PieItem item : mCurrentItems) {
+            for (PieItem item : mItems) {
                 if (!canItemDisplay(item)) continue;
                 if (inside(polar, item)) {
                     return item;
