@@ -720,7 +720,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     @Override
     public void onLocationGpsStateChanged(boolean inUse, boolean hasFix, String description) {
         mLocationState.enabled = inUse;
-                : (mUseDefaultTheme ? R.drawable.ic_qs_gps_off : R.drawable.ic_qs_gps_off_light);
         mLocationState.iconId = 0; // let refreshView decide what icon to use when there is no fix
         if (hasFix) {
             mLocationState.iconId = R.drawable.ic_qs_gps_locked;
