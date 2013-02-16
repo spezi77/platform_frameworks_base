@@ -8,7 +8,6 @@
 #ifndef RESOURCE_ID_CACHE_H
 #define RESOURCE_ID_CACHE_H
 
-<<<<<<< HEAD
 #include "StringPool.h"
 
 class ResourceIdCache {
