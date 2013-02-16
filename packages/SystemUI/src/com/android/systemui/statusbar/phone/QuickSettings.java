@@ -58,7 +58,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
-import android.graphics.Color;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.WifiDisplayStatus;
 import android.location.LocationManager;
@@ -121,7 +120,7 @@ public class QuickSettings {
     private static final int BATTERY_TILE = 9;
     private static final int AIRPLANE_TILE = 10;
     private static final int BLUETOOTH_TILE = 11;
-    // private static final int SWAGGER_TILE = 12;
+    //private static final int SWAGGER_TILE = 12;
     private static final int VIBRATE_TILE = 13;
     private static final int SILENT_TILE = 14;
     private static final int FCHARGE_TILE = 15;
@@ -134,8 +133,9 @@ public class QuickSettings {
     private static final int LTE_TILE = 22;
     private static final int FAV_CONTACT_TILE = 23;
    // private static final int BT_TETHER_TILE = 23;
-	private static final int SCREEN_TILE = 24;
-    private static final int SOUND_STATE_TILE = 25;
+    private static final int SOUND_STATE_TILE = 24;
+    private static final int SCREEN_TILE = 25;
+
 
     public static final String USER_TOGGLE = "USER";
     public static final String BRIGHTNESS_TOGGLE = "BRIGHTNESS";
@@ -149,7 +149,7 @@ public class QuickSettings {
     public static final String BATTERY_TOGGLE = "BATTERY";
     public static final String AIRPLANE_TOGGLE = "AIRPLANE_MODE";
     public static final String BLUETOOTH_TOGGLE = "BLUETOOTH";
-    // public static final String SWAGGER_TOGGLE = "SWAGGER";
+    //public static final String SWAGGER_TOGGLE = "SWAGGER";
     public static final String VIBRATE_TOGGLE = "VIBRATE";
     public static final String SILENT_TOGGLE = "SILENT";
     public static final String FCHARGE_TOGGLE = "FCHARGE";
@@ -162,8 +162,8 @@ public class QuickSettings {
     public static final String TWOG_TOGGLE = "2G";
     public static final String LTE_TOGGLE = "LTE";
     public static final String FAV_CONTACT_TOGGLE = "FAVCONTACT";
-	public static final String SCREEN_TOGGLE = "SCREEN";
     public static final String SOUND_STATE_TOGGLE = "SOUNDSTATE";
+    public static final String SCREEN_TOGGLE = "SCREEN";
 
     private static final String DEFAULT_TOGGLES = "default";
 
@@ -212,14 +212,9 @@ public class QuickSettings {
     private long tacoSwagger = 0;
     private boolean tacoToggle = false;
     private int mTileTextSize = 12;
-    private int mTileText;
-    private int mTileTextBG;
-    private int mTileBG;
-	private String mFastChargePath;
+    private String mFastChargePath;
 
     private HashMap<String, Integer> toggleMap;
-
-    private boolean mUseDefaultTheme = true;
 
     private HashMap<String, Integer> getToggleMap() {
         if (toggleMap == null) {
@@ -248,8 +243,8 @@ public class QuickSettings {
             toggleMap.put(TWOG_TOGGLE, TWOG_TILE);
             toggleMap.put(LTE_TOGGLE, LTE_TILE);
             toggleMap.put(FAV_CONTACT_TOGGLE, FAV_CONTACT_TILE);
-			toggleMap.put(SCREEN_TOGGLE, SCREEN_TILE);
             toggleMap.put(SOUND_STATE_TOGGLE, SOUND_STATE_TILE);
+            toggleMap.put(SCREEN_TOGGLE, SCREEN_TILE);
             //toggleMap.put(BT_TETHER_TOGGLE, BT_TETHER_TILE);
         }
         return toggleMap;
@@ -268,7 +263,6 @@ public class QuickSettings {
         mContext = context;
         mContainerView = container;
         mModel = new QuickSettingsModel(context);
-
         mWifiDisplayStatus = new WifiDisplayStatus();
         wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
         tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
@@ -285,7 +279,7 @@ public class QuickSettings {
                 r.getInteger(R.integer.quick_settings_brightness_dialog_long_timeout);
         mBrightnessDialogShortTimeout =
                 r.getInteger(R.integer.quick_settings_brightness_dialog_short_timeout);
-		mFastChargePath = r.getString(com.android.internal.R.string.config_fastChargePath);
+        mFastChargePath = r.getString(com.android.internal.R.string.config_fastChargePath);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(DisplayManager.ACTION_WIFI_DISPLAY_STATUS_CHANGED);
@@ -497,24 +491,21 @@ public class QuickSettings {
 
     private QuickSettingsTileView getTile(int tile, ViewGroup parent, LayoutInflater inflater) {
         final Resources r = mContext.getResources();
-
         QuickSettingsTileView quick = null;
         switch (tile) {
             case USER_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_user, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getService().animateCollapsePanels();
+                        mBar.collapseAllPanels(true);
                         final UserManager um =
                                 (UserManager) mContext.getSystemService(Context.USER_SERVICE);
                         if (um.getUsers(true).size() > 1) {
                             try {
-                                WindowManagerGlobal.getWindowManagerService().lockNow(
-                                        LockPatternUtils.USER_SWITCH_LOCK_OPTIONS);
+                                WindowManagerGlobal.getWindowManagerService().lockNow(null);
                             } catch (RemoteException e) {
                                 Log.e(TAG, "Couldn't show user switcher", e);
                             }
@@ -534,8 +525,6 @@ public class QuickSettings {
                         TextView tv = (TextView) view.findViewById(R.id.user_textview);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
-                        tv.setBackgroundColor(mTileTextBG);
                         iv.setImageDrawable(us.avatar);
                         view.setContentDescription(mContext.getString(
                                 R.string.accessibility_quick_settings_user, state.label));
@@ -545,8 +534,7 @@ public class QuickSettings {
             case CLOCK_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
-                quick.setContent(mUseDefaultTheme ? R.layout.quick_settings_tile_time : R.layout.quick_settings_tile_time_light, inflater);
+                quick.setContent(R.layout.quick_settings_tile_time, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -568,7 +556,6 @@ public class QuickSettings {
                     public void refreshView(QuickSettingsTileView view, State alarmState) {
                          TextView tv = (TextView) view.findViewById(R.id.clock_textview);
                          tv.setTextSize(1, mTileTextSize);
-                         tv.setTextColor(mTileText);
                     }
                 });
                 break;
@@ -577,7 +564,6 @@ public class QuickSettings {
                     // Mobile Network state
                     quick = (QuickSettingsTileView)
                             inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                    quick.setBackgroundResource(mTileBG);
                     quick.setContent(R.layout.quick_settings_tile_rssi, inflater);
                     quick.setOnClickListener(new View.OnClickListener() {
                          @Override
@@ -616,7 +602,6 @@ public class QuickSettings {
                             }
                             tv.setText(state.label);
                             tv.setTextSize(1, mTileTextSize);
-                            tv.setTextColor(mTileText);
                             view.setContentDescription(mContext.getResources().getString(
                                     R.string.accessibility_quick_settings_mobile,
                                     rssiState.signalContentDescription, rssiState.dataContentDescription,
@@ -628,20 +613,12 @@ public class QuickSettings {
             case BRIGHTNESS_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_brightness, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getService().animateCollapsePanels();
+                        mBar.collapseAllPanels(true);
                         showBrightnessDialog();
-                    }
-                });
-                quick.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        startSettingsActivity(android.provider.Settings.ACTION_DISPLAY_SETTINGS);
-                        return true;
                     }
                 });
                 mModel.addBrightnessTile(quick, new QuickSettingsModel.RefreshCallback() {
@@ -651,15 +628,52 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                         dismissBrightnessDialog(mBrightnessDialogShortTimeout);
+                    }
+                });
+                break;
+            case NAVBAR_HIDE_TILE:
+                quick = (QuickSettingsTileView)
+                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                quick.setContent(R.layout.quick_settings_tile_navbar_hide, inflater);
+                quick.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBar.collapseAllPanels(true);
+                        boolean enabled = Settings.System.getBoolean(mContext.getContentResolver(),
+                                 Settings.System.NAV_HIDE_ENABLE, false);
+                        Settings.System.putBoolean(mContext.getContentResolver(),
+                                 Settings.System.NAV_HIDE_ENABLE, !enabled);
+                        Settings.System.putBoolean(mContext.getContentResolver(),
+                                 Settings.System.NAVIGATION_BAR_SHOW_NOW, enabled);
+
+                    }
+                });
+                quick.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        Intent intent = new Intent("android.intent.action.MAIN");
+                        // gonna make this go to navbar settings at some point
+                        intent.setComponent(ComponentName.
+                                unflattenFromString("com.aokp.romcontrol/.ROMControlActivity"));
+                        intent.addCategory("android.intent.category.LAUNCHER");
+                        startSettingsActivity(intent);
+                        return true;
+                    }
+                });
+                mModel.addNavBarHideTile(quick, new QuickSettingsModel.RefreshCallback() {
+                    @Override
+                    public void refreshView(QuickSettingsTileView view, State state) {
+                        TextView tv = (TextView) view.findViewById(R.id.navbar_hide_textview);
+                        tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
+                        tv.setText(state.label);
+                        tv.setTextSize(1, mTileTextSize);
                     }
                 });
                 break;
             case SETTINGS_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_settings, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -684,15 +698,12 @@ public class QuickSettings {
                         TextView tv = (TextView) view.findViewById(R.id.settings_tileview);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
-                        tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                     }
                 });
                 break;
             case WIFI_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_wifi, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -722,7 +733,6 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, wifiState.iconId, 0, 0);
                         tv.setText(wifiState.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                         view.setContentDescription(mContext.getString(
                                 R.string.accessibility_quick_settings_wifi,
                                 wifiState.signalContentDescription,
@@ -734,7 +744,6 @@ public class QuickSettings {
             case TWOG_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_twog, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -767,7 +776,6 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
@@ -775,7 +783,6 @@ public class QuickSettings {
             case LTE_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_lte, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -809,14 +816,12 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case VIBRATE_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_vibrate, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -839,14 +844,12 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case SILENT_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_silent, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -869,7 +872,6 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
@@ -904,13 +906,11 @@ public class QuickSettings {
             case TORCH_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_torch, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         AwesomeAction.getInstance(mContext).launchAction(AwesomeAction.ACTION_TORCH);
-                        mHandler.postDelayed(delayedRefresh, 1000);
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
@@ -927,19 +927,17 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case FCHARGE_TILE:
-				if((mFastChargePath == null || mFastChargePath.isEmpty()) ||
+                if((mFastChargePath == null || mFastChargePath.isEmpty()) ||
                         !new File(mFastChargePath).exists()) {
                     // config not set or config set and kernel doesn't support it?
                     break;
                 }
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_fcharge, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -961,15 +959,13 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
-				restoreFChargeState();
+                restoreFChargeState();
                 break;
             case WIFI_TETHER_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_wifi_tether, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -998,14 +994,12 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case USB_TETHER_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_usb_tether, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1030,14 +1024,12 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case SYNC_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_sync, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1061,14 +1053,12 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case NFC_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_nfc, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1103,14 +1093,12 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case ROTATE_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_rotation_lock, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1126,14 +1114,12 @@ public class QuickSettings {
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case BATTERY_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_battery, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1165,7 +1151,6 @@ public class QuickSettings {
                         iv.setImageLevel(batteryState.batteryLevel);
                         tv.setText(t);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                         view.setContentDescription(
                                 mContext.getString(R.string.accessibility_quick_settings_battery, t));
                     }
@@ -1174,7 +1159,6 @@ public class QuickSettings {
             case AIRPLANE_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_airplane, inflater);
                 mModel.addAirplaneModeTile(quick, new QuickSettingsModel.RefreshCallback() {
                     @Override
@@ -1189,14 +1173,12 @@ public class QuickSettings {
                                 mContext.getString(R.string.accessibility_quick_settings_airplane, airplaneState));
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case BLUETOOTH_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_bluetooth, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1243,14 +1225,12 @@ public class QuickSettings {
                                 bluetoothState.stateContentDescription));
                         tv.setText(label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case GPS_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_location, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1291,14 +1271,12 @@ public class QuickSettings {
                             tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         }
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
                     }
                 });
                 break;
             case IME_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_ime, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1319,42 +1297,16 @@ public class QuickSettings {
                         if (state.label != null) {
                             tv.setText(state.label);
                             tv.setTextSize(1, mTileTextSize);
-                            tv.setTextColor(mTileText);
-                            tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         }
                     }
                 });
                 break;
-			case SCREEN_TILE:
+            /*case SWAGGER_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setContent(R.layout.quick_settings_tile_screen, inflater);
-                TextView tv = (TextView) quick.findViewById(R.id.screen_textview);
-                tv.setTextSize(1, mTileTextSize);
-                quick.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-                        pm.goToSleep(SystemClock.uptimeMillis());
-                       }
-                    });
-                    mModel.addScreenTile(quick, new QuickSettingsModel.RefreshCallback() {
-		        @Override
-			public void refreshView(QuickSettingsTileView view, State state) {
-		       	    TextView tv = (TextView) view.findViewById(R.id.screen_textview);
-			    tv.setText("Screen Off");
-						tv.setTextSize(1, mTileTextSize);
-                        }
-                 });
-                 break;
-           /** case SWAGGER_TILE:
-                quick = (QuickSettingsTileView)
-                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_swagger, inflater);
                 TextView tv = (TextView) quick.findViewById(R.id.swagger_textview);
                 tv.setTextSize(1, mTileTextSize);
-                tv.setTextColor(mTileText);
                 quick.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -1384,11 +1336,31 @@ public class QuickSettings {
                         return true;
                     }
                 });
-                break; **/
+                break; */
+            case SCREEN_TILE:
+                quick = (QuickSettingsTileView)
+                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                quick.setContent(R.layout.quick_settings_tile_screen, inflater);
+                TextView tv = (TextView) quick.findViewById(R.id.screen_textview);
+                tv.setTextSize(1, mTileTextSize);
+                quick.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+                        pm.goToSleep(SystemClock.uptimeMillis());
+                       }
+                    });
+                    mModel.addScreenTile(quick, new QuickSettingsModel.RefreshCallback() {
+		        @Override
+			public void refreshView(QuickSettingsTileView view, State state) {
+		       	    TextView tv = (TextView) view.findViewById(R.id.screen_textview);
+			    tv.setText("Screen Off");
+                        }
+                 });
+                 break;
             case FAV_CONTACT_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setBackgroundResource(mTileBG);
                 quick.setContent(R.layout.quick_settings_tile_user, inflater);
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1397,7 +1369,7 @@ public class QuickSettings {
                         Settings.System.QUICK_TOGGLE_FAV_CONTACT);
 
                         if (lookupKey != null && lookupKey.length() > 0) {
-                            getService().animateCollapsePanels();
+                            mBar.collapseAllPanels(true);
                             Uri lookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
                             Uri res = ContactsContract.Contacts.lookupContact(mContext.getContentResolver(), lookupUri);
                             Intent intent = ContactsContract.QuickContact.composeQuickContactsIntent(
@@ -1415,8 +1387,6 @@ public class QuickSettings {
                         TextView tv = (TextView) view.findViewById(R.id.user_textview);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
-                        tv.setTextColor(mTileText);
-                        tv.setBackgroundColor(mTileTextBG);
                         iv.setImageDrawable(us.avatar);
                         view.setContentDescription(mContext.getString(
                                 R.string.accessibility_quick_settings_user, state.label));
@@ -1471,17 +1441,15 @@ public class QuickSettings {
                 View v = getTile(getToggleMap().get(toggle), parent, inflater);
                 if(v != null) {
                     parent.addView(v);
-				}
+                }
             }
         }
     }
 
     private void addTemporaryTiles(final ViewGroup parent, final LayoutInflater inflater) {
-
         // Alarm tile
         QuickSettingsTileView alarmTile = (QuickSettingsTileView)
                 inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        alarmTile.setBackgroundResource(mTileBG);
         alarmTile.setContent(R.layout.quick_settings_tile_alarm, inflater);
         alarmTile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1500,7 +1468,6 @@ public class QuickSettings {
                 TextView tv = (TextView) view.findViewById(R.id.alarm_textview);
                 tv.setText(alarmState.label);
                 tv.setTextSize(1, mTileTextSize);
-                tv.setTextColor(mTileText);
                 view.setVisibility(alarmState.enabled ? View.VISIBLE : View.GONE);
                 view.setContentDescription(mContext.getString(
                         R.string.accessibility_quick_settings_alarm, alarmState.label));
@@ -1511,7 +1478,6 @@ public class QuickSettings {
         // Wifi Display
         QuickSettingsTileView wifiDisplayTile = (QuickSettingsTileView)
                 inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        wifiDisplayTile.setBackgroundResource(mTileBG);
         wifiDisplayTile.setContent(R.layout.quick_settings_tile_wifi_display, inflater);
         wifiDisplayTile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1526,7 +1492,6 @@ public class QuickSettings {
                 tv.setText(state.label);
                 tv.setTextSize(1, mTileTextSize);
                 tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
-                tv.setTextColor(mTileText);
                 view.setVisibility(state.enabled ? View.VISIBLE : View.GONE);
             }
         });
@@ -1535,7 +1500,6 @@ public class QuickSettings {
         // Bug reports
         QuickSettingsTileView bugreportTile = (QuickSettingsTileView)
                 inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        bugreportTile.setBackgroundResource(mTileBG);
         bugreportTile.setContent(R.layout.quick_settings_tile_bugreport, inflater);
         bugreportTile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1547,8 +1511,6 @@ public class QuickSettings {
         mModel.addBugreportTile(bugreportTile, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
-                TextView tv = (TextView) view.findViewById(R.id.bug_textview);
-                tv.setTextColor(mTileText);
                 view.setVisibility(state.enabled ? View.VISIBLE : View.GONE);
             }
         });
@@ -1828,11 +1790,10 @@ public class QuickSettings {
         public void run() {
             mModel.refreshWifiTetherTile();
             mModel.refreshUSBTetherTile();
-            mModel.refreshTorchTile();
         }
     };
 
-	private void restoreFChargeState() {
+    private void restoreFChargeState() {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
@@ -1865,13 +1826,6 @@ public class QuickSettings {
         userToggles = Settings.System.getString(resolver, Settings.System.QUICK_TOGGLES);
         int columnCount = Settings.System.getInt(resolver, Settings.System.QUICK_TOGGLES_PER_ROW,
                 mContext.getResources().getInteger(R.integer.quick_settings_num_columns));
-        mUseDefaultTheme = (Settings.System.getInt(resolver, Settings.System.QUICK_THEME_STYLE, 1) == 1);
-        mTileText = Settings.System.getInt(resolver, Settings.System.QUICK_TEXT_COLOR,
-                mContext.getResources().getColor(mUseDefaultTheme ? R.color.quicksettings_text_color_dark:
-                R.color.quicksettings_text_color_light));
-        mTileBG = (mUseDefaultTheme ? R.drawable.qs_tile_background : R.drawable.qs_tile_background_light);
-        mTileTextBG = mContext.getResources().getColor(mUseDefaultTheme ? R.color.quicksettings_text_background_dark : R.color.quicksettings_text_background_light);
-        mModel.setDefaultTheme(mUseDefaultTheme);
         ((QuickSettingsContainerView) mContainerView).setColumnCount(columnCount);
         updateTileTextSize(columnCount);
         setupQuickSettings();
@@ -1897,10 +1851,10 @@ public class QuickSettings {
                     .getUriFor(Settings.System.QUICK_TOGGLE_FAV_CONTACT),
                     false, this);
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.QUICK_THEME_STYLE),
+                    .getUriFor(Settings.System.NAV_HIDE_ENABLE),
                     false, this);
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.QUICK_TEXT_COLOR),
+                    .getUriFor(Settings.System.TORCH_STATE),
                     false, this);
             updateSettings();
         }
@@ -1924,6 +1878,8 @@ public class QuickSettings {
             mModel.refreshVibrateTile();
             mModel.refreshSilentTile();
             mModel.refreshSoundStateTile();
+            mModel.refreshNavBarHideTile();
+            mModel.refreshTorchTile();
         }
 
         @Override
@@ -1931,6 +1887,8 @@ public class QuickSettings {
             mModel.refreshVibrateTile();
             mModel.refreshSilentTile();
             mModel.refreshSoundStateTile();
+            mModel.refreshNavBarHideTile();
+            mModel.refreshTorchTile();
         }
     }
 }
