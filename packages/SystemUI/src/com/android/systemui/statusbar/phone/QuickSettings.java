@@ -632,45 +632,6 @@ public class QuickSettings {
                     }
                 });
                 break;
-            case NAVBAR_HIDE_TILE:
-                quick = (QuickSettingsTileView)
-                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setContent(R.layout.quick_settings_tile_navbar_hide, inflater);
-                quick.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mBar.collapseAllPanels(true);
-                        boolean enabled = Settings.System.getBoolean(mContext.getContentResolver(),
-                                 Settings.System.NAV_HIDE_ENABLE, false);
-                        Settings.System.putBoolean(mContext.getContentResolver(),
-                                 Settings.System.NAV_HIDE_ENABLE, !enabled);
-                        Settings.System.putBoolean(mContext.getContentResolver(),
-                                 Settings.System.NAVIGATION_BAR_SHOW_NOW, enabled);
-
-                    }
-                });
-                quick.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        Intent intent = new Intent("android.intent.action.MAIN");
-                        // gonna make this go to navbar settings at some point
-                        intent.setComponent(ComponentName.
-                                unflattenFromString("com.aokp.romcontrol/.ROMControlActivity"));
-                        intent.addCategory("android.intent.category.LAUNCHER");
-                        startSettingsActivity(intent);
-                        return true;
-                    }
-                });
-                mModel.addNavBarHideTile(quick, new QuickSettingsModel.RefreshCallback() {
-                    @Override
-                    public void refreshView(QuickSettingsTileView view, State state) {
-                        TextView tv = (TextView) view.findViewById(R.id.navbar_hide_textview);
-                        tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
-                        tv.setText(state.label);
-                        tv.setTextSize(1, mTileTextSize);
-                    }
-                });
-                break;
             case SETTINGS_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
@@ -1851,9 +1812,6 @@ public class QuickSettings {
                     .getUriFor(Settings.System.QUICK_TOGGLE_FAV_CONTACT),
                     false, this);
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.NAV_HIDE_ENABLE),
-                    false, this);
-            resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.TORCH_STATE),
                     false, this);
             updateSettings();
@@ -1878,7 +1836,6 @@ public class QuickSettings {
             mModel.refreshVibrateTile();
             mModel.refreshSilentTile();
             mModel.refreshSoundStateTile();
-            mModel.refreshNavBarHideTile();
             mModel.refreshTorchTile();
         }
 
@@ -1887,7 +1844,6 @@ public class QuickSettings {
             mModel.refreshVibrateTile();
             mModel.refreshSilentTile();
             mModel.refreshSoundStateTile();
-            mModel.refreshNavBarHideTile();
             mModel.refreshTorchTile();
         }
     }
