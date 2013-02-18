@@ -306,6 +306,7 @@ public class QuickSettings {
         filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         filter.addAction(Intent.ACTION_USER_SWITCHED);
+        filter.addAction(WifiManager.WIFI_AP_STATE_CHANGED_ACTION);
         mContext.registerReceiver(mReceiver, filter);
 
         IntentFilter profileFilter = new IntentFilter();
@@ -316,6 +317,7 @@ public class QuickSettings {
 
         new SettingsObserver(new Handler()).observe();
         new SoundObserver(new Handler()).observe();
+        new NetworkModeObserver(new Handler()).observe();
     }
 
     public void setBar(PanelBar bar) {
@@ -1840,6 +1842,8 @@ public class QuickSettings {
             } else if (Intent.ACTION_USER_SWITCHED.equals(action)) {
                 reloadUserInfo();
                 reloadFavContactInfo();
+            } else if (WifiManager.WIFI_AP_STATE_CHANGED_ACTION.equals(action)) {
+                mHandler.postDelayed(delayedRefresh, 1000);
             }
         }
     };
@@ -1978,6 +1982,8 @@ public class QuickSettings {
         updateWifiDisplayStatus();
         updateResources();
         reloadFavContactInfo();
+        mModel.refreshNavBarHideTile();
+        mModel.refreshTorchTile();
     }
 
     class SettingsObserver extends ContentObserver {
@@ -2021,7 +2027,6 @@ public class QuickSettings {
             mModel.refreshVibrateTile();
             mModel.refreshSilentTile();
             mModel.refreshSoundStateTile();
-            mModel.refreshTorchTile();
         }
 
         @Override
@@ -2029,7 +2034,27 @@ public class QuickSettings {
             mModel.refreshVibrateTile();
             mModel.refreshSilentTile();
             mModel.refreshSoundStateTile();
-            mModel.refreshTorchTile();
+        }
+    }
+
+    class NetworkModeObserver extends ContentObserver {
+        NetworkModeObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.Global
+                    .getUriFor(Settings.Global.PREFERRED_NETWORK_MODE),
+                    false, this);
+            mModel.refresh2gTile();
+            mModel.refreshLTETile();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            mModel.refresh2gTile();
+            mModel.refreshLTETile();
         }
     }
 }
