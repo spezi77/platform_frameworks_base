@@ -2703,15 +2703,6 @@ public final class Settings {
          */
         public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
 
-/**
-         * Shows weekday before clock time
-         * 0 - No Day
-         * 1 - Small Day
-         * 2 - Normal Day
-         * @hide
-         */
-        public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
-
         /**
         * @hide
         * Shows custom date before clock time

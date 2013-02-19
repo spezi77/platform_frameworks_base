@@ -533,9 +533,6 @@ public class PackageManagerService extends IPackageManager.Stub {
     WindowManager mWindowManager;
     private final WindowManagerPolicy mPolicy; // to set packageName
 
-    WindowManager mWindowManager;
-    private final WindowManagerPolicy mPolicy; // to set packageName
-
     final private DefaultContainerConnection mDefContainerConn =
             new DefaultContainerConnection();
     class DefaultContainerConnection implements ServiceConnection {
