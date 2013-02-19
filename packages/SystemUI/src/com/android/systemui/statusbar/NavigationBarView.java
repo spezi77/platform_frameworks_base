@@ -93,6 +93,7 @@ public class NavigationBarView extends LinearLayout {
     
     public DelegateViewHelper mDelegateHelper;
     private BaseStatusBar mBar;
+    private SettingsObserver mSettingsObserver;
 
     private SettingsObserver mSettingsObserver;
 
