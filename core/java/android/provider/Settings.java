@@ -3354,6 +3354,13 @@ public final class Settings {
          * @hide
          */
         public static final String EXPANDED_DESKTOP_MODE = "expanded_desktop_mode";
+        
+        /**
+         * User Interface State
+         * 1 = Rebuild UI, resets to 0 automatically
+         * @hide
+         */
+        public static final String USER_INTERFACE_STATE = "user_interface_state";
 
         /**
          * @hide
