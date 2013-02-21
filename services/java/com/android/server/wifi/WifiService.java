@@ -312,6 +312,8 @@ public final class WifiService extends IWifiManager.Stub {
     public void startScan() {
         enforceChangePermission();
         mWifiStateMachine.startScan(Binder.getCallingUid());
+        mWifiStateMachine.startScan();
+        noteScanStart();
     }
 
     private void enforceAccessPermission() {

@@ -2178,6 +2178,37 @@ public class WifiStateMachine extends StateMachine {
                     } else {
                         loge("Failed to load driver for softap");
                     }
+                    mWakeLock.release();
+                }
+            }).start();
+        }
+
+        @Override
+        public boolean processMessage(Message message) {
+            if (DBG) log(getName() + message.toString() + "\n");
+            switch (message.what) {
+                case CMD_UNLOAD_DRIVER_SUCCESS:
+                    transitionTo(mDriverUnloadedState);
+                    break;
+                case CMD_UNLOAD_DRIVER_FAILURE:
+                    transitionTo(mDriverFailedState);
+                    break;
+                case CMD_LOAD_DRIVER:
+                case CMD_UNLOAD_DRIVER:
+                case CMD_START_SUPPLICANT:
+                case CMD_STOP_SUPPLICANT:
+                case CMD_START_AP:
+                case CMD_STOP_AP:
+                case CMD_START_DRIVER:
+                case CMD_STOP_DRIVER:
+                case CMD_SET_SCAN_MODE:
+                case CMD_SET_COUNTRY_CODE:
+                case CMD_SET_FREQUENCY_BAND:
+                case CMD_START_PACKET_FILTERING:
+                case CMD_STOP_PACKET_FILTERING:
+                    deferMessage(message);
+                    break;
+>>>>>>> bcc97ca... Clean up scan handling
                 default:
                     return NOT_HANDLED;
             }
