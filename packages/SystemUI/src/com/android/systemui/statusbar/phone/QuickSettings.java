@@ -792,6 +792,7 @@ public class QuickSettings {
                         TextView tv = (TextView) view.findViewById(R.id.settings_tileview);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
+                        tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                     }
                 });
                 break;
@@ -1982,7 +1983,6 @@ public class QuickSettings {
         updateWifiDisplayStatus();
         updateResources();
         reloadFavContactInfo();
-        mModel.refreshNavBarHideTile();
         mModel.refreshTorchTile();
     }
 
