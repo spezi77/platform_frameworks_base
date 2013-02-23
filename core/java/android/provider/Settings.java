@@ -3376,6 +3376,27 @@ public final class Settings {
          * @hide
          */
         public static final String RECENTS_RAM_BAR_ACTIVE_APPS_COLOR = "recents_ram_bar_active_apps_color";
+        
+        /**
+         * Custom Spen Actions
+         *
+         * @hide
+         */
+        public static final String[] SPEN_ACTIONS = new String[] {
+                "spen_action_left",
+                "spen_action_right",
+                "spen_action_down",
+                "spen_action_up",
+                "spen_action_double",
+                "spen_action_long",
+        };
+
+        /**
+         * Setting to enable Spen actions.
+         *
+         * @hide
+         */
+        public static final String ENABLE_SPEN_ACTIONS = "enable_spen_actions";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
