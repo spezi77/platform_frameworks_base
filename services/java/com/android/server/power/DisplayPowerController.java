@@ -240,6 +240,7 @@ final class DisplayPowerController {
     // Eos settings - override config for ElectronBeam on or off
     private boolean mElectronBeamOnEnabled;
     private boolean mElectronBeamOffEnabled;
+    private int mElectronBeamMode;
 
     // The pending power request.
     // Initially null until the first call to requestPowerState.
