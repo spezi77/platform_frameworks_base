@@ -2867,6 +2867,12 @@ public final class Settings {
         public static final String LOCKSCREEN_HIDE_INITIAL_PAGE_HINTS = "lockscreen_hide_initial_page_hints";
         
         /**
+         * Notifications Expand Behavior
+         * @hide
+         */
+        public static final String NOTIFICATIONS_BEHAVIOUR = "notifications_behaviour";
+        
+        /**
          * Weather to minimize lockscreen challenge on screen turned on
          * @hide
          */
