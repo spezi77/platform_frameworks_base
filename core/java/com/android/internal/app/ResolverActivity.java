@@ -74,8 +74,8 @@ public class ResolverActivity extends AlertActivity implements AdapterView.OnIte
     private boolean mAlwaysUseOption;
     private boolean mShowExtended;
     private GridView mGrid;
-    private RadioButton mAlwaysButton;
-    private RadioButton mOnceButton;
+    private Button mAlwaysButton;
+    private Button mOnceButton;
     private CheckBox mAlwaysCheckBox;
     private int mIconDpi;
     private int mIconSize;
