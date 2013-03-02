@@ -296,14 +296,10 @@ public class NotificationPanelView extends PanelView {
                 //
                 // event = MotionEvent.obtainNoHistory(original);
                 // event.setLocation(getWidth()/2, getHeight());
-                shouldRecycleEvent = true;
             }
 
         }
         final boolean result = mHandleView.dispatchTouchEvent(event);
-        if (shouldRecycleEvent) {
-            event.recycle();
-        }
         return result;
     }
 }
