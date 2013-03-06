@@ -355,6 +355,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Behavior of volume wake
     boolean mVolumeWakeScreen;
 
+    // HW overlays state
+    int mDisableOverlays = 0;
+
     // Behavior of volbtn music controls
     boolean mVolBtnMusicControls;
     boolean mIsLongPress;
