@@ -3329,6 +3329,12 @@ public final class Settings {
          */
         public static final String MVNO_ROAMING = "mvno_roaming";
 
+        /**  
+         * Give MMS Notifications a breathing effect
+         * @hide
+         */
+        public static final String MMS_BREATH = "mms_breath";
+
         /**
          * Battery warning preferences
          *
