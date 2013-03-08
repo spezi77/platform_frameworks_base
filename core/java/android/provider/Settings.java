@@ -2931,6 +2931,12 @@ public final class Settings {
 
          public static final String THEME_WALLPAPER = "theme_wallpaper";
 
+        /**  
+         * Give MMS Notifications a breathing effect
+         * @hide
+         */
+        public static final String MMS_BREATH = "mms_breath";
+
         /**
          * Battery warning preferences
          *
