@@ -3858,6 +3858,12 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_CAMERA_WIDGET_SHOW = "lockscreen_camera_widget_show";
 
+        /**  
+         * Give MMS Notifications a breathing effect
+         * @hide
+         */
+        public static final String MMS_BREATH = "mms_breath";
+
         /**
          * Battery warning preferences
          *
