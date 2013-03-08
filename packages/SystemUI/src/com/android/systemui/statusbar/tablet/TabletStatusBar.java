@@ -27,6 +27,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -34,14 +35,17 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.CustomTheme;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.inputmethodservice.InputMethodService;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Slog;
@@ -82,7 +86,6 @@ import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.SbBatteryController;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
-import com.android.systemui.statusbar.phone.NavigationBarView;
 import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.CompatModeButton;
 import com.android.systemui.statusbar.policy.LocationController;
@@ -1838,5 +1841,3 @@ public class TabletStatusBar extends BaseStatusBar implements
         UpdateWeights(mLandscape);
     }
 }
-
-
