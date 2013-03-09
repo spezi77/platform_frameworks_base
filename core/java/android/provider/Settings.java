@@ -2856,6 +2856,12 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
+        
+         /**
+         * Pie last app, should default to 0 (no, show only when needed)
+         * @hide
+         */
+        public static final String PIE_LAST_APP = "pie_last_app";
 
         /**
          *
@@ -2989,12 +2995,6 @@ public final class Settings {
          * @hide
          */
         public static final String PIE_CENTER = "pie_center";
-
-        /**
-         * Pie last app, should default to 0 (no, show only when needed)
-         * @hide
-         */
-        public static final String PIE_LAST_APP = "pie_last_app";
 
         /*
          * Pie gap angle, should default to 3

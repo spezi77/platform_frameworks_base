@@ -224,6 +224,7 @@ public class PieMenu extends FrameLayout {
     private boolean mUseMenuAlways;
     private boolean mUseSearch;
     private boolean mHapticFeedback;
+    boolean mUseLastApp;
 
     // Animations
     private int mGlowOffsetLeft = 150;
@@ -622,9 +623,8 @@ public class PieMenu extends FrameLayout {
             // Get fresh dimensions
             getDimensions();
 
-            // De-select all items
+			// De-select all items
             mCurrentItem = null;
-            mOpenItem = null;
             for (PieItem item : mItems) {
                 item.setSelected(false);
             }
