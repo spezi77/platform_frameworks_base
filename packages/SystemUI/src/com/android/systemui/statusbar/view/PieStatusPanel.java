@@ -82,14 +82,8 @@ public class PieStatusPanel {
 
         mContentFrame = (View) mPanel.getBar().mContainer.findViewById(R.id.content_frame);
         mScrollView = (ScrollView) mPanel.getBar().mContainer.findViewById(R.id.content_scroll);
-        mScrollView.setOnTouchListener(new ViewOnTouchListener());
-        mContentFrame.setOnTouchListener(new ViewOnTouchListener());
-
-        mPanel.getBar().mContainer.setVisibility(View.GONE);
-    }
-
-    class ViewOnTouchListener implements OnTouchListener {
-        final int SCROLLING_DISTANCE_TRIGGER = 100;
+        mContentFrame.setOnTouchListener(new OnTouchListener(){
+            final int SCROLLING_DISTANCE_TRIGGER = 100;
             float scrollX;
             float scrollY;
             boolean hasScrolled;
@@ -117,7 +111,10 @@ public class PieStatusPanel {
                         break;
                 }
                 return false;
-            }                  
+            }                               
+        });
+
+        mPanel.getBar().mContainer.setVisibility(View.GONE);
     }
 
     public int getFlipViewState() {
