@@ -52,9 +52,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import static com.android.internal.util.aokp.AwesomeConstants.*;
+import com.android.internal.util.aokp.BackgroundAlphaColorDrawable;
++import com.android.internal.util.aokp.NavBarHelpers;
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.systemui.aokp.AwesomeAction;
-import com.android.systemui.aokp.NavBarHelpers;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
@@ -89,7 +89,7 @@ public class NavigationBarView extends LinearLayout {
     boolean mHidden, mLowProfile, mShowMenu;
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
-    private Drawable mBackIcon, mBackLandIcon, mBackAltIcon, mBackAltLandIcon;
+    private Drawable mBackIcon, mBackAltIcon;
     private Drawable mRecentIcon;
     private Drawable mRecentLandIcon;
     private boolean mMenuArrowKeys;
@@ -162,7 +162,6 @@ public class NavigationBarView extends LinearLayout {
 
     private int mMenuVisbility;
     private int mMenuLocation;
-    private boolean mHasBigMenuButton = false;
 
     private class H extends Handler {
         public void handleMessage(Message m) {
@@ -269,10 +268,8 @@ public class NavigationBarView extends LinearLayout {
     }
 
     private void getIcons(Resources res) {
-        mBackIcon = res.getDrawable(R.drawable.ic_sysbar_back);
-        mBackLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_land);
-        mBackAltIcon = res.getDrawable(R.drawable.ic_sysbar_back_ime);
-        mBackAltLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_ime);
+        mBackIcon = NavBarHelpers.getIconImage(mContext, AwesomeConstant.ACTION_BACK.value());
+        mBackAltIcon = ((KeyButtonView)generateKey(false, KEY_BACK_ALT)).getDrawable();
         mRecentIcon = res.getDrawable(R.drawable.ic_sysbar_recent);
         mRecentLandIcon = res.getDrawable(R.drawable.ic_sysbar_recent_land);
     }
@@ -307,7 +304,6 @@ public class NavigationBarView extends LinearLayout {
                     .findViewById(R.id.lights_out));
 
             // Add the Main Nav Buttons
-            mHasBigMenuButton = false;
             String iconUri = "";
             for (int j = 0; j < mNumberOfButtons; j++) {
                 ExtensibleKeyButtonView v = generateKey(landscape, mClickActions[j],
@@ -332,10 +328,7 @@ public class NavigationBarView extends LinearLayout {
                 addLightsOutButton(lightsOut, v, landscape && !mLeftyMode, false);
 
                 if (v.getId() == R.id.back){
-                	mBackIcon = mBackLandIcon = v.getDrawable();
-                }
-                if (v.getId() == R.id.navbar_menu_big){
-                    mHasBigMenuButton = true;
+                	mBackIcon = v.getDrawable();
                 }
                 if (mNumberOfButtons == 3 && j != (mNumberOfButtons - 1)) {
                     // add separator view here
@@ -534,13 +527,13 @@ public class NavigationBarView extends LinearLayout {
         }
 
         mNavigationIconHints = hints;
-        // We can't gaurantee users will set these buttons as targets
+        // We can't guarantee users will set these buttons as targets
         if (getBackButton() != null) {
         		getBackButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
         		((ImageView)getBackButton()).setImageDrawable(
                     (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
-                    ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
-                    : (mVertical ? mBackLandIcon : mBackIcon));
+                    ? (mBackAltIcon)
+                    : (mBackIcon));
         }
         if (getHomeButton()!=null) {
         	getHomeButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
