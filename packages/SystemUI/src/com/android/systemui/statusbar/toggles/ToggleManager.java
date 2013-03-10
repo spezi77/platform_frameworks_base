@@ -85,6 +85,9 @@ public class ToggleManager {
     public static final String QUICKRECORD_TOGGLE = "QUICKRECORD";
     public static final String QUIETHOURS_TOGGLE = "QUIETHOURS";
     public static final String PIE_TOGGLE = "PIE";
+    public static final String SLEEP_TOGGLE = "SLEEP";
+    public static final String POWER_MENU_TOGGLE = "POWERMENU";
+    public static final String REBOOT_TOGGLE = "REBOOT";
 
     private int mStyle;
 
@@ -133,6 +136,9 @@ public class ToggleManager {
             toggleMap.put(QUICKRECORD_TOGGLE, QuickRecordToggle.class);
             toggleMap.put(QUIETHOURS_TOGGLE, QuietHoursToggle.class);
             toggleMap.put(PIE_TOGGLE, PieToggle.class);
+            toggleMap.put(SLEEP_TOGGLE, SleepToggle.class);
+            toggleMap.put(POWER_MENU_TOGGLE, PowerMenuToggle.class);
+            toggleMap.put(REBOOT_TOGGLE, RebootToggle.class);
             // toggleMap.put(BT_TETHER_TOGGLE, null);
         }
         return toggleMap;
