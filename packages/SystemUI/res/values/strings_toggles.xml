@@ -48,5 +48,5 @@
     <string name="toggle_POWERMENU">Power Menu</string>
     <string name="toggle_REBOOT">Reboot</string>
     <string name="toggle_SLEEP">Sleep</string>
-    <string name="toggle_XPOSED">Xposed</string>
+	<string name="toggle_SCREENSHOT">Screenshot</string>
 </resources>

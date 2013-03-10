@@ -363,8 +363,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mIsLongPress;
     
     private PowerMenuReceiver mPowerMenuReceiver;
+    
+    private PowerMenuReceiver mPowerMenuReceiver;
 
-    // PowerMenu Tile stuffs
+    // PowerMenu Tile
     class PowerMenuReceiver extends BroadcastReceiver {
         private boolean mIsRegistered = false;
 
@@ -374,11 +376,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
+
             if (action.equals(Intent.ACTION_POWERMENU)) {
                 showGlobalActionsDialog();
             }
             if (action.equals(Intent.ACTION_POWERMENU_REBOOT)) {
                 mWindowManagerFuncs.rebootTile();
+            }
+            if (action.equals(Intent.ACTION_SCREENSHOT)) {
+                takeScreenshot();
             }
         }
 
@@ -389,6 +395,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(Intent.ACTION_POWERMENU);
                 filter.addAction(Intent.ACTION_POWERMENU_REBOOT);
+                filter.addAction(Intent.ACTION_SCREENSHOT);
                 mContext.registerReceiver(mPowerMenuReceiver, filter);
             }
         }
@@ -3726,7 +3733,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     };
 
     // Assume this is called from the Handler thread.
-    private void takeScreenshot() {
+    public void takeScreenshot() {
         synchronized (mScreenshotLock) {
             if (mScreenshotConnection != null) {
                 return;
