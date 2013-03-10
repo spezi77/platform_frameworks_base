@@ -4171,6 +4171,8 @@
 
     <!-- label for item that opens the profile choosing dialog -->
     <string name="global_action_choose_profile">Profile</string>
+    
+    <string name="quick_settings_powermenu">Power Menu</string>
 
 	<!-- XenonHD ADDITIONS END -->
 </resources>

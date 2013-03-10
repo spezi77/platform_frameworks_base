@@ -79,6 +79,9 @@ public class ToggleManager {
     public static final String TWOG_TOGGLE = "2G";
     public static final String LTE_TOGGLE = "LTE";
     public static final String QUICKRECORD_TOGGLE = "QUICKRECORD";
+    public static final String SLEEP_TOGGLE = "SLEEP";
+    public static final String POWER_MENU_TOGGLE = "POWERMENU";
+    public static final String REBOOT_TOGGLE = "REBOOT";
     
     private int mStyle;
 
@@ -119,6 +122,9 @@ public class ToggleManager {
             toggleMap.put(TWOG_TOGGLE, TwoGToggle.class);
             toggleMap.put(LTE_TOGGLE, LteToggle.class);
             toggleMap.put(QUICKRECORD_TOGGLE, QuickRecordToggle.class);
+            toggleMap.put(SLEEP_TOGGLE, SleepToggle.class);
+            toggleMap.put(POWER_MENU_TOGGLE, PowerMenuToggle.class);
+            toggleMap.put(REBOOT_TOGGLE, RebootToggle.class);
             // toggleMap.put(BT_TETHER_TOGGLE, null);
         }
         return toggleMap;
