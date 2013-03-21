@@ -2638,6 +2638,12 @@ public final class Settings {
         public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
         
         /**
+         * Swap volume buttons when the screen is rotated by 90 or 180 degrees
+         * @hide
+         */
+        public static final String SWAP_VOLUME_KEYS = "swap_volume_keys";
+        
+        /**
          * Current UI Mode
          * 
          *  0 = Phone UI
@@ -2957,10 +2963,9 @@ public final class Settings {
         public static final String POWER_UI_LOW_BATTERY_WARNING_POLICY = "power_ui_low_battery_warning_policy";
         
         /**
-         * Swap volume buttons when the screen is rotated by 90 or 180 degrees
-         * @hide
+         * Use alternative application resolver
          */
-        public static final String SWAP_VOLUME_KEYS = "swap_volume_keys";
+        public static final String ACTIVITY_RESOLVER_USE_ALT = "activity_resolver_use_alt";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
