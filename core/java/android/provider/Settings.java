@@ -3106,6 +3106,12 @@ public final class Settings {
         public static final String PIE_CHEVRON_RIGHT = "pie_chevron_right";
 
        // PIE COLORS EVERYWHERE! //
+       
+       	/**
+         * Swap volume buttons when the screen is rotated by 90 or 180 degrees
+         * @hide
+         */
+        public static final String SWAP_VOLUME_KEYS = "swap_volume_keys";
 
         /**
          * Sets navbar background color/alpha
