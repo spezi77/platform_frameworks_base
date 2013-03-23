@@ -3823,6 +3823,10 @@ public final class Settings {
         
         /**
          * @hide
+         * 0 == QuickSettings Tile
+         * 1 == Toggle Switch (Not implemented Yet)
+         * 2 == Traditional
+         * 3 == Traditional (Scrolling)
          */
          public static final String TOGGLES_STYLE = "toggls_style";
 		
