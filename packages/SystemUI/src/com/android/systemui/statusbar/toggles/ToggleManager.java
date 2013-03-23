@@ -88,6 +88,7 @@ public class ToggleManager {
     public static final String SLEEP_TOGGLE = "SLEEP";
     public static final String POWER_MENU_TOGGLE = "POWERMENU";
     public static final String REBOOT_TOGGLE = "REBOOT";
+    public static final String XPOSED_TOGGLE = "XPOSED";
 
     private int mStyle;
 
@@ -139,6 +140,7 @@ public class ToggleManager {
             toggleMap.put(SLEEP_TOGGLE, SleepToggle.class);
             toggleMap.put(POWER_MENU_TOGGLE, PowerMenuToggle.class);
             toggleMap.put(REBOOT_TOGGLE, RebootToggle.class);
+            toggleMap.put(XPOSED_TOGGLE, XposedToggle.class);
             // toggleMap.put(BT_TETHER_TOGGLE, null);
         }
         return toggleMap;

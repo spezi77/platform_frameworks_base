@@ -594,6 +594,7 @@
     <string name="quick_settings_powermenu">Power Menu</string>
     <string name="quick_settings_sleep">Sleep</string>
     <string name="quick_settings_reboot">Reboot</string>
+    <string name="quick_settings_xposed_label">Xposed</string>
 
     <!--  RamBar -->
     <string name="memory">RAM</string>
