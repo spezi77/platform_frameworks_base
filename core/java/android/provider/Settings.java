@@ -3361,6 +3361,14 @@ public final class Settings {
         public static final String POWER_UI_LOW_BATTERY_WARNING_POLICY = "power_ui_low_battery_warning_policy";
         
         /**
+         * @hide
+         * Show Wifi network name in notification shade
+         * 0 - don't show
+         * 1 - show
+         */
+        public static final String NOTIFICATION_SHOW_WIFI_SSID = "notification_show_wifi_ssid";
+        
+        /**
          * Use alternative application resolver
          */
         public static final String ACTIVITY_RESOLVER_USE_ALT = "activity_resolver_use_alt";
