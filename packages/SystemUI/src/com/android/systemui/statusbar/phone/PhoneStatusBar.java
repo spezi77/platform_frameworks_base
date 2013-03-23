@@ -255,6 +255,10 @@ public class PhoneStatusBar extends BaseStatusBar {
     private TextView mEmergencyCallLabel;
     private int mNotificationHeaderHeight;
 
+    // drag bar
+    CloseDragHandle mCloseView;
+    private int mCloseViewHeight;
+
     private boolean mShowCarrierInPanel = false;
 
     // position
@@ -3072,10 +3076,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         mClockActions[doubleClick] = Settings.System.getString(cr,
                 Settings.System.NOTIFICATION_CLOCK[doubleClick]);
 
-        mNotificationShortcutsToggle = Settings.System.getIntForUser(resolver,
-                    Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE, 0, UserHandle.USER_CURRENT) != 0;
-        mNotificationShortcutsHideCarrier = Settings.System.getIntForUser(resolver,
-                    Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER, 0, UserHandle.USER_CURRENT) != 0;
+        mNotificationShortcutsToggle = Settings.System.getInt(cr,Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE, 0) != 0;
+        mNotificationShortcutsHideCarrier = Settings.System.getInt(cr,Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER, 0) != 0;
             if (mCarrierLabel != null) {
                 toggleCarrierAndWifiLabelVisibility();
         }
