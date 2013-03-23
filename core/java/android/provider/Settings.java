@@ -2933,9 +2933,17 @@ public final class Settings {
           * 2 - Volume up/down moves cursor right/left
           * @hide
           */
-         public static final String VOLUME_KEY_CURSOR_CONTROL = "volume_key_cursor_control";
+        public static final String VOLUME_KEY_CURSOR_CONTROL = "volume_key_cursor_control";
 
-         public static final String THEME_WALLPAPER = "theme_wallpaper";
+        public static final String THEME_WALLPAPER = "theme_wallpaper";
+        
+		/*
+         * @hide
+         * Show Wifi network name in notification shade
+         * 0 - don't show
+         * 1 - show
+         */
+        public static final String NOTIFICATION_SHOW_WIFI_SSID = "notification_show_wifi_ssid";
 
         /**  
          * Give MMS Notifications a breathing effect
