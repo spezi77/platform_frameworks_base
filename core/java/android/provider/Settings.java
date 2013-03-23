@@ -2981,6 +2981,8 @@ public final class Settings {
          * @hide
          */
         public static final String EXPANDED_DESKTOP_RESTART_LAUNCHER = "expanded_desktop_restart_launcher";
+        
+        public static final String EXPANDED_DESKTOP_MODE = "expanded_desktop_mode";
 
         /**
          * On or off the Pie.
