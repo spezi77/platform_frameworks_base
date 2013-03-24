@@ -334,13 +334,6 @@
             recent dialog is still in the framework
      -->
     <string name="no_recent_tasks">No recent apps.</string>
-    
-    <!-- label for item that toggles expand desktop mode -->
-    <string name="global_action_expanded_desktop">Expanded desktop</string>
-    <!-- status message in phone options dialog for when expand desktop mode is on -->
-    <string name="global_action_expanded_desktop_on">Enabled</string>
-    <!-- status message in phone options dialog for when expand desktop mode is off -->
-    <string name="global_action_expanded_desktop_off">Disabled</string>
 
     <!-- Title of the Global Actions Dialog -->
     <string name="global_actions" product="tablet">Tablet options</string>
