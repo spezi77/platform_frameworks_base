@@ -53,7 +53,7 @@ import android.widget.LinearLayout;
 
 import static com.android.internal.util.aokp.AwesomeConstants.*;
 import com.android.internal.util.aokp.BackgroundAlphaColorDrawable;
-+import com.android.internal.util.aokp.NavBarHelpers;
+import com.android.internal.util.aokp.NavBarHelpers;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
