@@ -1350,6 +1350,8 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     	protected void updateCarrierAndWifiLabelVisibility(boolean force) {
+    	if (!mShowCarrierInPanel || mCarrierAndWifiView == null) return;
+    	
         if (DEBUG) {
             Slog.d(TAG, String.format("pileh=%d scrollh=%d carrierh=%d",
                     mPile.getHeight(), mScrollView.getHeight(), mCarrierAndWifiViewHeight));
@@ -1372,15 +1374,13 @@ public class PhoneStatusBar extends BaseStatusBar {
             }
             mCarrierAndWifiView.animate()
                 .alpha(makeVisible ? 1f : 0f)
-                //.setStartDelay(makeVisible ? 500 : 0)
-                //.setDuration(makeVisible ? 750 : 100)
                 .setDuration(150)
                 .setListener(makeVisible ? null : new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         if (!mCarrierAndWifiViewVisible) { // race
                             mCarrierAndWifiView.setVisibility(View.INVISIBLE);
-                            mCarrierAndWifiView.animate().alpha(0f);
+                            mCarrierAndWifiView.setAlpha(0f);
                         }
                     }
                 })
@@ -1912,6 +1912,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             mScrollView.setVisibility(View.VISIBLE);
             mScrollView.setScaleX(-progress);
             mNotificationButton.setVisibility(View.GONE);
+            updateCarrierAndWifiLabelVisibility(true);
         } else { // settings side
             mFlipSettingsView.setScaleX(progress);
             mFlipSettingsView.setVisibility(View.VISIBLE);
@@ -1920,6 +1921,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             mScrollView.setScaleX(0f);
             mNotificationButton.setVisibility(View.VISIBLE);
             mNotificationButton.setAlpha(progress);
+            updateCarrierAndWifiLabelVisibility(false);
         }
         mClearButton.setVisibility(View.GONE);
     }
