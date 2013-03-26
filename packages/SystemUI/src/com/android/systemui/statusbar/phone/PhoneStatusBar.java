@@ -643,6 +643,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
 
         mWifiLabel = (TextView)mStatusBarWindow.findViewById(R.id.wifi_text);
+        
+        if (mWifiLabel != null) {
         mNetworkController.addWifiLabelView(mWifiLabel);
 
         mWifiLabel.addTextChangedListener(new TextWatcher() {
@@ -666,6 +668,8 @@ public class PhoneStatusBar extends BaseStatusBar {
             }
 
         });
+        
+       }
         
         // set up the dynamic hide/show of the labels
         mPile.setOnSizeChangedListener(new OnSizeChangedListener() {
