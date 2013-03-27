@@ -4837,17 +4837,17 @@ public final class ActivityThread {
                     iter.remove();
                 }
             }
+        }
 
-            try {
-                if (DEBUG_PROVIDER) {
-                    Slog.v(TAG, "removeProvider: Invoking ActivityManagerNative."
-                            + "removeContentProvider(" + prc.holder.info.name + ")");
-                }
-                ActivityManagerNative.getDefault().removeContentProvider(
-                        prc.holder.connection, false);
-            } catch (RemoteException e) {
-                //do nothing content provider object is dead any way
+        try {
+            if (DEBUG_PROVIDER) {
+                Slog.v(TAG, "removeProvider: Invoking ActivityManagerNative."
+                        + "removeContentProvider(" + prc.holder.info.name + ")");
             }
+            ActivityManagerNative.getDefault().removeContentProvider(
+                    prc.holder.connection, false);
+        } catch (RemoteException e) {
+            //do nothing content provider object is dead any way
         }
     }
 
