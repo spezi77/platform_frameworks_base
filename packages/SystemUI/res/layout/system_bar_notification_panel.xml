@@ -62,9 +62,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:overScrollMode="ifContentScrolls"
-            android:layout_weight="1"
-            android:paddingBottom="6dp"
+            android:layout_height="wrap_content"
             >
             <ViewStub android:id="@+id/flip_settings_stub"
                 android:layout="@layout/flip_settings"
@@ -72,14 +70,15 @@
                 android:layout_height="wrap_content"
                 />
 
-            <ScrollView
-                android:id="@+id/notification_scroller"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:overScrollMode="ifContentScrolls"
-                android:layout_weight="1"
-                >
-                <com.android.systemui.statusbar.policy.NotificationRowLayout
+        <ScrollView
+            android:id="@+id/notification_scroller"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:overScrollMode="ifContentScrolls"
+            android:layout_weight="1"
+            android:paddingBottom="6dp"
+            >
+            <com.android.systemui.statusbar.policy.NotificationRowLayout
                     android:id="@+id/content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -277,6 +277,7 @@ public class TabletStatusBar extends BaseStatusBar implements
         mNotificationPanel = (NotificationPanel)View.inflate(context,
                 R.layout.system_bar_notification_panel, null);
         mNotificationPanel.setBar(this);
+        mNotificationPanel.setNotificationArea(mNotificationArea);
         mNotificationPanel.show(false, false);
         mNotificationPanel.setOnTouchListener(
                 new TouchOutsideListener(MSG_CLOSE_NOTIFICATION_PANEL, mNotificationPanel));
@@ -954,7 +955,6 @@ public class TabletStatusBar extends BaseStatusBar implements
                     if (DEBUG) Slog.d(TAG, "opening notifications panel");
                     if (!mNotificationPanel.isShowing()) {
                         mNotificationPanel.show(true, true);
-                        mNotificationArea.setVisibility(View.INVISIBLE);
                         mTicker.halt();
                     }
                     break;
@@ -962,7 +962,6 @@ public class TabletStatusBar extends BaseStatusBar implements
                     if (DEBUG) Slog.d(TAG, "closing notifications panel");
                     if (mNotificationPanel.isShowing()) {
                         mNotificationPanel.show(false, true);
-                        mNotificationArea.setVisibility(View.VISIBLE);
                     }
                     break;
                 case MSG_OPEN_INPUT_METHODS_PANEL:
