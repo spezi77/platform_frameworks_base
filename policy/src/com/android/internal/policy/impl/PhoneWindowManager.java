@@ -363,8 +363,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mIsLongPress;
     
     private PowerMenuReceiver mPowerMenuReceiver;
-    
-    private PowerMenuReceiver mPowerMenuReceiver;
 
     // PowerMenu Tile
     class PowerMenuReceiver extends BroadcastReceiver {
