@@ -669,6 +669,10 @@ public class TabletStatusBar extends BaseStatusBar implements
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
         updateSettings();
+        mNavBarView.setTransparencyManager(mTransparencyManager);
+        mTransparencyManager.setStatusbar(mStatusBarView);
+        mTransparencyManager.setNavbar(mNavBarView);
+        mTransparencyManager.update();
         return sb;
     }
 
@@ -1095,6 +1099,7 @@ public class TabletStatusBar extends BaseStatusBar implements
                 mHandler.sendEmptyMessage(MSG_CLOSE_RECENTS_PANEL);
            }
         }
+        mTransparencyManager.update();
     }
 
     private void setNavigationVisibility(int visibility) {
@@ -1237,7 +1242,7 @@ public class TabletStatusBar extends BaseStatusBar implements
     public void topAppWindowChanged(boolean showMenu) {
         if (mPieControlPanel != null)
             mPieControlPanel.setMenu(showMenu);
-
+        	mTransparencyManager.update();
         if (DEBUG) {
             Slog.d(TAG, (showMenu?"showing":"hiding") + " the MENU button");
         }
