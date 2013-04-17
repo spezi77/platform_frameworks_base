@@ -86,6 +86,7 @@ public class ToggleManager {
     public static final String SILENT_TOGGLE = "SILENT";
     public static final String SOUND_STATE_TOGGLE = "SOUNDSTATE";
     public static final String VOLUME_TOGGLE = "VOLUME";
+    public static final String STAYAWAKE_TOGGLE = "STAYAWAKE";
     
     private int mStyle;
 
@@ -133,6 +134,7 @@ public class ToggleManager {
             toggleMap.put(SILENT_TOGGLE, SilentToggle.class);
             toggleMap.put(SOUND_STATE_TOGGLE, SoundStateToggle.class);
             toggleMap.put(VOLUME_TOGGLE, VolumeToggle.class);
+            toggleMap.put(STAYAWAKE_TOGGLE, StayAwakeToggle.class);
             // toggleMap.put(BT_TETHER_TOGGLE, null);
         }
         return toggleMap;
