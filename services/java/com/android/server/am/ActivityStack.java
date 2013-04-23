@@ -2481,6 +2481,15 @@ final class ActivityStack {
             boolean componentSpecified, ActivityRecord[] outActivity) {
 
         int err = ActivityManager.START_SUCCESS;
+        
+        if (intent != null) {
+            final String intentExtra = intent.getStringExtra("Theme.DeviceDefault.Floating");
+            final boolean floatingDialog = (intentExtra != null ? intentExtra.equals("1") : false);
+            if (floatingDialog) {
+                // Do not allow tasks on home for floating multiwindows!
+                intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+            }
+        }
 
         mPm.cpuBoost(1500000);
 
