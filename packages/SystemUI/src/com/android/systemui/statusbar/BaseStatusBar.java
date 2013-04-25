@@ -102,6 +102,7 @@ import com.android.systemui.SystemUI;
 import com.android.systemui.recent.RecentTasksLoader;
 import com.android.systemui.recent.RecentsActivity;
 import com.android.systemui.recent.TaskDescription;
+import com.android.systemui.statusbar.halo.Halo;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.Clock;
@@ -467,6 +468,12 @@ public abstract class BaseStatusBar extends SystemUI implements
             });
 
         attachPie();
+
+        Halo halo = new Halo(mContext,"com.google.android.talk");
+        WindowManager.LayoutParams params = halo.getWMParams();
+        params.gravity = Gravity.BOTTOM;
+        params.setTitle("Halo");
+        mWindowManager.addView(halo,params);
 
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();

@@ -82,6 +82,9 @@
                 android:description="@string/permdesc_screenshot"
                 android:label="@string/permlab_screenshot" />
 
+    <!--Halo-->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
     <application
         android:persistent="true"
         android:allowClearUserData="false"
