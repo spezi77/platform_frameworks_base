@@ -338,6 +338,13 @@ public class NavigationBarView extends LinearLayout {
                     addButton(navButtonLayout, separator, landscape);
                     addLightsOutButton(lightsOut, separator, landscape, true);
                 }
+                if (mNumberOfButtons == 3 && j != (mNumberOfButtons - 1)) {
+                    // add separator view here
+                    View separator = new View(mContext);
+                    separator.setLayoutParams(getSeparatorLayoutParams(landscape));
+                    addButton(navButtonLayout, separator, landscape);
+                    addLightsOutButton(lightsOut, separator, landscape, true);
+                }
             }
             if (mMenuLocation != SHOW_DONT) {
                 // add left menu
