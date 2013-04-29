@@ -304,7 +304,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     int mShortcutsSpacingHeight;
 
     // ticker
-    private Ticker mTicker;
     private View mTickerView;
     private boolean mTicking;
 
