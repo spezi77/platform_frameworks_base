@@ -5084,7 +5084,7 @@ public class Activity extends ContextThemeWrapper
 
             parent = null;
 
-            mWindow = PolicyManager.makeNewWindow(context);
+            mWindow = PolicyManager.makeNewWindow(this);
             mWindow.mIsMultiWindow = true;
             mWindow.setCloseOnTouchOutsideIfNotSet(true);
             mWindow.setGravity(Gravity.CENTER);
