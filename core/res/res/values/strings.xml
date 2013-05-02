@@ -4134,7 +4134,4 @@
     <string name="action_ribbon">AOKP Ribbon</string>
     <string name="action_app">Custom App/Shortcut</string>
 
-    <!-- Hardware Rotation lock string -->
-    <string name="toast_rotation_unlocked">Display rotation unlocked</string>
-    <string name="toast_rotation_locked">Display rotation locked</string>
 </resources>
