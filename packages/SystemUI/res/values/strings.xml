@@ -623,5 +623,9 @@
     <string name="service_free_mem"><xliff:g id="memory">%1$s</xliff:g> free</string>
     <!-- [CHAR LIMIT=10] Running services, summary of foreground processes -->
     <string name="service_used_mem"><xliff:g id="memory">%1$s</xliff:g> used</string>
+    
+    <!--  App window Strings -->
+    <string name="close">Close</string>
+    <string name="app_window">Applications</string>
 
 </resources>
