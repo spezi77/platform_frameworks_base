@@ -293,5 +293,6 @@
     <dimen name="ribbon_drag_handle_height">25dp</dimen>
 
     <dimen name="halo_icon_size">65dp</dimen>
+    <dimen name="halo_icon_margin">5dp</dimen>
 
 </resources>
