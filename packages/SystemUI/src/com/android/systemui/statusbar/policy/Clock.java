@@ -161,6 +161,9 @@ public class Clock extends TextView {
     };
 
     final void updateClock() {
+        if (mCalendar == null) {
+            mCalendar = Calendar.getInstance(TimeZone.getDefault());
+        }
         mCalendar.setTimeInMillis(System.currentTimeMillis());
         setText(getSmallTime());
     }
