@@ -281,7 +281,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
             Settings.System.getBoolean(cr,
                 Settings.System.RIBBON_ICON_VIBRATE[AokpRibbonHelper.LOCKSCREEN], true),
             Settings.System.getBoolean(cr,
-                Settings.System.RIBBON_ICON_COLORIZE[AokpRibbonHelper.LOCKSCREEN], true)));
+                Settings.System.RIBBON_ICON_COLORIZE[AokpRibbonHelper.LOCKSCREEN], true), 0));
         updateTargets();
 
         mGlowTorch = Settings.System.getBoolean(cr,
