@@ -289,4 +289,7 @@
     <!-- Height of trigger for revealing a hidden status bar or navbar -->
     <dimen name="trigger_view_height">2dip</dimen>
 
+    <!-- Constant for hidden ribbon drag handle -->
+    <dimen name="ribbon_drag_handle_height">25dp</dimen>
+
 </resources>
