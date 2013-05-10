@@ -645,6 +645,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         mTicker = new MyTicker(context, mStatusBarView);
         TickerView tickerView = (TickerView)mStatusBarView.findViewById(R.id.tickerText);
         tickerView.mTicker = mTicker;
+        if (mHaloActive) mTickerView.setVisibility(View.GONE);
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
 
@@ -2550,8 +2551,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     @Override
     protected void tick(IBinder key, StatusBarNotification n, boolean firstTime) {
-        // no ticking in lights-out mode
-        if (!areLightsOn()) return;
+		// no ticking in lights-out mode, except if halo is active
+        if (!areLightsOn() && !mHaloActive) return;
 
         // no ticking in Setup
         if (!isDeviceProvisioned()) return;
@@ -2578,17 +2579,20 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         @Override
         public void tickerStarting() {
+        	if (!mHaloActive) {
             mTicking = true;
             mStatusBarContents.setVisibility(View.GONE);
             mCenterClockLayout.setVisibility(View.GONE);
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
-            mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
+            mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null)
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
+            }
         }
 
         @Override
         public void tickerDone() {
+        	if (!mHaloActive) {
             mStatusBarContents.setVisibility(View.VISIBLE);
             mCenterClockLayout.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
@@ -2596,15 +2600,18 @@ public class PhoneStatusBar extends BaseStatusBar {
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out,
                         mTickingDoneListener));
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
+            }
         }
 
         public void tickerHalting() {
+        	if (!mHaloActive) {
             mStatusBarContents.setVisibility(View.VISIBLE);
             mCenterClockLayout.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             // we do not animate the ticker away at this point, just get rid of it (b/6992707)
+            }
         }
     }
 
@@ -2834,8 +2841,12 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private View.OnClickListener mHaloButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
+        // Activate HALO
             Settings.System.putInt(mContext.getContentResolver(),
                     Settings.System.HALO_ACTIVE, 1);
+        // Switch off regular ticker
+            mTickerView.setVisibility(View.GONE);
+        // Collapse
             animateCollapsePanels();
         }
     };
