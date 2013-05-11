@@ -3393,6 +3393,14 @@ public final class Settings {
         public static final String EXPANDED_DESKTOP_MODE = "expanded_desktop_mode";
         
         /**
+         * Peek at stausbar when it is hidden by swiping down from top
+         * end of the screen
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_PEEK = "statusbar_peek";
+        
+        /**
          * User Interface State
          * 1 = Rebuild UI, resets to 0 automatically
          * @hide
