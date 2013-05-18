@@ -2764,6 +2764,12 @@ public final class Settings {
          * @hide
          */
         public static final String KEYBOARD_ROTATION_TIMEOUT = "keyboard_rotation_timeout";
+        
+         /**
+         * Forces formal text input.  1 to replace emoticon key with enter key.
+         * @hide
+         */
+        public static final String FORMAL_TEXT_INPUT = "formal_text_input";
 
         /**
          * whether which Ram Usage Bar mode is used on recent switcher
