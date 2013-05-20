@@ -2951,6 +2951,18 @@ public final class Settings {
          * @hide
          */
         public static final String PIE_LAST_APP = "pie_last_app";
+        
+        /**
+         * Pie kill task, default to 0 (off)
+         * @hide
+         */
+        public static final String PIE_KILL_TASK = "pie_kill_task";
+
+        /**
+         * Pie action widgets, default to off
+         * @hide
+         */
+        public static final String PIE_APP_WINDOW = "pie_app_window";
 
         /**
          *
