@@ -3009,6 +3009,12 @@ public final class Settings {
             "lockscreen_targets_icon_6",
             "lockscreen_targets_icon_7",
         };
+        
+        /**
+         *
+         * @hide
+         */
+        public static final String LOCKSCREEN_GLOW_TORCH = "lockscreen_glow_torch";
 
         /**
          * Whether to use the custom quick unlock screen control
