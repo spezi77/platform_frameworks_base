@@ -48,7 +48,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.android.systemui.carbon.AwesomeAction;
+import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.PanelBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
