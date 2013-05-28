@@ -114,6 +114,7 @@ import com.android.internal.util.aokp.AokpRibbonHelper;
 import com.android.systemui.aokp.AokpSwipeRibbon;
 
 import java.io.FileDescriptor;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
