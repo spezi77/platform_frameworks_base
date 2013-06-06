@@ -1976,6 +1976,8 @@ public class PhoneStatusBar extends BaseStatusBar {
             mNotificationPanel.expand();
             if (mFlipSettingsView.getVisibility() != View.VISIBLE) {
                 flipToSettings();
+            } else {
+                switchToSettings();
             }
         } else if (mSettingsPanel != null) {
             mSettingsPanel.expand();
