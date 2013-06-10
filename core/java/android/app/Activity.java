@@ -55,7 +55,7 @@ import android.text.TextUtils;
 import android.text.method.TextKeyListener;
 import android.util.AttributeSet;
 import android.util.EventLog;
-import android.util.ExtendedPropertiesUtils;
+/* import android.util.ExtendedPropertiesUtils; */
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
