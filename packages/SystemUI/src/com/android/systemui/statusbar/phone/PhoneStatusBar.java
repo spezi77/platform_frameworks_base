@@ -2119,6 +2119,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             updateCarrierAndWifiLabelVisibility(false);
         }
         mClearButton.setVisibility(View.GONE);
+        mHaloButton.setVisibility(View.GONE);
     }
 
     public void flipToSettings() {
