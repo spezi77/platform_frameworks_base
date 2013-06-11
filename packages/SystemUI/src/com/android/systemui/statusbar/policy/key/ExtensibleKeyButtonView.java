@@ -51,27 +51,6 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
             case ACTION_SEARCH:
                 setCode(KeyEvent.KEYCODE_SEARCH);
                 break;
-            case ACTION_RECENTS:
-                setId(R.id.recent_apps);
-                setOnClickListener(mClickListener);
-                setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        int action = event.getAction() & MotionEvent.ACTION_MASK;
-                        if (action == MotionEvent.ACTION_DOWN) {
-                            preloadRecentTasksList();
-                        } else if (action == MotionEvent.ACTION_CANCEL) {
-                            cancelPreloadingRecentTasksList();
-                        } else if (action == MotionEvent.ACTION_UP) {
-                            if (!v.isPressed()) {
-                                cancelPreloadingRecentTasksList();
-                            }
-
-                        }
-                        return false;
-                    }
-                });
-                break;
             default:
                 setOnClickListener(mClickListener);
                 break;
@@ -105,22 +84,4 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
             return AwesomeAction.launchAction(mContext, mLongpress);
         }
     };
-
-    protected void preloadRecentTasksList() {
-        Intent intent = new Intent(RecentsActivity.PRELOAD_INTENT);
-        intent.setClassName("com.android.systemui",
-                "com.android.systemui.recent.RecentsPreloadReceiver");
-        mContext.sendBroadcastAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
-
-        RecentTasksLoader.getInstance(mContext).preloadFirstTask();
-    }
-
-    protected void cancelPreloadingRecentTasksList() {
-        Intent intent = new Intent(RecentsActivity.CANCEL_PRELOAD_INTENT);
-        intent.setClassName("com.android.systemui",
-                "com.android.systemui.recent.RecentsPreloadReceiver");
-        mContext.sendBroadcastAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
-
-        RecentTasksLoader.getInstance(mContext).cancelPreloadingFirstTask();
-    }
 }
