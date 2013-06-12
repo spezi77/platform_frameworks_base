@@ -3783,6 +3783,13 @@ public final class Settings {
          * @hide
          */
         public static final String APP_WINDOW_HIDDEN_APPS = "app_window_hidden_apps";
+        
+        /**
+         * HALO pause activities?, defaults to 0 (no, do not pause) on devices which isLargeRAM() == true
+         * otherwise it defaults to 1 (yes, do pause)
+         * @hide
+         */
+        public static final String HALO_PAUSE = "halo_pause";
 
         /**
          *
