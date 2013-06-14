@@ -17,7 +17,6 @@
 package android.app;
 
 import android.app.Activity;
-<<<<<<< HEAD
 import android.os.Bundle;
 
 public class LayerActivity extends Activity {
@@ -30,28 +29,16 @@ public class LayerActivity extends Activity {
         super.onCreate(savedInstanceState);
         mSavedInstanceState = savedInstanceState;
     }
-=======
-import android.os.Handler;
-
-public class LayerActivity extends Activity {
-
-    private boolean mResume = false;
->>>>>>> f888ead... Reworked transparent layer
 
     @Override
     public void onStart() {
         super.onStart();
-<<<<<<< HEAD
         mShouldFinish = false;
-=======
-        mResume = false;
->>>>>>> f888ead... Reworked transparent layer
     }
 
     @Override
     public void onResume() {
         super.onResume();
-<<<<<<< HEAD
         if (!mShouldFinish) {
             mShouldFinish = true;
             return;
@@ -67,12 +54,4 @@ public class LayerActivity extends Activity {
             finish();
         }
     }
-=======
-        if (!mResume) {
-            mResume = true;
-            return;
-        }
-        finish();
-    }
->>>>>>> f888ead... Reworked transparent layer
 }
