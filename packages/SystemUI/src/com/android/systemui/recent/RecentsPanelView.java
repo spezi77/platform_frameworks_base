@@ -898,11 +898,10 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                     ViewHolder viewHolder = (ViewHolder) selectedView.getTag();
                     if (viewHolder != null) {
                         final TaskDescription ad = viewHolder.taskDescription;
-                        dismissAndGoBack();
                         Intent intent = ad.intent;
                         intent.addFlags(Intent.FLAG_FLOATING_WINDOW
                                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+                        dismissAndGoBack();
                         getContext().startActivity(intent);
                     }
                 } else {
