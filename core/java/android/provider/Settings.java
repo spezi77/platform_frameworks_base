@@ -3868,6 +3868,12 @@ public final class Settings {
         public static final String HALO_PAUSE = "halo_pause";
 
 		/**
+         * HALO being minimal.
+         * @hide
+         */
+        public static final String HALO_STYLE = "halo_style";
+
+        /**
          * HALO speech bubble color
          * @hide
          */
@@ -3878,18 +3884,12 @@ public final class Settings {
          * @hide
          */
         public static final String HALO_BUBBLE_TEXT_COLOR = "halo_bubble_text_color";
-        
+
         /**
-         * HALO colors
+         * HALO circle bg color
          * @hide
          */
-        public static final String HALO_COLORS = "halo_colors";
-        
-        /**
-         * HALO effect color
-         * @hide
-         */
-        public static final String HALO_EFFECT_COLOR = "halo_effect_color";
+        public static final String HALO_CIRCLE_COLOR = "halo_circle_color";
 
         /**
          *
