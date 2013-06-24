@@ -1364,6 +1364,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mHdmiRotationLock = SystemProperties.getBoolean("persist.demo.hdmirotationlock", true);
     }
     
+    private void closeApplication(String packageName) {
+        try {
+            ActivityManagerNative.getDefault().killApplicationProcess(
+                    packageName, AppGlobals.getPackageManager().getPackageUid(
+                    packageName, UserHandle.myUserId()));
+        } catch (RemoteException e) {
+            // Good luck next time!
+        }
+    }
+    
     private void update(boolean updateUi) {
         if (updateUi) {
             updateHybridLayout();
