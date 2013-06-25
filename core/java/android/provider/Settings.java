@@ -3802,6 +3802,12 @@ public final class Settings {
          * @hide
          */
         public static final String HALO_COLORS = "halo_colors";
+        
+        /**
+         * HALO effect color
+         * @hide
+         */
+        public static final String HALO_EFFECT_COLOR = "halo_effect_color";
 
         /**
          *
