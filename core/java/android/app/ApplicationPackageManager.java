@@ -1311,6 +1311,9 @@ final class ApplicationPackageManager extends PackageManager {
         } catch (RemoteException e) {
             // Should never happen!
         }
+    }
+
+    @Override
     public void setPrivacyGuardSetting(String packageName, boolean enabled) {
         try {
             mPM.setPrivacyGuardSetting(packageName, enabled, mContext.getUserId());
@@ -1325,7 +1328,8 @@ final class ApplicationPackageManager extends PackageManager {
             return mPM.getPrivacyGuardSetting(packageName, mContext.getUserId());
         } catch (RemoteException e) {
             // Should never happen!
-        }
+	}
+	
         return false;
     }
 
