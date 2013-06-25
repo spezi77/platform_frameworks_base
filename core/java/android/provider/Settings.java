@@ -3796,6 +3796,12 @@ public final class Settings {
          * @hide
          */
         public static final String HALO_BUBBLE_TEXT_COLOR = "halo_bubble_text_color";
+        
+        /**
+         * HALO colors
+         * @hide
+         */
+        public static final String HALO_COLORS = "halo_colors";
 
         /**
          *
