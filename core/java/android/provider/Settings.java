@@ -3773,10 +3773,10 @@ public final class Settings {
 
         /**
          *
-         * HALO being minimal.
+         * HALO circle bg color
          * @hide
          */
-        public static final String HALO_STYLE = "halo_style";
+        public static final String HALO_CIRCLE_COLOR = "halo_circle_color";
         
         /**
          * HALO pause activities?, defaults to 0 (no, do not pause) on devices which isLargeRAM() == true
