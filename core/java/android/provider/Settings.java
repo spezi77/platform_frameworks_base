@@ -3777,12 +3777,6 @@ public final class Settings {
          * @hide
          */
         public static final String HALO_STYLE = "halo_style";
-
-        /**
-         *
-         * @hide
-         */
-        public static final String APP_WINDOW_HIDDEN_APPS = "app_window_hidden_apps";
         
         /**
          * HALO pause activities?, defaults to 0 (no, do not pause) on devices which isLargeRAM() == true
@@ -3790,6 +3784,24 @@ public final class Settings {
          * @hide
          */
         public static final String HALO_PAUSE = "halo_pause";
+
+		/**
+         * HALO speech bubble color
+         * @hide
+         */
+        public static final String HALO_BUBBLE_COLOR = "halo_bubble_color";
+
+        /**
+         * HALO speech bubble text color
+         * @hide
+         */
+        public static final String HALO_BUBBLE_TEXT_COLOR = "halo_bubble_text_color";
+
+        /**
+         *
+         * @hide
+         */
+        public static final String APP_WINDOW_HIDDEN_APPS = "app_window_hidden_apps";
 
         /**
          *
