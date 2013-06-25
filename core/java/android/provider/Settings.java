@@ -3890,6 +3890,12 @@ public final class Settings {
          * @hide
          */
         public static final String HALO_BUBBLE_TEXT_COLOR = "halo_bubble_text_color";
+        
+        /**
+         * HALO effect color
+         * @hide
+         */
+        public static final String HALO_EFFECT_COLOR = "halo_effect_color";
 
         /**
          * HALO circle bg color
