@@ -285,9 +285,6 @@
     <dimen name="notification_shortcuts_close_handle_height">28dp</dimen>
     <dimen name="notification_shortcuts_spacing_height">88dp</dimen>
     <dimen name="notification_shortcuts_drawer_margin">56dp</dimen>
-    
-    <!-- Height of trigger for revealing a hidden status bar or navbar -->
-    <dimen name="trigger_view_height">2dip</dimen>
 
     <!-- Constant for hidden ribbon drag handle -->
     <dimen name="ribbon_drag_handle_height">25dp</dimen>

@@ -503,23 +503,4 @@ public class IWindowManagerImpl implements IWindowManager {
             throws RemoteException {
         // TODO Auto-generated method stub
     }
-
-    @Override
-    public void showStatusBar()
-            throws RemoteException {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void hideStatusBar()
-            throws RemoteException {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public boolean shouldHideStatusBar()
-            throws RemoteException {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }

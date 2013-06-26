@@ -545,7 +545,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mSearchKeyShortcutPending;
     boolean mConsumeSearchKeyUp;
     boolean mAssistKeyLongPressed;
-    boolean mForceStatusBarFromUI;
     
     // Used when key is pressed and performing non-default action
     boolean mMenuDoCustomAction;
@@ -3783,7 +3782,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (DEBUG_LAYOUT) Log.i(TAG, "force=" + mForceStatusBar
                     + " forcefkg=" + mForceStatusBarFromKeyguard
                     + " top=" + mTopFullscreenOpaqueWindowState);
-            if ((mForceStatusBar || mForceStatusBarFromKeyguard || mForceStatusBarFromUI) &&
+            if ((mForceStatusBar || mForceStatusBarFromKeyguard) &&
                     Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.EXPANDED_DESKTOP_STATE, 0) == 0) {
                 if (DEBUG_LAYOUT) Log.v(TAG, "Showing status bar: forced");
@@ -5606,28 +5605,5 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 pw.print(" mUpsideDownRotation="); pw.println(mUpsideDownRotation);
         pw.print(prefix); pw.print("mHdmiRotation="); pw.print(mHdmiRotation);
                 pw.print(" mHdmiRotationLock="); pw.println(mHdmiRotationLock);
-    }
-    
-    @Override
-    public void showStatusBar() {
-        if (mStatusBar != null && shouldHideStatusBar()) {
-            mForceStatusBarFromUI = true;
-            mStatusBar.showLw(true);
-        }
-    }
-
-    @Override
-    public void hideStatusBar() {
-        if (mStatusBar != null) {
-            mForceStatusBarFromUI = false;
-            mStatusBar.hideLw(true);
-        }
-    }
-
-    @Override
-    public boolean shouldHideStatusBar() {
-        return mForceStatusBarFromUI || mTopIsFullscreen || 
-                Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
     }
 }
