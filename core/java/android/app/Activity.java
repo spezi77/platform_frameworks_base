@@ -2417,6 +2417,13 @@ public class Activity extends ContextThemeWrapper
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             if (!mPieOnTop && (Settings.System.getInt(getContentResolver(),
                     Settings.System.STATUSBAR_PEEK, 0) == 1)) {
+                if (ev.getY() < getStatusBarHeight()) {
+                    Settings.System.putInt(getContentResolver(),
+                            Settings.System.TOGGLE_NOTIFICATION_AND_QS_SHADE, 1);
+                } else {
+                    Settings.System.putInt(getContentResolver(),
+                            Settings.System.TOGGLE_NOTIFICATION_AND_QS_SHADE, 0);
+                }
             }
             onUserInteraction();
         }
