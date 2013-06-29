@@ -137,6 +137,9 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     public static final String ACTION_STATUSBAR_START
             = "com.android.internal.policy.statusbar.START";
+	
+	private static final String ACTION_STATUSBAR_HIDE
+			= "com.android.internal.policy.statusbar.START";
 
     private static final long AUTO_HIDE_DELAY = 3000;
 
