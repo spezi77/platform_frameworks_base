@@ -22,7 +22,7 @@ import android.annotation.SdkConstant.SdkConstantType;
 import android.app.ActivityManagerNative;
 import android.app.SearchManager;
 import android.app.WallpaperManager;
-import android.content.ComponentName;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -2666,6 +2666,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_NOTIF_COUNT = "status_bar_notif_count";
+
+	/*
+         * Network speed indicator
+         * @hide
+         */
+        public static final String STATUS_BAR_TRAFFIC = "status_bar_traffic"; 
+
 
         /**
          * Holds the text for the Carrier label. An empty string
