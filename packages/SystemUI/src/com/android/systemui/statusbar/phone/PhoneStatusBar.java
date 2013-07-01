@@ -2465,7 +2465,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             final View signal = mStatusBarView.findViewById(R.id.signal_cluster);
             final View battery = mStatusBarView.findViewById(R.id.battery);
             final View clock = mStatusBarView.findViewById(R.id.clock);
-            final View traffic = mStatusBarView.findViewById(R.id.traffic);
+	    final View traffic = mStatusBarView.findViewById(R.id.traffic);
 
             final AnimatorSet lightsOutAnim = new AnimatorSet();
             lightsOutAnim.playTogether(
