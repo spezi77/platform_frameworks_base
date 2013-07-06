@@ -107,6 +107,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     boolean mRecentsKillAllEnabled;
     private int mAndroidDpi = DisplayMetrics.DENSITY_DEVICE;
 
+    private RecentsActivity mRecentsActivity;
+
     TextView mBackgroundProcessText;
     TextView mForegroundProcessText;
 
@@ -298,6 +300,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
         mRecentItemLayoutId = a.getResourceId(R.styleable.RecentsPanelView_recentItemLayout, 0);
         mRecentTasksLoader = RecentTasksLoader.getInstance(context);
+        mRecentsActivity = (RecentsActivity) context;
         a.recycle();
         mSettingsObserver = new SettingsObserver(mHandler);
     }
@@ -382,6 +385,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
         mShowing = show;
 
+	mRecentsActivity.setRecentHints(show && getTasks() > 0);
+
         if (show) {
             // if there are no apps, bring up a "No recent apps" message
             boolean noApps = mRecentTaskDescriptions != null
@@ -403,6 +408,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     }
 
     public void onUiHidden() {
+     	mRecentsActivity.setRecentHints(false);
         if (!mShowing && mRecentTaskDescriptions != null) {
             onAnimationEnd(null);
             clearRecentTasksList();
@@ -410,11 +416,11 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     }
 
     public void dismiss() {
-        ((RecentsActivity) mContext).dismissAndGoHome();
+        mRecentsActivity.dismissAndGoHome();
     }
 
     public void dismissAndGoBack() {
-        ((RecentsActivity) mContext).dismissAndGoBack();
+        mRecentsActivity.dismissAndGoBack();
     }
 
     public void onAnimationCancel(Animator animation) {
@@ -515,6 +521,12 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                 killAllRecentApps();
             }
         });
+    }
+
+@Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        mRecentsActivity.setRecentHints(mShowing && getTasks() > 0);
+        super.onSizeChanged(w, h, oldw, oldh);
     }
 
     public void setMinSwipeAlpha(float minAlpha) {
@@ -681,7 +693,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         } else {
             mRecentTaskDescriptions.addAll(tasks);
         }
-        if (((RecentsActivity) mContext).isActivityShowing()) {
+        if (mRecentsActivity.isActivityShowing()) {
             refreshViews();
         }
     }
