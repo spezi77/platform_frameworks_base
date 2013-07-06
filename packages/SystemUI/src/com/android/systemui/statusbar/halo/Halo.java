@@ -32,6 +32,7 @@ import android.animation.Keyframe;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.ContentResolver;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.Intent;
 import android.content.pm.PackageManager;
