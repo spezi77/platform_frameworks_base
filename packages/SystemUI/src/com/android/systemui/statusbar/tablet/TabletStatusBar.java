@@ -312,9 +312,6 @@ public class TabletStatusBar extends BaseStatusBar implements
             updateHaloButton();
         }
 
-        // Add QuickSettings
-        mNotificationPanel.setupQuickSettings(this, mNetworkController, mBluetoothController, 
-                mBatteryController, mLocationController);
 
         mStatusBarView.setIgnoreChildren(0, mNotificationTrigger, mNotificationPanel);
 
