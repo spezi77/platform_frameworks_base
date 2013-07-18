@@ -2189,6 +2189,9 @@ String8 ResTable_config::toString() const {
             case ResTable_config::UI_MODE_TYPE_APPLIANCE:
                 res.append("appliance");
                 break;
+            case ResTable_config::UI_MODE_TYPE_LIGHTUI:
+                res.append("lightui");
+                break;
             default:
                 res.appendFormat("uiModeType=%d",
                         dtohs(screenLayout&ResTable_config::MASK_UI_MODE_TYPE));

@@ -74,7 +74,7 @@ final class UiModeManagerService extends IUiModeManager.Stub {
     private boolean mCarModeEnabled = false;
     private boolean mCharging = false;
     private int mUiInvertedMode;
-    private final int mDefaultUiModeType;
+    private int mDefaultUiModeType;
     private final boolean mCarModeKeepsScreenOn;
     private final boolean mDeskModeKeepsScreenOn;
     private final boolean mTelevision;
@@ -83,6 +83,7 @@ final class UiModeManagerService extends IUiModeManager.Stub {
     private int mCurUiMode = 0;
     private int mSetUiMode = 0;
     private int mSetUiInvertedMode = 0;
+    private boolean mInitialVarSet;
 
     private boolean mHoldingConfiguration = false;
     private Configuration mConfiguration = new Configuration();
@@ -173,15 +174,23 @@ final class UiModeManagerService extends IUiModeManager.Stub {
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.UI_INVERTED_MODE),
                     false, this);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.UI_LIGHTUI_MODE),
+                    false, this);
         }
 
         @Override
         public void onChange(boolean selfChange) {
             updateUiInvertedMode();
+            updateUiMode();
+            mUiContext = null;
+            updateLocked(0, 0);
+            forceUiModeChangeForNonObservingMethods();
         }
     }
 
     public UiModeManagerService(Context context, TwilightService twilight) {
+    	mInitialVarSet = true;
         mContext = context;
         mTwilightService = twilight;
 
@@ -204,9 +213,8 @@ final class UiModeManagerService extends IUiModeManager.Stub {
         mConfiguration.setToDefaults();
 
         updateUiInvertedMode();
+        updateUiMode();
 
-        mDefaultUiModeType = context.getResources().getInteger(
-                com.android.internal.R.integer.config_defaultUiModeType);
         mCarModeKeepsScreenOn = (context.getResources().getInteger(
                 com.android.internal.R.integer.config_carDockKeepsScreenOn) == 1);
         mDeskModeKeepsScreenOn = (context.getResources().getInteger(
@@ -231,6 +239,24 @@ final class UiModeManagerService extends IUiModeManager.Stub {
 
         mConfiguration.uiInvertedMode = mUiInvertedMode;
         sendConfigurationLocked();
+    }
+    
+    private void updateUiMode() {
+        if (Settings.Secure.getInt(mContext.getContentResolver(),
+                Settings.Secure.UI_LIGHTUI_MODE, 0) == 1) {
+            mDefaultUiModeType = mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_alternativeUiModeType);
+        } else {
+            mDefaultUiModeType = mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_defaultUiModeType);
+        }
+
+        if (mInitialVarSet && mDefaultUiModeType != Configuration.UI_MODE_TYPE_NORMAL) {
+            mUiContext = null;
+            updateLocked(0, 0);
+            forceUiModeChangeForNonObservingMethods();
+        }
+        mInitialVarSet = false;
     }
 
     @Override // Binder call
@@ -348,6 +374,15 @@ final class UiModeManagerService extends IUiModeManager.Stub {
             default:
                 return false;
         }
+    }
+    
+    private void forceUiModeChangeForNonObservingMethods() {
+        final boolean toggleUiMode = Settings.Secure.getInt(
+                mContext.getContentResolver(),
+                Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
+         Settings.Secure.putInt(mContext.getContentResolver(),
+                Settings.Secure.UI_MODE_IS_TOGGLED,
+                toggleUiMode ? 0 : 1);
     }
 
     private void updateConfigurationLocked() {
