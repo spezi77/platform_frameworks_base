@@ -4952,6 +4952,11 @@ public class WindowManagerService extends IWindowManager.Stub
             return LID_ABSENT;
         }
     }
+    
+    @Override
+    public void reboot(String reason) {
+        ShutdownThread.reboot(mContext, reason, false);
+    }
 
     // Called by window manager policy.  Not exposed externally.
     @Override
