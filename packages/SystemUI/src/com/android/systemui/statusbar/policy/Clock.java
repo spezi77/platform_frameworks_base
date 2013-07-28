@@ -186,7 +186,7 @@ public class Clock extends TextView {
 
         SpannableStringBuilder formatted = new SpannableStringBuilder(result);
 
-        if (!b24) {
+        if (!is24) {
             if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
                 if (mAmPmStyle == AM_PM_STYLE_GONE) {
                     formatted.delete(result.length() - 3, result.length());
