@@ -369,6 +369,17 @@ class QuickSettings {
                 startSettingsActivity(android.provider.Settings.ACTION_SETTINGS);
             }
         });
+        settingsTile.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent("android.intent.action.MAIN");
+                intent.setComponent(ComponentName.unflattenFromString("com.aokp.romcontrol/.ROMControlActivity"));
+                intent.addCategory("android.intent.category.LAUNCHER");
+                startSettingsActivity(intent);
+                getService().animateCollapsePanels();
+                return true;
+            }
+        });
         mModel.addSettingsTile(settingsTile,
                 new QuickSettingsModel.BasicRefreshCallback(settingsTile));
         parent.addView(settingsTile);
