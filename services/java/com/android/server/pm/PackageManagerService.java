@@ -3646,19 +3646,10 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         if (pkgs != null) {
             int i = 0;
-            PackageParser.Package p = pkgs.get(i);
             for (PackageParser.Package pkg : pkgs) {
                 if (!isFirstBoot()) {
                     i++;
                     try {
-                    // give the packagename to the PhoneWindowManager
-                        ApplicationInfo ai;
-                        try {
-                            ai = mContext.getPackageManager().getApplicationInfo(p.packageName, 0);
-                        } catch (Exception e) {
-                            ai = null;
-                        }
-                        mPolicy.setPackageName((String) (ai != null ? mContext.getPackageManager().getApplicationLabel(ai) : p.packageName));
                         ActivityManagerNative.getDefault().showBootMessage(
                                 mContext.getResources().getString(
                                         com.android.internal.R.string.android_upgrading_apk,
@@ -3666,6 +3657,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     } catch (RemoteException e) {
                     }
                 }
+                PackageParser.Package p = pkg;
                 synchronized (mInstallLock) {
                     if (!p.mDidDexOpt) {
                         performDexOptLI(p, false, false, true);
