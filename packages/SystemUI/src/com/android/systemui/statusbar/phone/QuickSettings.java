@@ -350,8 +350,8 @@ class QuickSettings {
         parent.addView(timeTile);
         mDynamicSpannedTiles.add(timeTile);
 
-        if (mModel.deviceSupportsTelephony()) {
-            // Mobile Network state
+        if (mModel.deviceHasMobileData()) {
+            // RSSI
             QuickSettingsTileView rssiTile = (QuickSettingsTileView)
                     inflater.inflate(R.layout.quick_settings_tile, parent, false);
             rssiTile.setContent(R.layout.quick_settings_tile_rssi, inflater);
@@ -372,6 +372,8 @@ class QuickSettings {
                     ImageView iv = (ImageView) view.findViewById(R.id.rssi_image);
                     ImageView iov = (ImageView) view.findViewById(R.id.rssi_overlay_image);
                     TextView tv = (TextView) view.findViewById(R.id.rssi_textview);
+                    // Force refresh
+                    iv.setImageDrawable(null);
                     iv.setImageResource(rssiState.signalIconId);
 
                     if (rssiState.dataTypeIconId > 0) {
