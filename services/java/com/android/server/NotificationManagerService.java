@@ -88,6 +88,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -459,6 +460,15 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
     }
 
+	private boolean mQuietHoursEnabled = false;
+    // Minutes from midnight when quiet hours begin.
+    private int mQuietHoursStart = 0;
+    // Minutes from midnight when quiet hours end.
+    private int mQuietHoursEnd = 0;
+    // Don't play sounds.
+    private boolean mQuietHoursMute = true;
+    // Dim LED if hardware supports it.
+    private boolean mQuietHoursDim = true;
 
     private static String idDebugString(Context baseContext, String packageName, int id) {
         Context c = null;
@@ -1344,6 +1354,8 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         mSettingsObserver = new SettingsObserver(mHandler);
         mSettingsObserver.observe();
+        QuietHoursSettingsObserver qhObserver = new QuietHoursSettingsObserver(mHandler);
+        qhObserver.observe();
     }
 
     /**
@@ -1616,6 +1628,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         // package can enqueue.  Prevents DOS attacks and deals with leaks.
         if (!isSystemNotification) {
             synchronized (mNotificationList) {
+            	final boolean inQuietHours = inQuietHours();
                 int count = 0;
                 final int N = mNotificationList.size();
                 for (int i=0; i<N; i++) {
@@ -1787,8 +1800,9 @@ public class NotificationManagerService extends INotificationManager.Stub
                 // should we use the default notification sound? (indicated either by DEFAULT_SOUND
                 // or because notification.sound is pointing at Settings.System.NOTIFICATION_SOUND)
                 final boolean useDefaultSound =
-                       (notification.defaults & Notification.DEFAULT_SOUND) != 0
-                    || Settings.System.DEFAULT_NOTIFICATION_URI.equals(notification.sound);
+                       (notification.defaults & Notification.DEFAULT_SOUND) != 0;
+                if (!(inQuietHours && mQuietHoursMute)
+                        && (useDefaultSound || notification.sound != null)) {
 
                 Uri soundUri = null;
                 boolean hasValidSound = false;
@@ -1891,6 +1905,21 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
 
         idOut[0] = id;
+    }
+    
+    private boolean inQuietHours() {
+        if (mQuietHoursEnabled && (mQuietHoursStart != mQuietHoursEnd)) {
+            // Get the date in "quiet hours" format.
+            Calendar calendar = Calendar.getInstance();
+            int minutes = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+            if (mQuietHoursEnd < mQuietHoursStart) {
+                // Starts at night, ends in the morning.
+                return (minutes > mQuietHoursStart) || (minutes < mQuietHoursEnd);
+            } else {
+                return (minutes > mQuietHoursStart) && (minutes < mQuietHoursEnd);
+            }
+        }
+        return false;
     }
 
     private void sendAccessibilityEvent(Notification notification, CharSequence packageName) {
@@ -2150,7 +2179,8 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
 
         // Don't flash while we are in a call or screen is on
-        if (mLedNotification == null || mInCall || mScreenOn) {
+        if (mLedNotification == null || mInCall || mScreenOn
+                || (inQuietHours() && mQuietHoursDim)) {
             mNotificationLight.turnOff();
         } else {
             final Notification ledno = mLedNotification.sbn.getNotification();
@@ -2276,6 +2306,46 @@ public class NotificationManagerService extends INotificationManager.Stub
                 }
             }
 
+        }
+    }
+    
+    class QuietHoursSettingsObserver extends ContentObserver {
+        QuietHoursSettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QUIET_HOURS_ENABLED), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QUIET_HOURS_START), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QUIET_HOURS_END), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QUIET_HOURS_NOTIFICATIONS), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QUIET_HOURS_DIM), false, this);
+            update();
+        }
+
+        @Override public void onChange(boolean selfChange) {
+            update();
+            updateNotificationPulse();
+        }
+
+        public void update() {
+            ContentResolver resolver = mContext.getContentResolver();
+            mQuietHoursEnabled = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_ENABLED, 0) != 0;
+            mQuietHoursStart = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_START, 0);
+            mQuietHoursEnd = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_END, 0);
+            mQuietHoursMute = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_NOTIFICATIONS, 0) != 0;
+            mQuietHoursDim = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_DIM, 0) != 0;
         }
     }
 }
