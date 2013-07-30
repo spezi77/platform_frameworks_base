@@ -334,6 +334,9 @@ public class AokpTarget {
             return mContext.getResources().getString(R.string.action_power);
         if (uri.equals(ACTION_SEARCH))
             return mContext.getResources().getString(R.string.action_search);
+        } else if (action.equals(ACTION_SEARCH)) {
+            injectKeyDelayed(KeyEvent.KEYCODE_SEARCH);
+            return true;
         if (uri.equals(ACTION_NOTIFICATIONS))
             return mContext.getResources().getString(R.string.action_notifications);
         if (uri.equals(ACTION_NULL))
