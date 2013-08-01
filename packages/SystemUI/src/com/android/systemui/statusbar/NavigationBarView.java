@@ -49,12 +49,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.systemui.aokp.AokpTarget;
+import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
 import com.android.systemui.statusbar.policy.KeyButtonView;
-import com.android.systemui.statusbar.policy.ExtensibleKeyButtonView;
+import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
 
 public class NavigationBarView extends LinearLayout {
     final static boolean DEBUG = false;
@@ -85,8 +85,8 @@ public class NavigationBarView extends LinearLayout {
     private Drawable mRecentLandIcon;
 
     public DelegateViewHelper mDelegateHelper;
-
-    private AokpTarget mAokpTarget;
+    
+    private SettingsObserver mSettingsObserver;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
@@ -109,21 +109,21 @@ public class NavigationBarView extends LinearLayout {
 
     public final static int StockButtonsQty = 3;
     public final static String[] StockClickActions = {
-        AokpTarget.ACTION_BACK,
-        AokpTarget.ACTION_HOME,
-        AokpTarget.ACTION_RECENTS,
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL };
+        AwesomeAction.ACTION_BACK,
+        AwesomeAction.ACTION_HOME,
+        AwesomeAction.ACTION_RECENTS,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL };
     public final static String[] StockLongpress = {
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL,
-        AokpTarget.ACTION_NULL };
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL };
         
     FrameLayout rot0;
     FrameLayout rot90;
@@ -233,7 +233,6 @@ public class NavigationBarView extends LinearLayout {
         mVertical = false;
         mShowMenu = false;
         mDelegateHelper = new DelegateViewHelper(this);
-        mAokpTarget = new AokpTarget(context);
 
         getIcons(res);
     }
@@ -281,7 +280,7 @@ public class NavigationBarView extends LinearLayout {
                         mPortraitIcons[j]);
                 v.setTag((landscape ? "key_land_" : "key_") + j);
 
-                v.setAokpTarget(mAokpTarget);
+//                v.setAokpTarget(mAokpTarget);
                 iconUri = mPortraitIcons[j];
                 if (iconUri != null && iconUri.length() > 0) {
                     // custom icon from the URI here
@@ -291,7 +290,7 @@ public class NavigationBarView extends LinearLayout {
                     }
                     v.setTint(false);
                 } else {
-                    v.setImageDrawable(mAokpTarget.getIconImage(mClickActions[j]));
+                    v.setImageDrawable(AwesomeAction.getInstance(mContext).getIconImage(mClickActions[j]));
                     v.setTint(mClickActions[j].startsWith("**"));
                 }
                 addButton(navButtonLayout, v, landscape && !mLeftyMode);

@@ -21,6 +21,7 @@ import android.app.StatusBarManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.EventLog;
 import android.util.Slog;
@@ -46,6 +47,7 @@ public class PhoneStatusBarView extends PanelBar {
     PanelView mLastFullyOpenedPanel = null;
     PanelView mNotificationPanel, mSettingsPanel;
     private boolean mShouldFade;
+    private int mToggleStyle;
 
     public PhoneStatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -59,6 +61,9 @@ public class PhoneStatusBarView extends PanelBar {
             mSettingsPanelDragzoneFrac = 0f;
         }
         mFullWidthNotifications = mSettingsPanelDragzoneFrac <= 0f;
+        // no need for observer, sysui gets killed when the style is changed.
+        mToggleStyle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOGGLES_STYLE, 0);
     }
 
     public void setBar(PhoneStatusBar bar) {
@@ -118,6 +123,9 @@ public class PhoneStatusBarView extends PanelBar {
                         + mNotificationPanel.getExpandedHeight() > 0) 
                     ? null 
                     : mNotificationPanel;
+        }
+        if(mToggleStyle != 0) {
+            return mNotificationPanel;
         }
 
         // We split the status bar into thirds: the left 2/3 are for notifications, and the

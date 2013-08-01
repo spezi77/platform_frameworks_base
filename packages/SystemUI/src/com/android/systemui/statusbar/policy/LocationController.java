@@ -47,7 +47,7 @@ public class LocationController extends BroadcastReceiver {
             new ArrayList<LocationGpsStateChangeCallback>();
 
     public interface LocationGpsStateChangeCallback {
-        public void onLocationGpsStateChanged(boolean inUse, String description);
+        public void onLocationGpsStateChanged(boolean inUse, boolean hasFix, String description);
     }
 
     public LocationController(Context context) {
@@ -72,7 +72,7 @@ public class LocationController extends BroadcastReceiver {
         final String action = intent.getAction();
         final boolean enabled = intent.getBooleanExtra(LocationManager.EXTRA_GPS_ENABLED, false);
 
-        boolean visible;
+        boolean visible, hasFix;;
         int iconId, textResId;
 
         if (action.equals(LocationManager.GPS_FIX_CHANGE_ACTION) && enabled) {
@@ -80,15 +80,18 @@ public class LocationController extends BroadcastReceiver {
             iconId = com.android.internal.R.drawable.stat_sys_gps_on;
             textResId = R.string.gps_notification_found_text;
             visible = true;
+            hasFix = true;
         } else if (action.equals(LocationManager.GPS_ENABLED_CHANGE_ACTION) && !enabled) {
             // GPS is off
             visible = false;
+            hasFix = false;
             iconId = textResId = 0;
         } else {
             // GPS is on, but not receiving fixes
             iconId = R.drawable.stat_sys_gps_acquiring_anim;
             textResId = R.string.gps_notification_searching_text;
             visible = true;
+            hasFix = false;
         }
         
         try {
@@ -123,7 +126,7 @@ public class LocationController extends BroadcastReceiver {
                         UserHandle.USER_ALL);
 
                 for (LocationGpsStateChangeCallback cb : mChangeCallbacks) {
-                    cb.onLocationGpsStateChanged(true, text);
+                    cb.onLocationGpsStateChanged(true, hasFix, text);
                 }
             } else {
                 mNotificationService.cancelNotificationWithTag(
@@ -131,7 +134,7 @@ public class LocationController extends BroadcastReceiver {
                         GPS_NOTIFICATION_ID, UserHandle.USER_ALL);
 
                 for (LocationGpsStateChangeCallback cb : mChangeCallbacks) {
-                    cb.onLocationGpsStateChanged(false, null);
+                    cb.onLocationGpsStateChanged(false, false, null);
                 }
             }
         } catch (android.os.RemoteException ex) {
@@ -139,4 +142,3 @@ public class LocationController extends BroadcastReceiver {
         }
     }
 }
-
