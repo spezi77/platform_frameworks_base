@@ -30,6 +30,16 @@
     <drawable name="intruder_bg_pressed">#ff33B5E5</drawable>
     <drawable name="notification_header_bg">#FF000000</drawable>
     <drawable name="nav_bar_bg">#ff000000</drawable>
+    <color name="toggle_text">#ffffffff</color>
+    <color name="toggle_text_changing_state_color">#ff787878</color>
+    <color name="toggle_image_changing_state_overlay">@color/toggle_text_changing_state_color</color>
+    
+    <!-- QuickSettings colors -->
+    <color name="quicksettings_text_color_light">#ff333333</color>
+    <color name="quicksettings_text_color_dark">#ffCCCCCC</color>
+    <color name="quicksettings_text_background_light">#ccffffff</color>
+    <color name="quicksettings_text_background_dark">#cc000000</color>
+    <color name="qs_tile_user_label">#CC000000</color>
 
     <!-- Notification Shortcuts -->
     <drawable name="notification_shortcut_background_color">#00000000</drawable>

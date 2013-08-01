@@ -62,7 +62,7 @@ public class PhoneConstants {
     public static final int LTE_ON_CDMA_UNKNOWN = RILConstants.LTE_ON_CDMA_UNKNOWN;
     public static final int LTE_ON_CDMA_FALSE = RILConstants.LTE_ON_CDMA_FALSE;
     public static final int LTE_ON_CDMA_TRUE = RILConstants.LTE_ON_CDMA_TRUE;
-
+    
     // Used for preferred network type
     // Note NT_* substitute RILConstants.NETWORK_MODE_* above the Phone
     public static final int NT_MODE_WCDMA_PREF   = RILConstants.NETWORK_MODE_WCDMA_PREF;
@@ -80,8 +80,9 @@ public class PhoneConstants {
     public static final int NT_MODE_LTE_CMDA_EVDO_GSM_WCDMA = RILConstants.NETWORK_MODE_LTE_CMDA_EVDO_GSM_WCDMA;
 
     public static final int NT_MODE_LTE_ONLY     = RILConstants.NETWORK_MODE_LTE_ONLY;
-    public static final int NT_MODE_LTE_WCDMA    = RILConstants.NETWORK_MODE_LTE_WCDMA;
     public static final int PREFERRED_NT_MODE    = RILConstants.PREFERRED_NETWORK_MODE;
+
+    public static final int NT_MODE_LTE_WCDMA    = RILConstants.NETWORK_MODE_LTE_WCDMA;
 
     // Number presentation type for caller id display (From internal/Conneciton.java)
     public static int PRESENTATION_ALLOWED = 1;    // normal
