@@ -992,9 +992,9 @@ class WifiConfigStore {
                 loge("failed to set BSSID: "+config.BSSID);
                 break setVariables;
             }
-            if (config.isIBSS) {	
-                if(!mWifiNative.setNetworkVariable(	
-                        netId,	
+            if (config.isIBSS) {
+                if(!mWifiNative.setNetworkVariable(
+                        netId,
                         WifiConfiguration.modeVarName,
                         "1")) {
                     loge("failed to set adhoc mode");
@@ -1221,7 +1221,7 @@ class WifiConfigStore {
             WifiConfiguration newConfig) {
         boolean ipChanged = false;
         boolean proxyChanged = false;
-        LinkProperties linkProperties = new LinkProperties();
+        LinkProperties linkProperties = null;
 
         switch (newConfig.ipAssignment) {
             case STATIC:
@@ -1350,23 +1350,6 @@ class WifiConfigStore {
          */
         String value;
 
-        value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.modeVarName);
-        config.isIBSS = false;
-        if (!TextUtils.isEmpty(value)) {
-            try {
-                config.isIBSS = Integer.parseInt(value) != 0;
-            } catch (NumberFormatException ignore) {
-            }
-        }
-        value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.frequencyVarName);
-        config.frequency = 0;
-        if (!TextUtils.isEmpty(value)) {
-            try {
-                config.frequency = Integer.parseInt(value);
-            } catch (NumberFormatException ignore) {
-            }
-	}
-
         value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.ssidVarName);
         if (!TextUtils.isEmpty(value)) {
             if (value.charAt(0) != '"') {
@@ -1401,6 +1384,24 @@ class WifiConfigStore {
         if (!TextUtils.isEmpty(value)) {
             try {
                 config.hiddenSSID = Integer.parseInt(value) != 0;
+            } catch (NumberFormatException ignore) {
+            }
+        }
+
+        value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.modeVarName);
+        config.isIBSS = false;
+        if (!TextUtils.isEmpty(value)) {
+            try {
+                config.isIBSS = Integer.parseInt(value) != 0;
+            } catch (NumberFormatException ignore) {
+            }
+        }
+
+        value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.frequencyVarName);
+        config.frequency = 0;
+        if (!TextUtils.isEmpty(value)) {
+            try {
+                config.frequency = Integer.parseInt(value);
             } catch (NumberFormatException ignore) {
             }
         }

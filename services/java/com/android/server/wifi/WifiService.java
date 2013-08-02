@@ -27,6 +27,7 @@ import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.net.wifi.IWifiManager;
 import android.net.wifi.ScanResult;
+import android.net.wifi.WifiChannel;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiStateMachine;
@@ -37,7 +38,6 @@ import android.net.DhcpResults;
 import android.net.LinkAddress;
 import android.net.NetworkUtils;
 import android.net.RouteInfo;
-import android.net.wifi.WifiChannel;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.Messenger;
@@ -295,25 +295,12 @@ public final class WifiService extends IWifiManager.Stub {
         }
     }
 
-    public List<WifiChannel> getSupportedChannels() {
-        enforceAccessPermission();
-        if (mWifiStateMachineChannel != null) {
-            return (mWifiStateMachine.syncGetSupportedChannels(mWifiStateMachineChannel));
-        } else {
-            Slog.e(TAG, "mWifiStateMachineChannel is not initialized");
-            return null;
-        }
-    }
-
-
     /**
      * see {@link android.net.wifi.WifiManager#startScan()}
      */
     public void startScan() {
         enforceChangePermission();
         mWifiStateMachine.startScan(Binder.getCallingUid());
-        mWifiStateMachine.startScan();
-        noteScanStart();
     }
 
     private void enforceAccessPermission() {
@@ -619,13 +606,14 @@ public final class WifiService extends IWifiManager.Stub {
         }
     }
 
-    /**  
-     * Get the operational country code  
-     */  
-    public String getCountryCode() {  
-        enforceAccessPermission();  
-        return mWifiStateMachine.getCountryCode();  
-    }  
+
+    /**
+     * Get the operational country code
+     */
+    public String getCountryCode() {
+        enforceAccessPermission();
+        return mWifiStateMachine.getCountryCode();
+    }
 
     /**
      * Set the operational frequency band
@@ -668,7 +656,7 @@ public final class WifiService extends IWifiManager.Stub {
      * Is Ad-Hoc (IBSS) mode supported by the driver?
      * Will only return correct results when we have reached WIFI_STATE_ENABLED
      * @return {@code true} if IBSS mode is supported, {@code false} if not
-     */	
+     */
     public boolean isIbssSupported() {
         enforceAccessPermission();
         if (mWifiStateMachineChannel != null) {
@@ -677,8 +665,17 @@ public final class WifiService extends IWifiManager.Stub {
             Slog.e(TAG, "mWifiStateMachineChannel is not initialized");
             return false;
         }
-    }	
+    }
 
+    public List<WifiChannel> getSupportedChannels() {
+        enforceAccessPermission();
+        if (mWifiStateMachineChannel != null) {
+            return (mWifiStateMachine.syncGetSupportedChannels(mWifiStateMachineChannel));
+        } else {
+            Slog.e(TAG, "mWifiStateMachineChannel is not initialized");
+            return null;
+        }
+    }
 
     /**
      * Return the DHCP-assigned addresses from the last successful DHCP request,

@@ -82,6 +82,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.Iterator;
@@ -355,12 +356,13 @@ public class WifiStateMachine extends StateMachine {
     public static final int CMD_DISABLE_P2P_REQ           = BASE + 132;
     public static final int CMD_DISABLE_P2P_RSP           = BASE + 133;
 
+    /* Is IBSS mode supported by the driver? */
     public static final int CMD_GET_IBSS_SUPPORTED        = BASE + 134;
 
     /* Get supported channels */
     public static final int CMD_GET_SUPPORTED_CHANNELS    = BASE + 135;
 
-    public static final int CMD_BOOT_COMPLETED		  = BASE + 136;
+    public static final int CMD_BOOT_COMPLETED		   = BASE + 136;
 
     public static final int CONNECT_MODE                   = 1;
     public static final int SCAN_ONLY_MODE                 = 2;
@@ -772,7 +774,6 @@ public class WifiStateMachine extends StateMachine {
     public void setSupplicantRunning(boolean enable) {
         if (enable) {
             WifiNative.setMode(0);
-            /* Argument is the state that is entered prior to load */
             sendMessage(CMD_START_SUPPLICANT);
         } else {
             sendMessage(CMD_STOP_SUPPLICANT);
@@ -785,8 +786,7 @@ public class WifiStateMachine extends StateMachine {
     public void setHostApRunning(WifiConfiguration wifiConfig, boolean enable) {
         if (enable) {
             WifiNative.setMode(1);
-            /* Argument is the state that is entered prior to load */
-            sendMessage(obtainMessage(CMD_START_AP, wifiConfig));
+            sendMessage(CMD_START_AP, wifiConfig);
         } else {
             sendMessage(CMD_STOP_AP);
         }
@@ -1072,25 +1072,25 @@ public class WifiStateMachine extends StateMachine {
         sendMessage(CMD_SET_COUNTRY_CODE, countryCode);
     }
 
+    /**
+     * Returns the operational country code
+     */
+    public String getCountryCode() {
+        return mCountryCode;
+    }
+
     public int syncIsIbssSupported(AsyncChannel channel) {
         Message resultMsg = channel.sendMessageSynchronously(CMD_GET_IBSS_SUPPORTED);
         int result = resultMsg.arg1;
         resultMsg.recycle();
         return result;
-    }	    
+    }    
 
     public List<WifiChannel> syncGetSupportedChannels(AsyncChannel channel) {
         Message resultMsg = channel.sendMessageSynchronously(CMD_GET_SUPPORTED_CHANNELS);
         List<WifiChannel> result = (List<WifiChannel>) resultMsg.obj;
         resultMsg.recycle();
         return result;
-    }
-
-    /**
-     * Returns the operational country code
-     */
-    public String getCountryCode() {
-        return mCountryCode;
     }
 
     /**
@@ -1317,7 +1317,16 @@ public class WifiStateMachine extends StateMachine {
         if (countryCode != null && !countryCode.isEmpty()) {
             setCountryCode(countryCode, false);
         } else {
-            //use driver default
+            // On wifi-only devices, some drivers don't find hidden SSIDs unless DRIVER COUNTRY
+            // is called. Use the default country code to ping the driver.
+            ConnectivityManager cm =
+                    (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (!cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE)) {
+                setCountryCode(mCountryCode, false);
+            }
+
+            // In other case, mcc tables from carrier do the trick of starting up the wifi driver
+
         }
     }
 
@@ -2179,37 +2188,6 @@ public class WifiStateMachine extends StateMachine {
                     } else {
                         loge("Failed to load driver for softap");
                     }
-                    mWakeLock.release();
-                }
-            }).start();
-        }
-
-        @Override
-        public boolean processMessage(Message message) {
-            if (DBG) log(getName() + message.toString() + "\n");
-            switch (message.what) {
-                case CMD_UNLOAD_DRIVER_SUCCESS:
-                    transitionTo(mDriverUnloadedState);
-                    break;
-                case CMD_UNLOAD_DRIVER_FAILURE:
-                    transitionTo(mDriverFailedState);
-                    break;
-                case CMD_LOAD_DRIVER:
-                case CMD_UNLOAD_DRIVER:
-                case CMD_START_SUPPLICANT:
-                case CMD_STOP_SUPPLICANT:
-                case CMD_START_AP:
-                case CMD_STOP_AP:
-                case CMD_START_DRIVER:
-                case CMD_STOP_DRIVER:
-                case CMD_SET_SCAN_MODE:
-                case CMD_SET_COUNTRY_CODE:
-                case CMD_SET_FREQUENCY_BAND:
-                case CMD_START_PACKET_FILTERING:
-                case CMD_STOP_PACKET_FILTERING:
-                    deferMessage(message);
-                    break;
->>>>>>> bcc97ca... Clean up scan handling
                 default:
                     return NOT_HANDLED;
             }
@@ -2575,11 +2553,12 @@ public class WifiStateMachine extends StateMachine {
                     break;
                 case CMD_SET_COUNTRY_CODE:
                     String country = (String) message.obj;
-                    if (DBG) log("set country code " + country);
-                    if (mWifiNative.setCountryCode(country.toUpperCase())) {
-                        mCountryCode = country;
+                    String countryCode = country != null ? country.toUpperCase(Locale.ROOT) : null;
+                    if (DBG) log("set country code " + countryCode);
+                    if (mWifiNative.setCountryCode(countryCode)) {
+                        mCountryCode = countryCode;
                     } else {
-                        loge("Failed to set country code " + country);
+                        loge("Failed to set country code " + countryCode);
                     }
                     break;
                 case CMD_SET_FREQUENCY_BAND:

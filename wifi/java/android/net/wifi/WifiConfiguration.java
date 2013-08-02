@@ -49,46 +49,6 @@ public class WifiConfiguration implements Parcelable {
     public static final String frequencyVarName = "frequency";
     /** {@hide} */
     public static final int INVALID_NETWORK_ID = -1;
-
-    /** {@hide} */
-    public class EnterpriseField {
-        private String varName;
-        private String value;
-
-        private EnterpriseField(String varName) {
-            this.varName = varName;
-            this.value = null;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        public String varName() {
-            return varName;
-        }
-
-        public String value() {
-            return value;
-        }
-    }
-
-    /** {@hide} */
-    public EnterpriseField eap = new EnterpriseField("eap");
-    /** {@hide} */
-    public EnterpriseField phase2 = new EnterpriseField("phase2");
-    /** {@hide} */
-    public EnterpriseField identity = new EnterpriseField("identity");
-    /** {@hide} */
-    public EnterpriseField anonymous_identity = new EnterpriseField("anonymous_identity");
-    /** {@hide} */
-    public EnterpriseField password = new EnterpriseField("password");
-    /** {@hide} */
-    public EnterpriseField client_cert = new EnterpriseField("client_cert");
-    /** {@hide} */
-    public EnterpriseField engine = new EnterpriseField("engine");
-    /** {@hide} */
-    public EnterpriseField engine_id = new EnterpriseField("engine_id");
     /**
      * Recognized key management schemes.
      */
@@ -385,7 +345,6 @@ public class WifiConfiguration implements Parcelable {
         BSSID = null;
         priority = 0;
         hiddenSSID = false;
-        status = WifiConfiguration.Status.DISABLED;
         isIBSS = false;
         frequency = 0;
         disableReason = DISABLED_UNKNOWN_REASON;
@@ -626,7 +585,6 @@ public class WifiConfiguration implements Parcelable {
             wepTxKeyIndex = source.wepTxKeyIndex;
             priority = source.priority;
             hiddenSSID = source.hiddenSSID;
-            status = source.status;
             isIBSS = source.isIBSS;
             frequency = source.frequency;
             allowedKeyManagement   = (BitSet) source.allowedKeyManagement.clone();
