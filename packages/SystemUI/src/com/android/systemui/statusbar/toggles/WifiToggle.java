@@ -1,4 +1,3 @@
-
 package com.android.systemui.statusbar.toggles;
 
 import android.content.Context;
