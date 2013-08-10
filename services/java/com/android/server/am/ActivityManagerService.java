@@ -1455,7 +1455,7 @@ public final class ActivityManagerService  extends ActivityManagerNative
 
                     try {
                         int[] outId = new int[1];
-                        inm.enqueueNotificationWithTag("android", null,
+                        inm.enqueueNotificationWithTag("android", "android", null,
                                 R.string.privacy_guard_notification,
                                 notification, outId, root.userId);
                     } catch (RuntimeException e) {
@@ -1474,7 +1474,7 @@ public final class ActivityManagerService  extends ActivityManagerNative
                 }
                 try {
                     inm.cancelNotificationWithTag("android", null,
-                            R.string.privacy_guard_notification,  msg.arg1);
+                            R.string.privacy_guard_notification, msg.arg1);
                 } catch (RuntimeException e) {
                     Slog.w(ActivityManagerService.TAG,
                             "Error canceling notification for service", e);
