@@ -166,7 +166,7 @@ public class ActiveDisplayView extends FrameLayout {
     private class INotificationListenerWrapper extends INotificationListener.Stub {
         @Override
         public void onNotificationPosted(final StatusBarNotification sbn) {
-            if (!isScreenOn()) registerSensorListener();
+            if (!isScreenOn()) registerSensorListener(mProximitySensor);
             mHandler.postDelayed(new Runnable() {
                 public void run() {
                     if (shouldShowNotification() && isValidNotification(sbn)) {
@@ -178,7 +178,7 @@ public class ActiveDisplayView extends FrameLayout {
                     } else if (mPocketModeEnabled && isValidNotification(sbn)) {
                         // nothing to do here
                     } else {
-                        unregisterSensorListener();
+                        unregisterSensorListener(mProximitySensor);
                     }
                 }
             }, 50);
@@ -312,7 +312,7 @@ public class ActiveDisplayView extends FrameLayout {
                     .unregisterContentObserver(this);
             if (mAttached) {
                 unregisterNotificationListener();
-                unregisterSensorListener();
+                unregisterSensorListener(mProximitySensor);
                 unregisterBroadcastReceiver();
                 mAttached = false;
             }
@@ -353,14 +353,14 @@ public class ActiveDisplayView extends FrameLayout {
 
                 if (!mAttached) {
                     registerNotificationListener();
-                    registerSensorListener();
+                    registerSensorListener(mProximitySensor);
                     registerBroadcastReceiver();
                     mAttached = true;
                 }
 
             if (mAttached && !mDisplayNotifications) {
                 unregisterNotificationListener();
-                unregisterSensorListener();
+                unregisterSensorListener(mProximitySensor);
                 unregisterBroadcastReceiver();
                 mAttached = false;
             }
@@ -712,12 +712,12 @@ public class ActiveDisplayView extends FrameLayout {
 
     private void onScreenTurnedOn() {
         cancelRedisplayTimer();
-        if (!mWakedByPocketMode) unregisterSensorListener();
+        if (!mWakedByPocketMode) unregisterSensorListener(mProximitySensor);
     }
 
     private void onScreenTurnedOff() {
         if (mWakedByPocketMode) {
-            unregisterSensorListener();
+            unregisterSensorListener(mProximitySensor);
             mWakedByPocketMode = false;
         }
         hideNotificationView();
