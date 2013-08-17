@@ -2848,6 +2848,7 @@ public final class Settings {
         public static final String STATUSBAR_HIDE_SIGNAL_BARS = "statusbar_hide_signal_bars";
 
         /**
+<<<<<<< HEAD
          * Whether to show statusbar WiFi signal text
          *
          * @hide
@@ -2909,6 +2910,8 @@ public final class Settings {
         public static final String THEME_WALLPAPER = "theme_wallpaper";
 
         /**
+=======
+>>>>>>> parent of 1eb7a41... SystemUI: WiFi Signal Text
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
