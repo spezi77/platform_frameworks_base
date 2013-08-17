@@ -26,6 +26,7 @@ import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsTileView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public abstract class BaseToggle
         implements OnClickListener, OnLongClickListener {
@@ -277,24 +278,16 @@ public abstract class BaseToggle
         ToggleManager.log(msg, e);
     }
 
-    private void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-
-        mCollapsePref = Settings.System.getBoolean(resolver,
-                Settings.System.SHADE_COLLAPSE_ALL, false);
-    }
-
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
         }
 
         void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
+            ContentResolver cr = mContext.getContentResolver();
 
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.SHADE_COLLAPSE_ALL),
-                    false, this);
+            cr.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SHADE_COLLAPSE_ALL), false, this);
 
             updateSettings();
         }
@@ -303,5 +296,12 @@ public abstract class BaseToggle
         public void onChange(boolean selfChange) {
             updateSettings();
         }
+    }
+
+    private void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mCollapsePref = Settings.System.getBoolean(resolver,
+                Settings.System.SHADE_COLLAPSE_ALL, false);
     }
 }

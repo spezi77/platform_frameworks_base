@@ -210,6 +210,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     View mFlipSettingsView;
     QuickSettingsContainerView mSettingsContainer;
     int mSettingsPanelGravity;
+    int mToggleStyle;
 
     // top bar
     View mNotificationPanelHeader;
@@ -605,14 +606,19 @@ public class PhoneStatusBar extends BaseStatusBar {
             mToggleManager = new ToggleManager(mContext);
             mToggleManager.setControllers(mBluetoothController, mNetworkController, mBatteryController,
                     mLocationController, null);
-            mToggleManager.setContainer((LinearLayout) mNotificationPanel.findViewById(R.id.quick_toggles),
+            if (mToggleStyle == ToggleManager.STYLE_SCROLLABLE) {
+                mToggleManager.setContainer((LinearLayout) mNotificationPanel.findViewById(R.id.quick_toggles),
+                        ToggleManager.STYLE_SCROLLABLE);
+            } else {
+                mToggleManager.setContainer((LinearLayout) mNotificationPanel.findViewById(R.id.quick_toggles),
                     ToggleManager.STYLE_TRADITIONAL);
+            }
             if (mSettingsContainer != null) {
                 mToggleManager.setContainer(mSettingsContainer, ToggleManager.STYLE_TILE);
                 if (!mNotificationPanelIsFullScreenWidth) {
                     mSettingsContainer.setSystemUiVisibility(
                             View.STATUS_BAR_DISABLE_NOTIFICATION_TICKER
-                            | View.STATUS_BAR_DISABLE_SYSTEM_INFO);
+                                    | View.STATUS_BAR_DISABLE_SYSTEM_INFO);
                 }
             }
             mToggleManager.updateSettings();
@@ -2718,6 +2724,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
         mCurrentUIMode = Settings.System.getInt(cr,
                 Settings.System.CURRENT_UI_MODE, 0);
+        mToggleStyle = Settings.System.getInt(cr,
+        	 	Settings.System.TOGGLES_STYLE,ToggleManager.STYLE_TILE);
     }
 
     public boolean skipToSettingsPanel() {

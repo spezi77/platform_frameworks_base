@@ -57,6 +57,7 @@ public class GpsToggle extends StatefulToggle implements LocationGpsStateChangeC
         super.updateView();
     }
 
+    @Override
     public void onLocationGpsStateChanged(boolean inUse, boolean hasFix, String description) {
         setEnabledState(inUse);
         mGpsFix = hasFix;
