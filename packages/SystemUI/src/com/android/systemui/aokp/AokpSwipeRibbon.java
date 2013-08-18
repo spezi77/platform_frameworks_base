@@ -441,7 +441,6 @@ public class AokpSwipeRibbon extends LinearLayout {
             if (deviceSupportsBluetooth()) {
                 toggleMap.put(BLUETOOTH_TOGGLE, BluetoothToggle.class);
             }
-            toggleMap.put(SWAGGER_TOGGLE, SwaggerToggle.class);
             if (((Vibrator)mContext.getSystemService(Context.VIBRATOR_SERVICE)).hasVibrator()) {
                 toggleMap.put(VIBRATE_TOGGLE, VibrateToggle.class);
                 toggleMap.put(SOUND_STATE_TOGGLE, SoundStateToggle.class);
