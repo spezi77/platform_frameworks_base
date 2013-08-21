@@ -2884,7 +2884,7 @@ public final class Settings {
          * Enable longpress on expand challenge handle to unlock device
          * @hide
          */
-        public static final String LOCKSCREEN_LONGPRESS_CHALLENGE = "lockscreen_longpress_challenge"
+        public static final String LOCKSCREEN_LONGPRESS_CHALLENGE = "lockscreen_longpress_challenge";
         
         /**
          * Whether to use keyguard or homescreen widgets
@@ -3235,13 +3235,6 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
-
-		/**
-         * boolean value. toggles using arrow key locations on nav bar
-         * as left and right dpad keys
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_MENU_ARROW_KEYS = "navigation_bar_menu_arrow_keys";
 
         /**
          * boolean value. toggles using arrow key locations on nav bar

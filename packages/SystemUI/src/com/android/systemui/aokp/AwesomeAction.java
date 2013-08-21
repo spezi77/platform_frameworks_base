@@ -55,6 +55,8 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
 
 /*
  * Helper classes for managing AOKP custom actions
