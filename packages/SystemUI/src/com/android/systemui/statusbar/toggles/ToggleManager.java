@@ -82,6 +82,9 @@ public class ToggleManager {
     public static final String SLEEP_TOGGLE = "SLEEP";
     public static final String POWER_MENU_TOGGLE = "POWERMENU";
     public static final String REBOOT_TOGGLE = "REBOOT";
+    public static final String VIBRATE_TOGGLE = "VIBRATE";
+    public static final String SILENT_TOGGLE = "SILENT";
+    public static final String SOUND_STATE_TOGGLE = "SOUNDSTATE";
     
     private int mStyle;
 
@@ -125,6 +128,9 @@ public class ToggleManager {
             toggleMap.put(SLEEP_TOGGLE, SleepToggle.class);
             toggleMap.put(POWER_MENU_TOGGLE, PowerMenuToggle.class);
             toggleMap.put(REBOOT_TOGGLE, RebootToggle.class);
+            toggleMap.put(VIBRATE_TOGGLE, VibrateToggle.class);
+            toggleMap.put(SILENT_TOGGLE, SilentToggle.class);
+            toggleMap.put(SOUND_STATE_TOGGLE, SoundStateToggle.class);
             // toggleMap.put(BT_TETHER_TOGGLE, null);
         }
         return toggleMap;
@@ -425,7 +431,7 @@ public class ToggleManager {
                     false, this);
         }
 
-/*        @Override
+        @Override
         public void onChange(boolean selfChange) {
             boolean vibt = false;
             boolean silt = false;
@@ -450,7 +456,7 @@ public class ToggleManager {
                     t.scheduleViewUpdate();
                 }
             }
-        }*/
+        }
     }
 
     private Bundle getAvailableToggles() {
