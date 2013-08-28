@@ -2563,295 +2563,6 @@ public final class Settings {
          * @hide
          */
         public static final String QUIET_HOURS_ENABLED = "quiet_hours_enabled";
-<<<<<<< HEAD
-=======
-
-        /**
-         * Sets when quiet hours starts. This is stored in minutes from the start of the day.
-         * @hide
-         */
-        public static final String QUIET_HOURS_START = "quiet_hours_start";
-
-        /**
-         * Sets when quiet hours end. This is stored in minutes from the start of the day.
-         * @hide
-         */
-        public static final String QUIET_HOURS_END = "quiet_hours_end";
-
-        /**
-         * Whether to remove the sound from outgoing notifications during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_MUTE = "quiet_hours_mute";
-
-        /**
-         * Whether to disable haptic feedback during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_HAPTIC = "quiet_hours_haptic";
-
-        /**
-         * Whether to remove the vibration from outgoing notifications during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_STILL = "quiet_hours_still";
-
-        /**
-         * Whether to attempt to dim the LED color during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
-
-        /**
-         * Sets the lockscreen background style
-         * @hide
-         */
-        public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
-
-         /**
-         * Action for long-pressing back button on lock screen
-         * @hide
-         */
-        public static final String LOCKSCREEN_LONG_BACK_ACTION = "lockscreen_long_back_action";
-
-        /**
-         * Action for long-pressing home button on lock screen
-         * @hide
-         */
-        public static final String LOCKSCREEN_LONG_HOME_ACTION = "lockscreen_long_home_action";
-
-        /**
-         * Action for long-pressing menu button on lock screen
-         * @hide
-         */
-        public static final String LOCKSCREEN_LONG_MENU_ACTION = "lockscreen_long_menu_action";
-
-         /**
-          * Always show the battery status on the lockscreen
-          * @hide
-          */
-        public static final String LOCKSCREEN_ALWAYS_SHOW_BATTERY = "lockscreen_always_show_battery";
-
-        /**
-         * Show the pending notification counts as overlays on the status bar
-         * @hide
-         */
-        public static final String STATUS_BAR_NOTIF_COUNT = "status_bar_notif_count";
-
-        /**
-         * Show the pending notification counts as overlays on the status bar
-         * @hide
-         */
-        public static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
-
-        /**
-         * Whether the power menu reboot menu is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_REBOOT_ENABLED = "power_menu_reboot_enabled";
-
-        /**
-         * Whether power menu screenshot is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_SCREENSHOT_ENABLED = "power_menu_screenshot_enabled";
-
-        /**
-         * Whether power menu expanded desktop is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_EXPANDED_DESKTOP_ENABLED = "power_menu_expanded_desktop_enabled";
-
-        /**
-         * Whether power menu profiles switcher is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_PROFILES_ENABLED = "power_menu_profiles_enabled";
-
-        /**
-         * Whether power menu airplane toggle is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_AIRPLANE_ENABLED = "power_menu_airplane_enabled";
-
-        /**
-         * Whether power menu user switcher is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_USER_ENABLED = "power_menu_user_enabled";
-
-        /**
-         * Whether power menu silent mode is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_SOUND_ENABLED = "power_menu_silent_enabled";
-
-        /**
-         * Whether to allow notification vibration while notification alerts are disabled
-         * (e.g. during phone calls). The vibration pattern to be used will be a subtle one;
-         * custom vibration is disabled at that point.
-         * @hide
-         */
-        public static final String NOTIFICATION_VIBRATE_DURING_ALERTS_DISABLED = "vibrate_while_no_alerts";
-
-        /**
-         * Show the pending notification counts as overlays on the status bar
-         * Whether to enable custom rebindings of the actions performed on
-         * certain key press events.
-         * @hide
-         */
-        public static final String HARDWARE_KEY_REBINDING = "hardware_key_rebinding";
-
-         /**
-          * Action to perform when the home key is long-pressed. (Default is 2)
-          * 0 - Nothing
-          * 1 - Menu
-          * 2 - App-switch
-          * 3 - Search
-          * 4 - Voice search
-          * 5 - In-app search
-          * @hide
-          */
-         public static final String KEY_HOME_LONG_PRESS_ACTION = "key_home_long_press_action";
-
-         /**
-          * Action to perform when the menu key is pressed. (Default is 1)
-          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
-          * @hide
-          */
-         public static final String KEY_MENU_ACTION = "key_menu_action";
-
-         /**
-          * Action to perform when the menu key is long-pressed.
-          * (Default is 0 on devices with a search key, 3 on devices without)
-          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
-          * @hide
-          */
-         public static final String KEY_MENU_LONG_PRESS_ACTION = "key_menu_long_press_action";
-         
-         /**
-         * @hide
-         */
-        public static final String NAV_HIDE_TIMEOUT = "nav_hide_timeout";
-
-        /**
-         * @hide
-         */
-        public static final String NAV_HIDE_ENABLE = "nav_hide_enable";
-
-        /**
-         * @hide
-         */
-        public static final String DRAG_HANDLE_WEIGHT = "drag_handle_weight";
-
-        /**
-         * @hide
-         */
-        public static final String DRAG_HANDLE_OPACITY = "drag_handle_opacity";
-
-        /**
-         * @hide
-         */
-        public static final String NAV_HIDE_TIMEOUT = "nav_hide_timeout";
-
-        /**
-         * @hide
-         */
-        public static final String NAV_HIDE_ENABLE = "nav_hide_enable";
-
-        /**
-         * @hide
-         */
-        public static final String DRAG_HANDLE_WEIGHT = "drag_handle_weight";
-
-        /**
-         * @hide
-         */
-        public static final String DRAG_HANDLE_OPACITY = "drag_handle_opacity";
-
-        /**
-         * Whether to show the battery bar
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR = "statusbar_battery_bar";
-
-        /**
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR_COLOR = "statusbar_battery_bar_color";
-
-        /**
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR_THICKNESS = "statusbar_battery_bar_thickness";
-
-        /**
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
-
-        /**
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
-
-        /**
-        * @hide
-        * Style of Battery
-        * 0 - Icon Only
-        * 1 - Text Only
-        * 2 - Icon Text
-        * 3 - Icon Centered Text
-        * 4 - Icon Circle
-        * 5 - Hide
-        */
-        public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
-
-        /**
-         * Circle battery icon color
-         * in statusbar
-         */
-        public static final String STATUS_BAR_CIRCLE_BATTERY_COLOR = "status_bar_circle_battery_color";
-
-        /**
-         * Circle battery icon text color
-         * in statusbar
-         */
-        public static final String STATUS_BAR_CIRCLE_BATTERY_TEXT_COLOR = "status_bar_circle_battery_text_color";
-
-        /**
-         * Circle battery animation speed during charge
-         * in statusbar
-         */
-        public static final String STATUS_BAR_CIRCLE_BATTERY_ANIMATIONSPEED = "status_bar_circle_battery_animationspeed";
-
-        /**
-         * Circle battery icon reset helper
-         * in statusbar
-         */
-        public static final String STATUS_BAR_CIRCLE_BATTERY_RESET = "status_bar_circle_battery_reset";
-
-         /**
-          * Action to perform when the assistant (search) key is pressed. (Default is 3)
-          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
-          * @hide
-          */
-         public static final String KEY_ASSIST_ACTION = "key_assist_action";
-
-         /**
-          * Action to perform when the assistant (search) key is long-pressed. (Default is 4)
-          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
-          * @hide
-          */
-         public static final String KEY_ASSIST_LONG_PRESS_ACTION = "key_assist_long_press_action";
-
-         /**
-          * Action to perform when the app switch key is pressed. (Default is 2)
-          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
-          * @hide
-          */
-         public static final String KEY_APP_SWITCH_ACTION = "key_app_switch_action";
->>>>>>> 04c9dfe... FW: Hiding NavBar
 
         /**
          * Sets when quiet hours starts. This is stored in minutes from the start of the day.
@@ -3531,6 +3242,26 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_MENU_ARROW_KEYS = "navigation_bar_menu_arrow_keys";
+        
+        /**
+         * @hide
+         */
+        public static final String NAV_HIDE_TIMEOUT = "nav_hide_timeout";
+
+        /**
+         * @hide
+         */
+        public static final String NAV_HIDE_ENABLE = "nav_hide_enable";
+
+        /**
+         * @hide
+         */
+        public static final String DRAG_HANDLE_WEIGHT = "drag_handle_weight";
+
+        /**
+         * @hide
+		 */
+		public static final String DRAG_HANDLE_OPACITY = "drag_handle_opacity";
 
         /**
          * Navigation bar alpha while in homescreen and lockscreen.
