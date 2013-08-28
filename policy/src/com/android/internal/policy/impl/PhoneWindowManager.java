@@ -2832,7 +2832,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     if (navVisible) {
                         mNavigationBar.showLw(true);
                         if (!mNavBarAutoHide)
-                            mSystemBottom = mDockBottom = mTmpNavigationFrame.bottom - mDockTop;
+                            mSystemBottom = mDockBottom = mTmpNavigationFrame.bottom - mRestrictedScreenTop - mRestrictedOverscanScreenTop;
                     } else {
                         // We currently want to hide the navigation UI.
                         mNavigationBar.hideLw(true);
@@ -2854,7 +2854,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     if (navVisible) {
                         mNavigationBar.showLw(true);
                         if (!mNavBarAutoHide)
-                            mSystemRight = mDockRight = mTmpNavigationFrame.left - mDockLeft;
+                            mSystemRight = mDockRight = mTmpNavigationFrame.left - mRestrictedScreenLeft - mRestrictedOverscanScreenLeft;
                     } else {
                         // We currently want to hide the navigation UI.
                         mNavigationBar.hideLw(true);
