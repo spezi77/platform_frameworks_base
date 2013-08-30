@@ -2855,21 +2855,6 @@ public final class Settings {
         public static final String STATUSBAR_HIDE_SIGNAL_BARS = "statusbar_hide_signal_bars";
 
         /**
-<<<<<<< HEAD
-         * Whether to show statusbar WiFi signal text
-         *
-         * @hide
-         */
-        public static final String STATUSBAR_WIFI_SIGNAL_TEXT = "statusbar_wifi_signal_text";
-
-        /**
-         * statusbar WIFI signal text color
-         *
-         * @hide
-         */
-        public static final String STATUSBAR_WIFI_SIGNAL_TEXT_COLOR = "statusbar_wifi_signal_text_color";
-
-        /**
          * Whether to use the custom quick unlock screen control
          * @hide
          */
@@ -2932,11 +2917,9 @@ public final class Settings {
           */
          public static final String VOLUME_KEY_CURSOR_CONTROL = "volume_key_cursor_control";
 
-        public static final String THEME_WALLPAPER = "theme_wallpaper";
+         public static final String THEME_WALLPAPER = "theme_wallpaper";
 
         /**
-=======
->>>>>>> parent of 1eb7a41... SystemUI: WiFi Signal Text
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
