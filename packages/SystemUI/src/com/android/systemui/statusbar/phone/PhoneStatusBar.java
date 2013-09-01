@@ -3054,6 +3054,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     public void onChange(boolean selfChange) {
             updateSettings();
     }
+}
 
     protected void updateSettings() {
         ContentResolver cr = mContext.getContentResolver();

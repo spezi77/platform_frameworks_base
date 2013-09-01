@@ -4991,6 +4991,7 @@ public final class Settings {
          * @hide
          */
         public static final String PRIVACY_GUARD_DEFAULT = "privacy_guard_default";
+        
 
         /**
          * This are the settings to be backed up.
@@ -5034,7 +5035,7 @@ public final class Settings {
             MOUNT_UMS_NOTIFY_ENABLED,
             UI_NIGHT_MODE,
             DIALPAD_AUTOCOMPLETE,
-            PRIVACY_GUARD_DEFAULT
+            PRIVACY_GUARD_DEFAULT,
             UI_INVERTED_MODE
         };
 
