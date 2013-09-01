@@ -98,7 +98,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         case ACTION_ASSIST:
             Intent assistIntent =
                 ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
-                .getAssistIntent(mContext, UserHandle.USER_CURRENT);
+                .getAssistIntent(mContext, false, UserHandle.USER_CURRENT);
                 if (assistIntent != null) {
                     mActivityLauncher.launchActivity(assistIntent, false, true, null, null);
                 } else {
@@ -309,7 +309,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     public void updateResources() {
         // Update the search icon with drawable from the search .apk
         Intent intent = ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
-               .getAssistIntent(mContext, UserHandle.USER_CURRENT);
+               .getAssistIntent(mContext, false, UserHandle.USER_CURRENT);
         if (intent != null) {
             ComponentName component = intent.getComponent();
             boolean replaced = mGlowPadView.replaceTargetDrawablesIfPresent(component,

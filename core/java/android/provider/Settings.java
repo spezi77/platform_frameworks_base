@@ -2894,6 +2894,12 @@ public final class Settings {
         public static final String STATUSBAR_HIDE_SIGNAL_BARS = "statusbar_hide_signal_bars";
         
         /**
+         *
+         * @hide
+         */
+        public static final String LOCKSCREEN_TARGETS_LONGPRESS = "lockscreen_targets_longpress";
+        
+        /**
          * @hide
          */
         public static final String[] LOCKSCREEN_TARGETS_SHORT = new String[] {
