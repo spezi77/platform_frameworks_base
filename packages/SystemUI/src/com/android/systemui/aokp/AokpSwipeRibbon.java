@@ -399,18 +399,15 @@ public class AokpSwipeRibbon extends LinearLayout {
             if (deviceSupportsBluetooth()) {
                 toggleMap.put(BLUETOOTH_TOGGLE, BluetoothToggle.class);
             }
-            toggleMap.put(SWAGGER_TOGGLE, SwaggerToggle.class);
             if (((Vibrator)mContext.getSystemService(Context.VIBRATOR_SERVICE)).hasVibrator()) {
                 toggleMap.put(VIBRATE_TOGGLE, VibrateToggle.class);
                 toggleMap.put(SOUND_STATE_TOGGLE, SoundStateToggle.class);
             }
             toggleMap.put(SILENT_TOGGLE, SilentToggle.class);
-            toggleMap.put(FCHARGE_TOGGLE, FastChargeToggle.class);
             toggleMap.put(SYNC_TOGGLE, SyncToggle.class);
             if (mContext.getSystemService(Context.NFC_SERVICE) != null) {
                 toggleMap.put(NFC_TOGGLE, NfcToggle.class);
             }
-            toggleMap.put(TORCH_TOGGLE, TorchToggle.class);
             toggleMap.put(USB_TETHER_TOGGLE, UsbTetherToggle.class);
             if (((TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE))
                     .getPhoneType() == PhoneConstants.PHONE_TYPE_GSM) {
@@ -420,15 +417,10 @@ public class AokpSwipeRibbon extends LinearLayout {
                     || TelephonyManager.getLteOnGsmModeStatic() != 0) {
                 toggleMap.put(LTE_TOGGLE, LteToggle.class);
             }
-            toggleMap.put(FAV_CONTACT_TOGGLE, FavoriteUserToggle.class);
-            toggleMap.put(NAVBAR_HIDE_TOGGLE, NavbarHideToggle.class);
             toggleMap.put(QUICKRECORD_TOGGLE, QuickRecordToggle.class);
-            toggleMap.put(QUIETHOURS_TOGGLE, QuietHoursToggle.class);
             toggleMap.put(SLEEP_TOGGLE, SleepToggle.class);
             toggleMap.put(STATUSBAR_TOGGLE, StatusbarToggle.class);
-            toggleMap.put(SCREENSHOT_TOGGLE, ScreenshotToggle.class);
             toggleMap.put(REBOOT_TOGGLE, RebootToggle.class);
-            toggleMap.put(CUSTOM_TOGGLE, CustomToggle.class);
             toggleMap.put(STAYAWAKE_TOGGLE, StayAwakeToggle.class);
             // toggleMap.put(BT_TETHER_TOGGLE, null);
         }
