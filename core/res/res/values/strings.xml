@@ -4134,6 +4134,10 @@
     <string name="user_switched">Current user <xliff:g id="name" example="Bob">%1$s</xliff:g>.</string>
     <!-- Default name of the owner user [CHAR LIMIT=20] -->
     <string name="owner_name" msgid="3879126011135546571">Owner</string>
+    
+    <!-- label for item that screenshots in phone options dialog -->
+    <string name="global_action_screenshot">Screenshot</string>
+    
     <!-- Error message title [CHAR LIMIT=35] -->
     <string name="error_message_title">Error</string>
     <!-- Message informing user that app is not permitted to access accounts. [CHAR LIMIT=none] -->
