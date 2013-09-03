@@ -318,8 +318,6 @@ public class RibbonGestureCatcherView extends LinearLayout{
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RIBBON_DRAG_HANDLE_HEIGHT[ribbonNumber]), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.SWIPE_RIBBON_VIBRATE[ribbonNumber]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RIBBON_DRAG_HANDLE_LOCATION[ribbonNumber]), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RIBBON_LONG_SWIPE[ribbonNumber]), false, this);

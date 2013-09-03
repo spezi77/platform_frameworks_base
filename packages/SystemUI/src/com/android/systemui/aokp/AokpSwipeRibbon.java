@@ -21,20 +21,39 @@ import com.android.systemui.R;
 import java.lang.IllegalArgumentException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothAdapter.BluetoothStateChangeCallback;
+import com.android.systemui.statusbar.policy.BatteryController;
+import com.android.systemui.statusbar.policy.BatteryController.BatteryStateChangeCallback;
+import com.android.systemui.statusbar.policy.BluetoothController;
+import com.android.systemui.statusbar.policy.BrightnessController;
+import com.android.systemui.statusbar.policy.BrightnessController.BrightnessStateChangeCallback;
+import com.android.systemui.statusbar.policy.LocationController;
+import com.android.systemui.statusbar.policy.LocationController.LocationGpsStateChangeCallback;
+import com.android.systemui.statusbar.policy.NetworkController;
+import com.android.systemui.statusbar.policy.NetworkController.NetworkSignalChangedCallback;
 
+import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.PixelFormat;
+import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -48,11 +67,17 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 
+import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.util.aokp.AokpRibbonHelper;
+import com.android.internal.util.aokp.AwesomeAnimationHelper;
 import com.android.internal.util.aokp.BackgroundAlphaColorDrawable;
 import com.android.systemui.aokp.RibbonGestureCatcherView;
+import static com.android.systemui.statusbar.toggles.ToggleManager.*;
+import com.android.systemui.statusbar.toggles.*;
 
 public class AokpSwipeRibbon extends LinearLayout {
     public static final String TAG = "NAVIGATION BAR RIBBON";
@@ -60,22 +85,55 @@ public class AokpSwipeRibbon extends LinearLayout {
     private Context mContext;
     private RibbonGestureCatcherView mGesturePanel;
     public FrameLayout mPopupView;
+    public FrameLayout mContainerFrame;
     public WindowManager mWindowManager;
     private SettingsObserver mSettingsObserver;
     private LinearLayout mRibbon;
     private LinearLayout mRibbonMain;
+    private ImageButton mTogglesButton;
+    private TextView mTogglesText;
     private Button mBackGround;
-    private boolean mText, mColorize, hasNavBarByDefault, NavBarEnabled, navAutoHide, mNavBarShowing, mVib;
+    private boolean mText, mColorize, hasNavBarByDefault, NavBarEnabled, navAutoHide, mNavBarShowing, mVib, mToggleButtonLoc, mHideIme;
     private int mHideTimeOut = 5000;
     private boolean showing = false;
     private boolean animating = false;
-    private int mRibbonNumber, mLocationNumber, mSize, mColor, mTextColor, mOpacity, animationIn, animationOut, mIconLoc, mPad;
+    private int mRibbonNumber, mLocationNumber, mSize, mColor, mTextColor, mOpacity, animationIn,
+        animationOut, animTogglesIn, animTogglesOut, mIconLoc, mPad, mAnimDur, mDismiss, mAnim;
     private ArrayList<String> shortTargets = new ArrayList<String>();
     private ArrayList<String> longTargets = new ArrayList<String>();
     private ArrayList<String> customIcons = new ArrayList<String>();
     private String mLocation;
     private Handler mHandler;
     private boolean[] mEnableSides = new boolean[3];
+    private boolean flipped = false;
+    private Vibrator vib;
+
+    private ArrayList<LinearLayout> mRows = new ArrayList<LinearLayout>();
+    private ArrayList<BaseToggle> toggles = new ArrayList<BaseToggle>();
+    private ScrollView mRibbonSV;
+    private ScrollView mTogglesSV;
+    private Animation mAnimationIn;
+    private Animation mAnimationOut;
+    private int visible = 0;
+    private int mDisabledFlags = 0;
+
+    private static final String TOGGLE_DELIMITER = "|";
+
+    private BluetoothController bluetoothController;
+    private NetworkController networkController;
+    private BatteryController batteryController;
+    private LocationController locationController;
+    private BrightnessController brightnessController;
+
+    public void setControllers(BluetoothController bt, NetworkController net,
+            BatteryController batt, LocationController loc, BrightnessController screen) {
+        bluetoothController = bt;
+        networkController = net;
+        batteryController = batt;
+        locationController = loc;
+        brightnessController = screen;
+        updateSettings();
+    }
 
     private static final LinearLayout.LayoutParams backgroundParams = new LinearLayout.LayoutParams(
             LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
@@ -91,6 +149,7 @@ public class AokpSwipeRibbon extends LinearLayout {
         filter.addAction(RibbonReceiver.ACTION_HIDE_RIBBON);
         mContext.registerReceiver(new RibbonReceiver(), filter);
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        vib = (Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE);
         mHandler = new Handler();
         mSettingsObserver = new SettingsObserver(new Handler());
         mSettingsObserver.observe();
@@ -126,7 +185,7 @@ public class AokpSwipeRibbon extends LinearLayout {
             params.setTitle("Ribbon" + mLocation);
             if (mWindowManager != null) {
                 mWindowManager.addView(mPopupView, params);
-                PlayInAnim();
+                mContainerFrame.startAnimation(mAnimationIn);
                 if (mHideTimeOut > 0) {
                     mHandler.postDelayed(delayHide, mHideTimeOut);
                 }
@@ -137,7 +196,7 @@ public class AokpSwipeRibbon extends LinearLayout {
     public void hideRibbonView() {
         if (mPopupView != null && showing) {
             showing = false;
-            PlayOutAnim();
+            mContainerFrame.startAnimation(mAnimationOut);
         }
     }
 
@@ -167,18 +226,34 @@ public class AokpSwipeRibbon extends LinearLayout {
         int gravity = 0;
         if (mLocation.equals("bottom")) {
             gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-            animationIn = com.android.internal.R.anim.slide_in_up;
-            animationOut = com.android.internal.R.anim.slide_out_down;
         } else if (mLocation.equals("left")) {
             gravity = Gravity.CENTER_VERTICAL | Gravity.LEFT;
-            animationIn = com.android.internal.R.anim.slide_in_left;
-            animationOut = com.android.internal.R.anim.slide_out_left;
         } else {
             gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
-            animationIn = com.android.internal.R.anim.slide_in_right;
-            animationOut = com.android.internal.R.anim.slide_out_right;
         }
         return gravity;
+    }
+
+    private void setAnimation() {
+        if (mLocation.equals("bottom")) {
+            animationIn = com.android.internal.R.anim.slide_in_up_ribbon;
+            animationOut = com.android.internal.R.anim.slide_out_down_ribbon;
+        } else if (mLocation.equals("left")) {
+            animationIn = com.android.internal.R.anim.slide_in_left_ribbon;
+            animationOut = com.android.internal.R.anim.slide_out_left_ribbon;
+            animTogglesIn = com.android.internal.R.anim.slide_in_left_ribbon;
+            animTogglesOut = com.android.internal.R.anim.slide_out_right_ribbon;
+        } else {
+            animationIn = com.android.internal.R.anim.slide_in_right_ribbon;
+            animationOut = com.android.internal.R.anim.slide_out_right_ribbon;
+            animTogglesIn = com.android.internal.R.anim.slide_in_right_ribbon;
+            animTogglesOut = com.android.internal.R.anim.slide_out_left_ribbon;
+        }
+        if (mAnim > 0) {
+            int[] animArray = AwesomeAnimationHelper.getAnimations(mAnim);
+            animationIn = animArray[1];
+            animationOut = animArray[0];
+        }
     }
 
     public void createRibbonView() {
@@ -195,6 +270,8 @@ public class AokpSwipeRibbon extends LinearLayout {
         }
         mPopupView = new FrameLayout(mContext);
         mPopupView.removeAllViews();
+        mContainerFrame = new FrameLayout(mContext);
+        mContainerFrame.removeAllViews();
         if (mNavBarShowing) {
             int adjustment = mContext.getResources().getDimensionPixelSize(
                         com.android.internal.R.dimen.status_bar_height);
@@ -207,6 +284,13 @@ public class AokpSwipeRibbon extends LinearLayout {
         mBackGround.getBackground().setAlpha((int)opacity);
         View ribbonView = View.inflate(mContext, R.layout.aokp_swipe_ribbon, null);
         mRibbonMain = (LinearLayout) ribbonView.findViewById(R.id.ribbon_main);
+        if (mToggleButtonLoc) {
+            mTogglesButton = (ImageButton) ribbonView.findViewById(R.id.toggles_bottom);
+            mTogglesText = (TextView) ribbonView.findViewById(R.id.label_bottom);
+        } else {
+            mTogglesButton = (ImageButton) ribbonView.findViewById(R.id.toggles);
+            mTogglesText = (TextView) ribbonView.findViewById(R.id.label);
+        }
         switch (mIconLoc) {
             case 0:
                 mRibbonMain.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
@@ -220,8 +304,14 @@ public class AokpSwipeRibbon extends LinearLayout {
         }
         mRibbon = (LinearLayout) ribbonView.findViewById(R.id.ribbon);
         setupRibbon();
-        mPopupView.addView(mBackGround, backgroundParams);
-        mPopupView.addView(ribbonView);
+        maybeToggleOnly();
+        ribbonView.invalidate();
+        mContainerFrame.addView(mBackGround, backgroundParams);
+        mContainerFrame.addView(ribbonView);
+        mContainerFrame.setDrawingCacheEnabled(true);
+        mAnimationIn = PlayInAnim();
+        mAnimationOut = PlayOutAnim();
+        mPopupView.addView(mContainerFrame, backgroundParams);
         mPopupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -248,12 +338,22 @@ public class AokpSwipeRibbon extends LinearLayout {
         return false;
     }
 
+    private boolean maybeToggleOnly() {
+        if (shortTargets.size() < 1 && longTargets.size() < 1  && toggles.size() > 0) {
+            mTogglesButton.setVisibility(View.GONE);
+            mTogglesText.setVisibility(View.GONE);
+            mRibbon.removeView(mRibbonSV);
+            mRibbon.addView(mTogglesSV);
+            return true;
+        }
+        return false;
+    }
+
     public Animation PlayInAnim() {
         if (mRibbon != null) {
             Animation animation = AnimationUtils.loadAnimation(mContext, animationIn);
             animation.setStartOffset(0);
-            mBackGround.startAnimation(animation);
-            mRibbonMain.startAnimation(animation);
+            animation.setDuration((int) (animation.getDuration() * (mAnimDur * 0.01f)));
             return animation;
         }
         return null;
@@ -263,8 +363,7 @@ public class AokpSwipeRibbon extends LinearLayout {
         if (mRibbon != null) {
             Animation animation = AnimationUtils.loadAnimation(mContext, animationOut);
             animation.setStartOffset(0);
-            mBackGround.startAnimation(animation);
-            mRibbonMain.startAnimation(animation);
+            animation.setDuration((int) (animation.getDuration() * (mAnimDur * 0.01f)));
             animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -291,7 +390,8 @@ public class AokpSwipeRibbon extends LinearLayout {
         if (mLocation.equals("bottom")) {
             HorizontalScrollView hsv = new HorizontalScrollView(mContext);
             hsv = AokpRibbonHelper.getRibbon(mContext,
-                shortTargets, longTargets, customIcons, mText, mTextColor, mSize, mPad, mVib, mColorize);
+                shortTargets, longTargets, customIcons,
+                mText, mTextColor, mSize, mPad, mVib, mColorize, mDismiss);
             hsv.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -304,10 +404,11 @@ public class AokpSwipeRibbon extends LinearLayout {
             });
             mRibbon.addView(hsv);
         } else {
-            ScrollView sv = new ScrollView(mContext);
-            sv = AokpRibbonHelper.getVerticalRibbon(mContext,
-                shortTargets, longTargets, customIcons, mText, mTextColor, mSize, mPad, mVib, mColorize);
-            sv.setOnTouchListener(new View.OnTouchListener() {
+            mRibbonSV = new ScrollView(mContext);
+            mRibbonSV = AokpRibbonHelper.getVerticalRibbon(mContext,
+                shortTargets, longTargets, customIcons, mText, mTextColor,
+                mSize, mPad, mVib, mColorize, mDismiss);
+            mRibbonSV.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     mHandler.removeCallbacks(delayHide);
@@ -317,9 +418,293 @@ public class AokpSwipeRibbon extends LinearLayout {
                     return false;
                 }
             });
-            mRibbon.addView(sv);
+            mRibbon.addView(mRibbonSV);
             mRibbon.setPadding(0, 0, 0, 0);
+            addToggleManagers();
         }
+    }
+
+    private HashMap<String, Class<? extends BaseToggle>> toggleMap;
+
+    private HashMap<String, Class<? extends BaseToggle>> getToggleMap() {
+        if (toggleMap == null) {
+            toggleMap = new HashMap<String, Class<? extends BaseToggle>>();
+            toggleMap.put(USER_TOGGLE, UserToggle.class);
+            toggleMap.put(BRIGHTNESS_TOGGLE, BrightnessToggle.class);
+            toggleMap.put(SETTINGS_TOGGLE, SettingsToggle.class);
+            toggleMap.put(WIFI_TOGGLE, WifiToggle.class);
+            if (deviceSupportsTelephony()) {
+                toggleMap.put(SIGNAL_TOGGLE, SignalToggle.class);
+                toggleMap.put(WIFI_TETHER_TOGGLE, WifiApToggle.class);
+            }
+            toggleMap.put(ROTATE_TOGGLE, RotateToggle.class);
+            toggleMap.put(CLOCK_TOGGLE, ClockToggle.class);
+            toggleMap.put(GPS_TOGGLE, GpsToggle.class);
+            toggleMap.put(IME_TOGGLE, ImeToggle.class);
+            toggleMap.put(BATTERY_TOGGLE, BatteryToggle.class);
+            toggleMap.put(AIRPLANE_TOGGLE, AirplaneModeToggle.class);
+            if (deviceSupportsBluetooth()) {
+                toggleMap.put(BLUETOOTH_TOGGLE, BluetoothToggle.class);
+            }
+            if (((Vibrator)mContext.getSystemService(Context.VIBRATOR_SERVICE)).hasVibrator()) {
+                toggleMap.put(VIBRATE_TOGGLE, VibrateToggle.class);
+                toggleMap.put(SOUND_STATE_TOGGLE, SoundStateToggle.class);
+            }
+            toggleMap.put(SILENT_TOGGLE, SilentToggle.class);
+            toggleMap.put(SYNC_TOGGLE, SyncToggle.class);
+            if (mContext.getSystemService(Context.NFC_SERVICE) != null) {
+                toggleMap.put(NFC_TOGGLE, NfcToggle.class);
+            }
+            toggleMap.put(USB_TETHER_TOGGLE, UsbTetherToggle.class);
+            if (((TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE))
+                    .getPhoneType() == PhoneConstants.PHONE_TYPE_GSM) {
+                toggleMap.put(TWOG_TOGGLE, TwoGToggle.class);
+            }
+            if (TelephonyManager.getLteOnCdmaModeStatic() == PhoneConstants.LTE_ON_CDMA_TRUE
+                    || TelephonyManager.getLteOnGsmModeStatic() != 0) {
+                toggleMap.put(LTE_TOGGLE, LteToggle.class);
+            }
+            toggleMap.put(QUICKRECORD_TOGGLE, QuickRecordToggle.class);
+            toggleMap.put(SLEEP_TOGGLE, SleepToggle.class);
+            toggleMap.put(STATUSBAR_TOGGLE, StatusbarToggle.class);
+            toggleMap.put(REBOOT_TOGGLE, RebootToggle.class);
+            toggleMap.put(STAYAWAKE_TOGGLE, StayAwakeToggle.class);
+            toggleMap.put(WIRELESS_ADB_TOGGLE, WirelessAdbToggle.class);
+            // toggleMap.put(BT_TETHER_TOGGLE, null);
+        }
+        return toggleMap;
+    }
+
+    private void addToggles(ArrayList<String> userToggles) {
+        toggles.clear();
+        if (userToggles.size() > 0) {
+
+        HashMap<String, Class<? extends BaseToggle>> map = getToggleMap();
+        for (String toggleIdent : userToggles) {
+            try {
+                Class<? extends BaseToggle> theclass = map.get(toggleIdent);
+                BaseToggle toggle = theclass.newInstance();
+                //might make this user selectable, 0 == mStyle in togglemanager
+                toggle.init(mContext, 0);
+                toggles.add(toggle);
+
+                if (networkController != null && toggle instanceof NetworkSignalChangedCallback) {
+                    networkController
+                            .addNetworkSignalChangedCallback((NetworkSignalChangedCallback) toggle);
+                    networkController
+                            .notifySignalsChangedCallbacks((NetworkSignalChangedCallback) toggle);
+                }
+
+                if (bluetoothController != null && toggle instanceof BluetoothStateChangeCallback) {
+                    bluetoothController
+                            .addStateChangedCallback((BluetoothStateChangeCallback) toggle);
+                }
+
+                if (batteryController != null && toggle instanceof BatteryStateChangeCallback) {
+                    batteryController.addStateChangedCallback((BatteryStateChangeCallback) toggle);
+                    batteryController.updateCallback((BatteryStateChangeCallback) toggle);
+                }
+
+                if (locationController != null && toggle instanceof LocationGpsStateChangeCallback) {
+                    locationController
+                            .addStateChangedCallback((LocationGpsStateChangeCallback) toggle);
+                }
+
+                if (brightnessController != null && toggle instanceof BrightnessStateChangeCallback) {
+                    brightnessController.addStateChangedCallback((BrightnessStateChangeCallback)
+                            toggle);
+                }
+            } catch (Exception e) {
+            }
+        }
+        }
+    }
+
+    private void addToggleManagers() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(metrics);
+        int padding = (int) (mPad * metrics.density);
+        int mWidth = (int) (75 * metrics.density);
+        int mHeight = (int) (75 * metrics.density);
+        LinearLayout.LayoutParams tileParams = new LinearLayout.LayoutParams(
+            mWidth, mHeight);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, padding);
+        mTogglesSV = new ScrollView(mContext);
+        int length = toggles.size();
+        if (length > 0) {
+            LinearLayout targetsLayout = new LinearLayout(mContext);
+            targetsLayout.setOrientation(LinearLayout.VERTICAL);
+            targetsLayout.setGravity(Gravity.CENTER);
+            mTogglesSV.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+            for (int i = 0; i < length; i++) {
+                View view = toggles.get(i).createTileView();
+                view.setBackground(null);
+                targetsLayout.addView(view, tileParams);
+                if (i < length -1) {
+                    View v = new View(mContext);
+                    targetsLayout.addView(v, lp);
+                }
+            }
+            mTogglesSV.addView(targetsLayout, AokpRibbonHelper.PARAMS_TARGET_SCROLL);
+            mTogglesSV.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    mHandler.removeCallbacks(delayHide);
+                    if (mHideTimeOut > 0) {
+                        mHandler.postDelayed(delayHide, mHideTimeOut);
+                    }
+                    return false;
+                }
+            });
+            addToogleButton();
+        }
+    }
+
+    private void addToogleButton() {
+        mRibbon.removeView(mRibbonSV);
+        mTogglesButton.setVisibility(View.VISIBLE);
+        if (mText) {
+            mTogglesText.setVisibility(View.VISIBLE);
+        }
+        mRibbon.addView(mRibbonSV);
+        mRibbon.invalidate();
+        mTogglesButton.getBackground().setAlpha(0);
+        mTogglesButton.setImageDrawable(
+            mContext.getResources().getDrawable(R.drawable.ribbon_toggles_icon));
+        mTogglesText.setText(mContext.getResources().getString(R.string.toggles));
+        if (mTextColor != -1) {
+            mTogglesText.setTextColor(mTextColor);
+        }
+        mTogglesText.setOnClickListener(new OnClickListener() {
+            @Override
+            public final void onClick(View v) {
+                 if (mVib) {
+                     vib.vibrate(10);
+                 }
+                 if (flipped) {
+                     PlayAnim(mRibbonSV, mTogglesSV, mContext.getResources().getDrawable(R.drawable.ribbon_toggles_icon),
+                         mContext.getResources().getString(R.string.toggles));
+                 } else {
+                     PlayAnim(mTogglesSV, mRibbonSV, mContext.getResources().getDrawable(R.drawable.ribbon_icon),
+                         mContext.getResources().getString(R.string.ribbon));
+                 }
+                 flipped = !flipped;
+                 mHandler.removeCallbacks(delayHide);
+                 if (mHideTimeOut > 0) {
+                    mHandler.postDelayed(delayHide, mHideTimeOut);
+                 }
+            }
+        });
+        mTogglesButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public final void onClick(View v) {
+                 if (mVib) {
+                     vib.vibrate(10);
+                 }
+                 if (flipped) {
+                     PlayAnim(mRibbonSV, mTogglesSV, mContext.getResources().getDrawable(R.drawable.ribbon_toggles_icon),
+                         mContext.getResources().getString(R.string.toggles));
+                 } else {
+                     PlayAnim(mTogglesSV, mRibbonSV, mContext.getResources().getDrawable(R.drawable.ribbon_icon),
+                         mContext.getResources().getString(R.string.ribbon));
+                 }
+                 flipped = !flipped;
+                 mHandler.removeCallbacks(delayHide);
+                 if (mHideTimeOut > 0) {
+                    mHandler.postDelayed(delayHide, mHideTimeOut);
+                 }
+            }
+        });
+    }
+
+    public void PlayAnim(final ScrollView in, final ScrollView out, final Drawable newIcon, final String text) {
+        if (mRibbon != null) {
+            Animation outAnimation = AnimationUtils.loadAnimation(mContext, animTogglesOut);
+            final Animation inAnimation = AnimationUtils.loadAnimation(mContext, animTogglesIn);
+            final Animation inIcon = AnimationUtils.loadAnimation(mContext, com.android.internal.R.anim.fade_in);
+            final Animation outIcon = AnimationUtils.loadAnimation(mContext, com.android.internal.R.anim.fade_out);
+            inIcon.setDuration((int) (250 * (mAnimDur * 0.01f)));
+            inIcon.setStartOffset(0);
+            outIcon.setStartOffset(0);
+            outIcon.setDuration((int) (250 * (mAnimDur * 0.01f)));
+            outAnimation.setStartOffset(0);
+            outAnimation.setDuration((int) (250 * (mAnimDur * 0.01f)));
+            outAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    mTogglesButton.startAnimation(outIcon);
+                    mTogglesText.startAnimation(outIcon);
+                    animating = true;
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mRibbon.removeView(out);
+                    mRibbon.addView(in);
+                    mTogglesButton.setImageDrawable(newIcon);
+                    mTogglesText.setText(text);
+                    mTogglesButton.startAnimation(inIcon);
+                    mTogglesText.startAnimation(inIcon);
+                    in.startAnimation(inAnimation);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            inAnimation.setStartOffset(0);
+            inAnimation.setDuration((int) (250 * (mAnimDur * 0.01f)));
+            inAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    animating = false;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            out.startAnimation(outAnimation);
+        }
+    }
+
+    protected void updateSwipeArea() {
+        final boolean showingIme = ((visible & InputMethodService.IME_VISIBLE) != 0);
+        if (mGesturePanel != null) {
+            mGesturePanel.setViewVisibility(showingIme);
+        }
+    }
+
+    public void setNavigationIconHints(int hints) {
+          if (hints == visible) return;
+
+        if (mHideIme) {
+             visible = hints;
+             updateSwipeArea();
+        }
+    }
+
+    public void setDisabledFlags(int disabledFlags) {
+        if (disabledFlags == mDisabledFlags) return;
+
+        if (mHideIme) {
+            mDisabledFlags = disabledFlags;
+            updateSwipeArea();
+        }
+    }
+
+    private boolean deviceSupportsTelephony() {
+        PackageManager pm = mContext.getPackageManager();
+        return pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+    }
+
+    private boolean deviceSupportsBluetooth() {
+        return (BluetoothAdapter.getDefaultAdapter() != null);
     }
 
     class SettingsObserver extends ContentObserver {
@@ -365,6 +750,18 @@ public class AokpSwipeRibbon extends LinearLayout {
                     Settings.System.SWIPE_RIBBON_OPACITY[mLocationNumber]), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SWIPE_RIBBON_COLOR[mLocationNumber]), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SWIPE_RIBBON_TOGGLES[mLocationNumber]), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.RIBBON_DISMISS[mLocationNumber]), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.RIBBON_ANIMATION_DURATION[mLocationNumber]), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.RIBBON_ANIMATION_TYPE[mLocationNumber]), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.RIBBON_TOGGLE_BUTTON_LOCATION[mLocationNumber]), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.RIBBON_HIDE_IME[mLocationNumber]), false, this);
 
             if (mLocationNumber < 2) {
                 resolver.registerContentObserver(Settings.System.getUriFor(
@@ -397,13 +794,22 @@ public class AokpSwipeRibbon extends LinearLayout {
                  Settings.System.RIBBON_ICON_VIBRATE[mRibbonNumber], true);
         mColorize = Settings.System.getBoolean(cr,
                  Settings.System.RIBBON_ICON_COLORIZE[mRibbonNumber], false);
-
+        mAnimDur = Settings.System.getInt(cr,
+                 Settings.System.RIBBON_ANIMATION_DURATION[mLocationNumber], 50);
+        mDismiss = Settings.System.getInt(cr,
+                 Settings.System.RIBBON_DISMISS[mLocationNumber], 1);
         mHideTimeOut = Settings.System.getInt(cr,
                  Settings.System.RIBBON_HIDE_TIMEOUT[mLocationNumber], mHideTimeOut);
         mColor = Settings.System.getInt(cr,
                  Settings.System.SWIPE_RIBBON_COLOR[mLocationNumber], Color.BLACK);
         mOpacity = Settings.System.getInt(cr,
-                 Settings.System.SWIPE_RIBBON_OPACITY[mLocationNumber], 255);
+                 Settings.System.SWIPE_RIBBON_OPACITY[mLocationNumber], 100);
+        mAnim = Settings.System.getInt(cr,
+                 Settings.System.RIBBON_ANIMATION_TYPE[mLocationNumber], 0);
+        mToggleButtonLoc = Settings.System.getBoolean(cr,
+                 Settings.System.RIBBON_TOGGLE_BUTTON_LOCATION[mLocationNumber], false);
+        mHideIme = Settings.System.getBoolean(cr,
+                 Settings.System.RIBBON_HIDE_IME[mLocationNumber], false);
         if (mLocationNumber < 2) {
             mIconLoc = Settings.System.getInt(cr,
                      Settings.System.RIBBON_ICON_LOCATION[mLocationNumber], 0);
@@ -420,6 +826,10 @@ public class AokpSwipeRibbon extends LinearLayout {
         hasNavBarByDefault = mContext.getResources().getBoolean(com.android.internal.R.bool.config_showNavigationBar);
         mNavBarShowing = (NavBarEnabled || hasNavBarByDefault) && manualNavBarHide && !navHeightZero && !navAutoHide;
         mEnableSides[0] = mEnableSides[0] && (!(NavBarEnabled || hasNavBarByDefault) || !manualNavBarHide);
+
+        addToggles(Settings.System.getArrayList(cr, Settings.System.SWIPE_RIBBON_TOGGLES[mLocationNumber]));
+
+        setAnimation();
         if (!showing && !animating) {
             createRibbonView();
         }
