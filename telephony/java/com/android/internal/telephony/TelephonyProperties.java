@@ -102,6 +102,8 @@ public interface TelephonyProperties
      */
     static String PROPERTY_SIM_STATE = "gsm.sim.state";
 
+    static final String PROPERTY_SVDO = "ro.ril.svdo";
+
     /** The MCC+MNC (mobile country code+mobile network code) of the
      *  provider of the SIM. 5 or 6 decimal digits.
      *  Availability: SIM state must be "READY"
