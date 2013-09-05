@@ -894,8 +894,7 @@ public class ConnectivityService extends IConnectivityManager.Stub {
         // Find the first Provisioning Network
         NetworkInfo provNi = null;
         for (NetworkInfo ni : getAllNetworkInfo()) {
-            if (ni.getDetailedState()
-                    == NetworkInfo.DetailedState.CONNECTED_TO_PROVISIONING_NETWORK) {
+            if (ni.isConnectedToProvisioningNetwork()) {
                 provNi = ni;
                 break;
             }
@@ -2809,7 +2808,8 @@ public class ConnectivityService extends IConnectivityManager.Stub {
                     NetworkInfo.State state = info.getState();
 
                     if (VDBG || (state == NetworkInfo.State.CONNECTED) ||
-                            (state == NetworkInfo.State.DISCONNECTED)) {
+                            (state == NetworkInfo.State.DISCONNECTED) ||
+                            (state == NetworkInfo.State.SUSPENDED)) {
                         log("ConnectivityChange for " +
                             info.getTypeName() + ": " +
                             state + "/" + info.getDetailedState());
@@ -2824,7 +2824,8 @@ public class ConnectivityService extends IConnectivityManager.Stub {
                     if (ConnectivityManager.isNetworkTypeMobile(info.getType())
                             && (0 != Settings.Global.getInt(mContext.getContentResolver(),
                                         Settings.Global.DEVICE_PROVISIONED, 0))
-                            && (state == NetworkInfo.State.CONNECTED)) {
+                            && ((state == NetworkInfo.State.CONNECTED)
+                                    || info.isConnectedToProvisioningNetwork())) {
                         checkMobileProvisioning(CheckMp.MAX_TIMEOUT_MS);
                     }
 
@@ -2837,8 +2838,7 @@ public class ConnectivityService extends IConnectivityManager.Stub {
                     } else if (info.getDetailedState() ==
                             DetailedState.CAPTIVE_PORTAL_CHECK) {
                         handleCaptivePortalTrackerCheck(info);
-                    } else if (info.getDetailedState() ==
-                            DetailedState.CONNECTED_TO_PROVISIONING_NETWORK) {
+                    } else if (info.isConnectedToProvisioningNetwork()) {
                         /**
                          * TODO: Create ConnectivityManager.TYPE_MOBILE_PROVISIONING
                          * for now its an in between network, its a network that
@@ -4201,8 +4201,7 @@ public class ConnectivityService extends IConnectivityManager.Stub {
         // If provisioning network handle as a special case,
         // otherwise launch browser with the intent directly.
         NetworkInfo ni = getProvisioningNetworkInfo();
-        if ((ni != null) && ni.getDetailedState() ==
-                    NetworkInfo.DetailedState.CONNECTED_TO_PROVISIONING_NETWORK) {
+        if ((ni != null) && ni.isConnectedToProvisioningNetwork()) {
             if (DBG) log("handleMobileProvisioningAction: on provisioning network");
             MobileDataStateTracker mdst = (MobileDataStateTracker)
                     mNetTrackers[ConnectivityManager.TYPE_MOBILE];
