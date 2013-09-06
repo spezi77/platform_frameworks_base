@@ -33,6 +33,7 @@ import com.android.systemui.recent.TaskDescription;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.WidgetView;
+import com.android.systemui.aokp.AppWindow;
 
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
