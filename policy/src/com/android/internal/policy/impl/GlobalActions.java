@@ -317,32 +317,31 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return true;
                 }
             });
-            
-        // next: reboot
-        // only shown if enabled, enabled by default
-        if (Settings.System.getInt(mContext.getContentResolver(),
+
+		// next: reboot
+		if (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_MENU_REBOOT_ENABLED, 1) == 1) {
-            mItems.add(
-                new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
-                    public void onPress() {
-                        mWindowManagerFuncs.reboot();
-                    }
+        mItems.add(
+                new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_reboot,
+                        com.android.internal.R.string.reboot) {
 
-                    public boolean onLongPress() {
-                        mWindowManagerFuncs.rebootSafeMode(true);
-                        return true;
-                    }
-
+                    @Override
                     public boolean showDuringKeyguard() {
                         return true;
                     }
 
+                    @Override
                     public boolean showBeforeProvisioning() {
                         return true;
                     }
+
+                    @Override
+                    public void onPress() {
+                        createRebootDialog().show();
+                    }
                 });
         }
-
 
         // next: screenshot
         // only shown if enabled, disabled by default
