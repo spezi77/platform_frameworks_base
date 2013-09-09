@@ -2869,7 +2869,14 @@ public final class Settings {
         public static final String PIE_SIZE = "pie_size";
 
         /**
-         * Pie Notification Ability
+         * Google Assistant in Recents
+         *
+         * @hide
+         */
+        public static final String RECENTS_TARGET_ASSIST = "recents_target_assist";
+
+        /**
+	* Pie notification ability
          * @hide
          */
         public static final String PIE_NOTIFICATIONS = "pie_notifications";
