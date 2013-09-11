@@ -2920,7 +2920,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     if (navVisible) {
                         mNavigationBar.showLw(true);
                         if (!mNavBarAutoHide)
-                            mDockBottom = mTmpNavigationFrame.top;
+                            mDockBottom = mTmpNavigationFrame.top-mDockTop;
                             mRestrictedScreenHeight = mDockBottom - mRestrictedScreenTop;
                             mRestrictedOverscanScreenHeight = mDockBottom - mRestrictedOverscanScreenTop;
                     } else {
