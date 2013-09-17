@@ -366,6 +366,9 @@ public class CaptivePortalTracker extends StateMachine {
             urlConnection.getInputStream();
             // we got a valid response, but not from the real google
             return urlConnection.getResponseCode() != 204;
+        } catch (SocketTimeoutException e) {
+            if (DBG) log("Probably a portal: exception " + e);
+            return true;
         } catch (IOException e) {
             if (DBG) log("Probably not a portal: exception " + e);
             return false;
@@ -388,5 +391,76 @@ public class CaptivePortalTracker extends StateMachine {
             if (a instanceof Inet4Address) return a;
         }
         return null;
+    }
+
+    private void setNotificationVisible(boolean visible) {
+        // if it should be hidden and it is already hidden, then noop
+        if (!visible && !mNotificationShown) {
+            if (DBG) log("setNotivicationVisible: false and not shown, so noop");
+            return;
+        }
+
+        Resources r = Resources.getSystem();
+        NotificationManager notificationManager = (NotificationManager) mContext
+            .getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (visible) {
+            CharSequence title;
+            CharSequence details;
+            int icon;
+            String url = null;
+            switch (mNetworkInfo.getType()) {
+                case ConnectivityManager.TYPE_WIFI:
+                    title = r.getString(R.string.wifi_available_sign_in, 0);
+                    details = r.getString(R.string.network_available_sign_in_detailed,
+                            mNetworkInfo.getExtraInfo());
+                    icon = R.drawable.stat_notify_wifi_in_range;
+                    url = mUrl;
+                    break;
+                case ConnectivityManager.TYPE_MOBILE:
+                    title = r.getString(R.string.network_available_sign_in, 0);
+                    // TODO: Change this to pull from NetworkInfo once a printable
+                    // name has been added to it
+                    details = mTelephonyManager.getNetworkOperatorName();
+                    icon = R.drawable.stat_notify_rssi_in_range;
+                    try {
+                        url = mConnService.getMobileProvisioningUrl();
+                        if (TextUtils.isEmpty(url)) {
+                            url = mConnService.getMobileRedirectedProvisioningUrl();
+                        }
+                    } catch(RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    if (TextUtils.isEmpty(url)) {
+                        url = mUrl;
+                    }
+                    break;
+                default:
+                    title = r.getString(R.string.network_available_sign_in, 0);
+                    details = r.getString(R.string.network_available_sign_in_detailed,
+                            mNetworkInfo.getExtraInfo());
+                    icon = R.drawable.stat_notify_rssi_in_range;
+                    url = mUrl;
+                    break;
+            }
+
+            Notification notification = new Notification();
+            notification.when = 0;
+            notification.icon = icon;
+            notification.flags = Notification.FLAG_AUTO_CANCEL;
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT |
+                    Intent.FLAG_ACTIVITY_NEW_TASK);
+            notification.contentIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
+            notification.tickerText = title;
+            notification.setLatestEventInfo(mContext, title, details, notification.contentIntent);
+
+            if (DBG) log("setNotivicationVisible: make visible");
+            notificationManager.notify(NOTIFICATION_ID, 1, notification);
+        } else {
+            if (DBG) log("setNotivicationVisible: cancel notification");
+            notificationManager.cancel(NOTIFICATION_ID, 1);
+        }
+        mNotificationShown = visible;
     }
 }
