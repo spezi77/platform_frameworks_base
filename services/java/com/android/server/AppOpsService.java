@@ -346,6 +346,73 @@ public class AppOpsService extends IAppOpsService.Stub {
         }
     }
 
+    private static HashMap<Callback, ArrayList<Pair<String, Integer>>> addCallbacks(
+            HashMap<Callback, ArrayList<Pair<String, Integer>>> callbacks,
+            String packageName, int op, ArrayList<Callback> cbs) {
+        if (cbs == null) {
+            return callbacks;
+        }
+        if (callbacks == null) {
+            callbacks = new HashMap<Callback, ArrayList<Pair<String, Integer>>>();
+        }
+        for (int i=0; i<cbs.size(); i++) {
+            Callback cb = cbs.get(i);
+            ArrayList<Pair<String, Integer>> reports = callbacks.get(cb);
+            if (reports == null) {
+                reports = new ArrayList<Pair<String, Integer>>();
+                callbacks.put(cb, reports);
+            }
+            reports.add(new Pair<String, Integer>(packageName, op));
+        }
+        return callbacks;
+    }
+
+    @Override
+    public void resetAllModes() {
+        mContext.enforcePermission(android.Manifest.permission.UPDATE_APP_OPS_STATS,
+                Binder.getCallingPid(), Binder.getCallingUid(), null);
+        HashMap<Callback, ArrayList<Pair<String, Integer>>> callbacks = null;
+        synchronized (this) {
+            boolean changed = false;
+            for (int i=0; i<mUidOps.size(); i++) {
+                HashMap<String, Ops> packages = mUidOps.valueAt(i);
+                for (Map.Entry<String, Ops> ent : packages.entrySet()) {
+                    String packageName = ent.getKey();
+                    Ops pkgOps = ent.getValue();
+                    for (int j=0; j<pkgOps.size(); j++) {
+                        Op curOp = pkgOps.valueAt(j);
+                        if (curOp.mode != AppOpsManager.MODE_ALLOWED) {
+                            curOp.mode = AppOpsManager.MODE_ALLOWED;
+                            changed = true;
+                            callbacks = addCallbacks(callbacks, packageName, curOp.op,
+                                    mOpModeWatchers.get(curOp.op));
+                            callbacks = addCallbacks(callbacks, packageName, curOp.op,
+                                    mPackageModeWatchers.get(packageName));
+                            pruneOp(curOp, mUidOps.keyAt(i), packageName);
+                        }
+                    }
+                }
+            }
+            if (changed) {
+                scheduleWriteNowLocked();
+            }
+        }
+        if (callbacks != null) {
+            for (Map.Entry<Callback, ArrayList<Pair<String, Integer>>> ent : callbacks.entrySet()) {
+                Callback cb = ent.getKey();
+                ArrayList<Pair<String, Integer>> reports = ent.getValue();
+                for (int i=0; i<reports.size(); i++) {
+                    Pair<String, Integer> rep = reports.get(i);
+                    try {
+                        cb.mCallback.opChanged(rep.second, rep.first);
+                    } catch (RemoteException e) {
+                    }
+                }
+            }
+        }
+    }
+
+>>>>>>> 0ece4de... Merge tag 'android-4.3_r3' into jb43
     @Override
     public void startWatchingMode(int op, String packageName, IAppOpsCallback callback) {
         synchronized (this) {
