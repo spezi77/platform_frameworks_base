@@ -4228,11 +4228,6 @@ public final class Settings {
             "custom_toggle_icons_4",
         };
 
-        /**
-         * @hide
-         */
-        public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD = "mute_annoying_notifications_threshold";
-
          /**
           * Volume keys control cursor in text fields (default is 0)
           * 0 - Disabled
@@ -4427,6 +4422,11 @@ public final class Settings {
          * @hide
          */
         public static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
+
+        /**
+         * @hide
+         */
+        public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD = "mute_annoying_notifications_threshold";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

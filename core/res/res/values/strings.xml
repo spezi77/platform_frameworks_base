@@ -4232,6 +4232,9 @@
     <string name="action_app_window">App Window</string>
     <string name="action_ribbon">Ribbon</string>
     <string name="action_app">Custom App/Shortcut</string>
-    
+
+    <!-- In WiFi notification -->
+    <string name="notify_turn_wifi_off_title">Turn Wi-Fi off</string>
+
 	<!-- XenonHD ADDITIONS END -->
 </resources>

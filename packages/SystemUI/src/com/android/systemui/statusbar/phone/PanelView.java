@@ -227,7 +227,7 @@ public class PanelView extends FrameLayout {
     private String mViewName;
     protected float mInitialTouchY;
     protected float mFinalTouchY;
-    
+
     // brightness slider stuff
     private Handler mHandler = new Handler();
     private Float mPropFactor;
@@ -401,13 +401,14 @@ public class PanelView extends FrameLayout {
 
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                        	mShouldReactToBrightnessSlider = false;
+                            mShouldReactToBrightnessSlider = false;
                             mTracking = true;
                             mHandleView.setPressed(true);
                             postInvalidate(); // catch the press state change
                             mInitialTouchY = y;
                             mVelocityTracker = FlingTracker.obtain();
                             trackMovement(event);
+
                             mTimeAnimator.cancel(); // end any outstanding animations
                             mBar.onTrackingStarted(PanelView.this);
                             mTouchOffset = (rawY - mAbsPos[1]) - PanelView.this.getExpandedHeight();
@@ -685,7 +686,8 @@ public class PanelView extends FrameLayout {
                 mTimeAnimator, ((mTimeAnimator!=null && mTimeAnimator.isStarted())?" (started)":"")
         ));
     }
-    private void setPropFactor() {
+
+	private void setPropFactor() {
 		Display display = getDisplay();
 		if(display == null)
 			return;

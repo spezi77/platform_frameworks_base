@@ -97,6 +97,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -506,6 +507,9 @@ public class NotificationManagerService extends INotificationManager.Stub
     private boolean mQuietHoursMute = true;
     // Dim LED if hardware supports it.
     private boolean mQuietHoursDim = true;
+
+    private HashMap<String, Long> mAnnoyingNotifications = new HashMap<String, Long>();
+    private long mAnnoyingNotificationThreshold = -1;
 
     public void setHaloPolicyBlack(boolean state) {
         mHaloPolicyisBlack = state;
@@ -1430,6 +1434,8 @@ public class NotificationManagerService extends INotificationManager.Stub
 		   Settings.System.LED_CUSTOM_VALUES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QUIET_HOURS_DIM), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD), false, this);
             update();
         }
 
@@ -1481,6 +1487,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                     Settings.System.QUIET_HOURS_NOTIFICATIONS, 0) != 0;
             mQuietHoursDim = Settings.System.getInt(resolver,
                     Settings.System.QUIET_HOURS_DIM, 0) != 0;
+            mAnnoyingNotificationThreshold = Settings.System.getLong(resolver,
+                    Settings.System.MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD, 0);
         }
     }
 
@@ -2000,6 +2008,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             if (((mDisabledNotifications & StatusBarManager.DISABLE_NOTIFICATION_ALERTS) == 0)
                     && (!(old != null
                         && (notification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0 ))
+                        && !notificationIsAnnoying(pkg)
                     && (r.getUserId() == UserHandle.USER_ALL ||
                         (r.getUserId() == userId && r.getUserId() == currentUser))
                     && canInterrupt
@@ -2117,7 +2126,24 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         idOut[0] = id;
     }
-    
+
+	private boolean notificationIsAnnoying(String pkg) {
+        if (mAnnoyingNotificationThreshold <= 0)
+            return false;
+
+        if ("android".equals(pkg))
+            return false;
+
+        long currentTime = System.currentTimeMillis();
+        if (mAnnoyingNotifications.containsKey(pkg)
+                && (currentTime - mAnnoyingNotifications.get(pkg) < mAnnoyingNotificationThreshold)) {
+            return true;
+        } else {
+            mAnnoyingNotifications.put(pkg, currentTime);
+            return false;
+        }
+    }
+
     private boolean inQuietHours() {
         if (mQuietHoursEnabled && (mQuietHoursStart != mQuietHoursEnd)) {
             // Get the date in "quiet hours" format.
