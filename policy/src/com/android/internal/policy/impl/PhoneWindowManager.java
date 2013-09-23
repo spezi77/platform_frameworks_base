@@ -5669,4 +5669,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 pw.print(" mDemoHdmiRotationLock="); pw.println(mDemoHdmiRotationLock);
         pw.print(prefix); pw.print("mUndockedHdmiRotation="); pw.println(mUndockedHdmiRotation);
     }
+
+    /** Translucent bars */
+    public boolean isBarTranslucent() {
+        return mBarsAreTranslucent && (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_TRANSPARENT_ON_KEYGUARD, 1) == 1);
+    }
+
+    public void setBarTranslucentAllowed(boolean allowed) {
+        mBarsAreTranslucent = allowed;
+    }
 }

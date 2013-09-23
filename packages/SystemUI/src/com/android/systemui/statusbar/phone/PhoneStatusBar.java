@@ -500,7 +500,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         addActiveDisplayView();
 
         // figure out which pixel-format to use for the status bar.
-        mPixelFormat = PixelFormat.OPAQUE;
+        updateTranslucentStatus();
 
         mSystemIconArea = (LinearLayout) mStatusBarView.findViewById(R.id.system_icon_area);
         mStatusIcons = (LinearLayout)mStatusBarView.findViewById(R.id.statusIcons);
@@ -1116,8 +1116,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     private WindowManager.LayoutParams getNavigationBarLayoutParams() {
-        // if we are an AutoHide NavBar, We want to use System_alert so
-        // that we float above all other windows.
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.TYPE_NAVIGATION_BAR,
@@ -1129,6 +1127,11 @@ public class PhoneStatusBar extends BaseStatusBar {
                     | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
                     | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT);
+        // this will allow the navbar to run in an overlay on devices that support this
+        if (ActivityManager.isHighEndGfx()) {
+            lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+        }
+
         lp.setTitle("NavigationBar");
         lp.windowAnimations = 0;
         return lp;
@@ -2902,6 +2905,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 // work around problem where mDisplay.getRotation() is not stable while screen is off (bug 7086018)
                 repositionNavigationBar();
                 notifyNavigationBarScreenOn(true);
+                updateTranslucentStatus();
             }
         }
     };
@@ -2942,6 +2946,19 @@ public class PhoneStatusBar extends BaseStatusBar {
         } catch (android.os.RemoteException ex) {
             // oh well
         }
+    }
+
+    public void updateTranslucentStatus() {
+        boolean translucent = false;
+        try {
+            translucent = mWindowManagerService.isBarTranslucent();
+        } catch (RemoteException ex) {
+            // do nothing
+        }
+        Log.e(TAG, "Translucent? " + translucent);
+        mPixelFormat = translucent ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE;
+
+        mStatusBarView.getBackground().setAlpha(translucent ? 128 : 255);
     }
 
     /**
