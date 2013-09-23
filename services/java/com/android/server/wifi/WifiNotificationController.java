@@ -18,6 +18,7 @@ package com.android.server.wifi;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -37,6 +38,8 @@ import android.provider.Settings;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.List;
+
+import com.android.server.wifi.WifiService;
 
 /* Takes care of handling the "open wi-fi network available" notification @hide */
 final class WifiNotificationController {
@@ -284,10 +287,12 @@ final class WifiNotificationController {
         pw.println("mNumScansSinceNetworkStateChange " + mNumScansSinceNetworkStateChange);
     }
 
-	private class NotificationBroadcastReciever extends BroadcastReceiver {
+    private class NotificationBroadcastReciever extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-                setWifiEnabled(false);
+            //XXX: probably not right
+            WifiManager mgr = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+            mgr.setWifiEnabled(false);
         }
     }
 
