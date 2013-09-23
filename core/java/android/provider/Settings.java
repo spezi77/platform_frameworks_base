@@ -4230,11 +4230,6 @@ public final class Settings {
             "custom_toggle_icons_4",
         };
 
-        /**
-         * @hide
-         */
-        public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD = "mute_annoying_notifications_threshold";
-
          /**
           * Volume keys control cursor in text fields (default is 0)
           * 0 - Disabled

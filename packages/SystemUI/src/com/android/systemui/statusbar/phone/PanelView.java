@@ -227,14 +227,6 @@ public class PanelView extends FrameLayout {
     private String mViewName;
     protected float mInitialTouchY;
     protected float mFinalTouchY;
-    
-    // brightness slider stuff
-    private Handler mHandler = new Handler();
-    private Float mPropFactor;
-    private Integer mBrightnessValue;
-    private int lastBrightnessChanged = -1;
-    private boolean mBrightnessSliderEnabled = true;
-    private boolean mShouldReactToBrightnessSlider = false;
 
     // brightness slider stuff
     private Handler mHandler = new Handler();
