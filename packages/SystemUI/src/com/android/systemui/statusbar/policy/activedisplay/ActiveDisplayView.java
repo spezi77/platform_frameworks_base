@@ -134,6 +134,7 @@ public class ActiveDisplayView extends FrameLayout {
     private boolean mProximityRegistered = false;
     private boolean mProximityIsFar = true;
     private boolean mIsInBrightLight = false;
+    private boolean mWakedByPocketMode = false; 
     private LinearLayout mOverflowNotifications;
     private LayoutParams mRemoteViewLayoutParams;
     private int mIconSize;
@@ -998,7 +999,7 @@ public class ActiveDisplayView extends FrameLayout {
             mNotificationDrawable = pkgContext.getResources().getDrawable(sbn.getNotification().icon);
             if (mNotificationDrawable != null) {
                 mCurrentNotificationIcon.setImageDrawable(mNotificationDrawable);
-            }
+            } 
             setHandleText(sbn);
             mNotification = sbn;
             mGlowPadView.post(new Runnable() {
