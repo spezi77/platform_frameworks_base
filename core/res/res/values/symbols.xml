@@ -2038,4 +2038,9 @@
   <!-- Panel auto brightness -->
   <java-symbol type="integer" name="config_panelAutoBrightnessValue" />
 
+  <!-- Active Display -->
+  <java-symbol type="dimen" name="glowpad_notification_font_size" />
+  <java-symbol type="dimen" name="glowpad_notification_text_radius" />
+  <java-symbol type="dimen" name="glowpad_overflow_notifications_margin_top" />
+
 </resources>
