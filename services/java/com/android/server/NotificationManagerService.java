@@ -2401,15 +2401,15 @@ public class NotificationManagerService extends INotificationManager.Stub
             int ledOffMS;
             String stringColor = getLedColor(mLedNotification);
                 if (stringColor != null) {
-                        int ledColor = Integer.parseInt(stringColor)
+                int ledColor = Integer.parseInt(stringColor);
                 ledARGB = ledColor != 0 ? ledColor : mDefaultNotificationColor;
                 ledOnMS = mDefaultNotificationLedOn;
                 ledOffMS = mDefaultNotificationLedOff;
             } else {
-                ledARGB = mLedNotification.notification.ledARGB;
-                ledOnMS = mLedNotification.notification.ledOnMS;
-                ledOffMS = mLedNotification.notification.ledOffMS;
-                if ((mLedNotification.notification.defaults & Notification.DEFAULT_LIGHTS) != 0) {
+                ledARGB = mLedNotification.sbn.getNotification().ledARGB;
+                ledOnMS = mLedNotification.sbn.getNotification().ledOnMS;
+                ledOffMS = mLedNotification.sbn.getNotification().ledOffMS;
+                if ((mLedNotification.sbn.getNotification().defaults & Notification.DEFAULT_LIGHTS) != 0) {
                     ledARGB = mDefaultNotificationColor;
                     ledOnMS = mDefaultNotificationLedOn;
                     ledOffMS = mDefaultNotificationLedOff;
@@ -2444,10 +2444,10 @@ public class NotificationManagerService extends INotificationManager.Stub
     private String getLedColor(NotificationRecord ledNotification) {
         String notiPackage = null;
         String google = "com.google.android.gsf";
-        if ((ledNotification.pkg).equals(google)) {
+        if ((ledNotification.sbn.getNotification()).equals(google)) {
             notiPackage = "com.google.android.talk";
         } else {
-            notiPackage = ledNotification.pkg;
+            notiPackage = ledNotification.sbn.getPackageName();
         }
         return mCustomLedColors.get(notiPackage);
     }
