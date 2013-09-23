@@ -41,6 +41,7 @@ public abstract class BaseToggle
     private boolean mVibratePref;
     private boolean mTactileFeedbackEnabled;
     private Vibrator vib;
+    private boolean mFloatingPref;
     private Drawable mIconDrawable = null;
     private int mIconLevel = -1;
     private CharSequence mLabelText = null;
@@ -196,14 +197,19 @@ public abstract class BaseToggle
             mHandler.postDelayed(mUpdateViewRunnable, 100);
     }
 
-    protected final void startActivity(String a) {
-        startActivity(new Intent(a));
+    protected final void startActivity(String action) {
+        Intent intent = new Intent(action);
+        startActivity(intent);
     }
 
-    protected final void startActivity(Intent i) {
+    protected final void startActivity(Intent intent) {
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if (mFloatingPref) {
+            intent.addFlags(Intent.FLAG_FLOATING_WINDOW);
+        }
         collapseStatusBar();
         dismissKeyguard();
-        mContext.startActivityAsUser(i, new UserHandle(UserHandle.USER_CURRENT));
+        mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
     }
 
     protected final void registerBroadcastReceiver(BroadcastReceiver r, IntentFilter f) {
@@ -305,17 +311,18 @@ public abstract class BaseToggle
         }
 
         void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
+            ContentResolver cr = mContext.getContentResolver();
 
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.SHADE_COLLAPSE_ALL),
-                    false, this);
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.QUICK_TOGGLE_VIBRATE),
-                    false, this);
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.HAPTIC_FEEDBACK_ENABLED),
-                    false, this);
+            cr.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SHADE_COLLAPSE_ALL), false, this);
+            cr.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.TOGGLES_FLOATING_WINDOW), false, this);
+            cr.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QUICK_SETTINGS_TEXT_COLOR), false, this);
+            cr.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QUICK_TOGGLE_VIBRATE), false, this);
+            cr.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HAPTIC_FEEDBACK_ENABLED), false, this);
 
             updateSettings();
         }
@@ -324,5 +331,20 @@ public abstract class BaseToggle
         public void onChange(boolean selfChange) {
             updateSettings();
         }
+    }
+
+    private void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mCollapsePref = Settings.System.getBoolean(resolver,
+                Settings.System.SHADE_COLLAPSE_ALL, false);
+        mFloatingPref = Settings.System.getBoolean(resolver,
+                Settings.System.TOGGLES_FLOATING_WINDOW, false);
+        mTextColor = Settings.System.getInt(resolver,
+                Settings.System.QUICK_SETTINGS_TEXT_COLOR, 0xFFFFFFFF);
+        mVibratePref = Settings.System.getBoolean(resolver,
+                Settings.System.QUICK_TOGGLE_VIBRATE, false);
+        mTactileFeedbackEnabled = Settings.System.getIntForUser(resolver,
+                Settings.System.HAPTIC_FEEDBACK_ENABLED, 1, UserHandle.USER_CURRENT) != 0;
     }
 }
