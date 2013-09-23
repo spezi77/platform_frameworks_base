@@ -1872,6 +1872,9 @@
 
   <!-- From PinyinIME(!!!) -->
   <java-symbol type="string" name="inputMethod" />
+  
+  <!-- Telephony -->
+  <java-symbol type="string" name="config_legacyUmsLunFile" />
 
   <!-- From Chromium-WebView -->
   <java-symbol type="attr" name="actionModeWebSearchDrawable" />
