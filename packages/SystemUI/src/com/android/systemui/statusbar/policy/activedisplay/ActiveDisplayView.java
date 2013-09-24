@@ -286,9 +286,7 @@ public class ActiveDisplayView extends FrameLayout {
             ActiveDisplayView.this.mContext.getContentResolver()
                     .unregisterContentObserver(this);
             if (mDisplayNotifications) {
-                unregisterSensorListener();
-                unregisterNotificationListener();
-                unregisterBroadcastReceiver();
+                unregisterCallbacks();
             }
         }
 
@@ -328,13 +326,9 @@ public class ActiveDisplayView extends FrameLayout {
             }
 
             if (mDisplayNotifications) {
-                registerNotificationListener();
-                registerSensorListener();
-                registerBroadcastReceiver();
+                registerCallbacks();
             } else {
-                unregisterNotificationListener();
-                unregisterSensorListener();
-                unregisterBroadcastReceiver();
+                unregisterCallbacks();
             }
         }
     }
