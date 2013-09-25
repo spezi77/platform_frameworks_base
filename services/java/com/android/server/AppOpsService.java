@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.app.AppOpsManager;
 import android.content.Context;
@@ -42,6 +43,7 @@ import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.util.AtomicFile;
 import android.util.Log;
+import android.util.Pair;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.util.TimeUtils;
@@ -288,6 +290,24 @@ public class AppOpsService extends IAppOpsService.Stub {
         }
     }
 
+    private void pruneOp(Op op, int uid, String packageName) {
+        if (op.time == 0 && op.rejectTime == 0) {
+            Ops ops = getOpsLocked(uid, packageName, false);
+            if (ops != null) {
+                ops.remove(op.op);
+                if (ops.size() <= 0) {
+                    HashMap<String, Ops> pkgOps = mUidOps.get(uid);
+                    if (pkgOps != null) {
+                        pkgOps.remove(ops.packageName);
+                        if (pkgOps.size() <= 0) {
+                            mUidOps.remove(uid);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void setMode(int code, int uid, String packageName, int mode) {
         verifyIncomingUid(uid);
@@ -412,7 +432,6 @@ public class AppOpsService extends IAppOpsService.Stub {
         }
     }
 
->>>>>>> 0ece4de... Merge tag 'android-4.3_r3' into jb43
     @Override
     public void startWatchingMode(int op, String packageName, IAppOpsCallback callback) {
         synchronized (this) {
