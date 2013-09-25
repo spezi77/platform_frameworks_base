@@ -146,6 +146,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private final boolean mShowSilentToggle;
     private Profile mChosenProfile;
 
+	private static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
+
+
     /**
      * @param context everything needs a context :(
      */
@@ -353,7 +356,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             });
 
         // next: reboot
-        mItems.add(
+	if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_REBOOT_ENABLED, 1) == 1) {
+                mItems.add(
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_reboot,
                         com.android.internal.R.string.reboot) {
@@ -434,6 +439,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return false;
                 }
             });
+	}
         
 >>>>>>> e4e1041... Framework: Port CM9 features to CM10
         // next: expanded desktop toggle
@@ -503,8 +509,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                                         }, 500);
                                     }
                                 });
-                        AlertDialog dialog = builder.create();
-                        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+                        AlertDialog dialog = builder.create();       dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
                         dialog.show();
                     }
 
