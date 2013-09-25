@@ -348,7 +348,11 @@ void JNICameraContext::postMetadata(JNIEnv *env, int32_t msgType, camera_frame_m
         env->SetIntField(rect, fields.rect_bottom, metadata->faces[i].rect[3]);
 
         env->SetObjectField(face, fields.face_rect, rect);
+#ifdef FIX_FACE_DETECTION_SCORE
+        env->SetIntField(face, fields.face_score, (metadata->faces[i].score ? 0 : 100));
+#else
         env->SetIntField(face, fields.face_score, metadata->faces[i].score);
+#endif
 
         env->DeleteLocalRef(face);
         env->DeleteLocalRef(rect);
@@ -383,6 +387,27 @@ void JNICameraContext::setCallbackMode(JNIEnv *env, bool installed, bool manualM
         mCamera->setPreviewCallbackFlags(CAMERA_FRAME_CALLBACK_FLAG_BARCODE_SCANNER);
         clearCallbackBuffers_l(env, &mCallbackBuffers);
     }
+}
+
+static void android_hardware_Camera_setLongshot(JNIEnv *env, jobject thiz, jboolean enable)
+{
+    ALOGV("setLongshot");
+#ifdef QCOM_HARDWARE
+    JNICameraContext* context;
+    status_t rc;
+    sp<Camera> camera = get_native_camera(env, thiz, &context);
+    if (camera == 0) return;
+
+    if ( enable ) {
+        rc = camera->sendCommand(CAMERA_CMD_LONGSHOT_ON, 0, 0);
+    } else {
+        rc = camera->sendCommand(CAMERA_CMD_LONGSHOT_OFF, 0, 0);
+    }
+
+    if (rc != NO_ERROR) {
+       jniThrowException(env, "java/lang/RuntimeException", "enabling longshot mode failed");
+    }
+#endif
 }
 
 static void android_hardware_Camera_sendHistogramData(JNIEnv *env, jobject thiz)
@@ -948,6 +973,7 @@ static void android_hardware_Camera_sendRawCommand(JNIEnv *env, jobject thiz, ji
     }
 }
 
+
 //-------------------------------------------------
 
 static JNINativeMethod camMethods[] = {
@@ -1005,6 +1031,9 @@ static JNINativeMethod camMethods[] = {
   { "native_sendHistogramData",
     "()V",
      (void *)android_hardware_Camera_sendHistogramData },
+ { "native_setLongshot",
+     "(Z)V",
+      (void *)android_hardware_Camera_setLongshot },
   { "native_setParameters",
     "(Ljava/lang/String;)V",
     (void *)android_hardware_Camera_setParameters },
