@@ -111,6 +111,7 @@ public class ActiveDisplayView extends FrameLayout {
     private static final int MSG_DISMISS_NOTIFICATION   = 1003;
 
     private BaseStatusBar mBar;
+    private boolean mAttached = false;
     private GlowPadView mGlowPadView;
     private View mRemoteView;
     private View mClock;
@@ -161,9 +162,11 @@ public class ActiveDisplayView extends FrameLayout {
             if (shouldShowNotification() && isValidNotification(sbn)) {
                 // need to make sure either the screen is off or the user is currently
                 // viewing the notifications
-                if (ActiveDisplayView.this.getVisibility() == View.VISIBLE
-                        || !isScreenOn())
-                    showNotification(sbn, true);
+                if (!isCallIncoming()) {
+                    if (ActiveDisplayView.this.getVisibility() == View.VISIBLE
+                            || !isScreenOn())
+                        showNotification(sbn, true);
+                }
             }
         }
         @Override
@@ -285,8 +288,11 @@ public class ActiveDisplayView extends FrameLayout {
         void unobserve() {
             ActiveDisplayView.this.mContext.getContentResolver()
                     .unregisterContentObserver(this);
-            if (mDisplayNotifications) {
-                unregisterCallbacks();
+            if (mAttached) {
+                unregisterNotificationListener();
+                unregisterSensorListener();
+                unregisterBroadcastReceiver();
+                mAttached = false;
             }
         }
 
@@ -313,12 +319,29 @@ public class ActiveDisplayView extends FrameLayout {
                     resolver, Settings.System.ACTIVE_DISPLAY_BRIGHTNESS, 100) / 100f;
             mSunlightModeEnabled = Settings.System.getInt(
                     resolver, Settings.System.ACTIVE_DISPLAY_SUNLIGHT_MODE, 0) == 1;
+            mDisplayTimeout = Settings.System.getLong(
+                    resolver, Settings.System.ACTIVE_DISPLAY_TIMEOUT, 8000L);
 
-            int brightnessMode = Settings.System.getInt(
-                    resolver, Settings.System.SCREEN_BRIGHTNESS_MODE, -1);
-            if (mBrightnessMode != brightnessMode) {
-                mBrightnessMode = brightnessMode;
-                mUserBrightnessLevel = -1;
+                int brightnessMode = Settings.System.getInt(
+                        resolver, Settings.System.SCREEN_BRIGHTNESS_MODE, -1);
+                if (mBrightnessMode != brightnessMode) {
+                    mBrightnessMode = brightnessMode;
+                    mUserBrightnessLevel = -1;
+                }
+
+                if (!mAttached) {
+                    registerNotificationListener();
+                    registerSensorListener();
+                    registerBroadcastReceiver();
+                    mAttached = true;
+                }
+            }
+
+            if (!mDisplayNotifications) {
+                unregisterNotificationListener();
+                unregisterSensorListener();
+                unregisterBroadcastReceiver();
+                mAttached = false;
             }
 
             if (!mDisplayNotifications || mRedisplayTimeout <= 0) {
@@ -406,7 +429,8 @@ public class ActiveDisplayView extends FrameLayout {
         makeActiveDisplayView(mCreationOrientation, false);
     }
 
-    @Override protected void onAttachedToWindow() {
+    @Override
+    protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mSettingsObserver.observe();
         if (mRedisplayTimeout > 0 && !isScreenOn()) updateRedisplayTimer();
@@ -529,6 +553,11 @@ public class ActiveDisplayView extends FrameLayout {
                 storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_ad_dismiss_notification)));
             } else {
                 storedDraw.add(new TargetDrawable(res, null));
+                if (mNotification != null && mNotification.isClearable()) {
+                    storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_ad_dismiss_notification)));
+                } else {
+                    storedDraw.add(new TargetDrawable(res, null));
+                }
             }
         }
         storedDraw.add(new TargetDrawable(res, null));
@@ -939,12 +968,21 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     /**
-     * Determine i a call is currently in progress.
+     * Determine if a call is currently in progress.
      * @return True if a call is in progress.
      */
     private boolean isOnCall() {
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getCallState() != TelephonyManager.CALL_STATE_IDLE;
+    }
+
+    /**
+     * Determine if a call is incoming.
+     * @return True if a call is incoming.
+     */
+    private boolean isCallIncoming() {
+        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        return tm.getCallState() == TelephonyManager.CALL_STATE_RINGING;
     }
 
     /**
