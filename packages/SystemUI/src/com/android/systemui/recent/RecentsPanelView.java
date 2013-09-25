@@ -23,14 +23,12 @@ import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Shader.TileMode;
@@ -38,7 +36,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -59,16 +56,13 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import static com.android.internal.util.aokp.AwesomeConstants.*;
 import com.android.systemui.R;
-import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
@@ -101,8 +95,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private long mWindowAnimationStartTime;
     private boolean mCallUiHiddenBeforeNextReload;
 
-    private Button mGoogleNowButton;
-
     private RecentTasksLoader mRecentTasksLoader;
     private ArrayList<TaskDescription> mRecentTaskDescriptions;
     private TaskDescriptionAdapter mListAdapter;
@@ -112,7 +104,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mHighEndGfx;
     private ImageView mClearRecents;
     private LinearColorBar mRamUsageBar;
-    boolean mRecentsGoogEnabled;
 
     private long mFreeMemory;
     private long mTotalMemory;
@@ -537,13 +528,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             }
         }
         updateRamBar();
-        mGoogleNowButton = (Button) findViewById(R.id.recents_google_now_button);
-        mGoogleNowButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AwesomeAction.launchAction(v.getContext(), AwesomeConstant.ACTION_ASSIST.value());
-            }
-        });
     }
 
     public void setMinSwipeAlpha(float minAlpha) {
@@ -1039,27 +1023,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             }
         } catch (IOException e) {}
         mCachedMemory = result;
+
     }
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.RECENT_GOOGLE_ASSIST),
-                    false, this);
-            updateSettings();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-    }
-
 
     private static String readLine(String filename, int line) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filename), 256);
@@ -1070,17 +1035,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             return reader.readLine();
         } finally {
             reader.close();
-       }
-    }
-
-    public void updateSettings() {
-
-        mRecentsGoogEnabled = Settings.System.getBoolean(
-                mContext.getContentResolver(),
-                Settings.System.RECENT_GOOGLE_ASSIST, false);
-
-        if (mGoogleNowButton != null) {
-            mGoogleNowButton.setVisibility(mRecentsGoogEnabled ? View.VISIBLE : View.GONE);
         }
     }
 
