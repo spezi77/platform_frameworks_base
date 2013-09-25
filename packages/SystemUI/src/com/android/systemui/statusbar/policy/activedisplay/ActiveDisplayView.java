@@ -337,7 +337,7 @@ public class ActiveDisplayView extends FrameLayout {
                 }
             }
 
-            if (!mDisplayNotifications) {
+            if (mAttached && !mDisplayNotifications) {
                 unregisterNotificationListener();
                 unregisterSensorListener();
                 unregisterBroadcastReceiver();
