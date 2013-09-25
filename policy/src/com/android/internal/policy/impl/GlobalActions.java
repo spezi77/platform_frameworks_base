@@ -127,6 +127,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private final boolean mShowSilentToggle;
     private Profile mChosenProfile;
 
+	private static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
+
+
     /**
      * @param context everything needs a context :(
      */
@@ -322,7 +325,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             });
 
 		// next: reboot
-		if (Settings.System.getInt(mContext.getContentResolver(),
+	if (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_MENU_REBOOT_ENABLED, 1) == 1) {
         mItems.add(
                 new SinglePressAction(
@@ -386,6 +389,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return false;
                 }
             });
+	}
         
         // next: expanded desktop toggle
         // only shown if enabled, disabled by default
@@ -435,8 +439,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                                         }, 500);
                                     }
                                 });
-                        AlertDialog dialog = builder.create();
-                        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+                        AlertDialog dialog = builder.create();       dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
                         dialog.show();
                     }
 

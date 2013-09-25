@@ -22,6 +22,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import com.android.internal.app.HeavyWeightSwitcherActivity;
 import com.android.internal.os.BatteryStatsImpl;
 import com.android.server.am.ActivityManagerService.PendingActivityLaunch;
+import com.android.server.power.PowerManagerService;
 import com.android.server.wm.AppTransition;
 
 import android.app.Activity;
@@ -57,6 +58,7 @@ import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.UserHandle;
 import android.util.EventLog;
@@ -322,6 +324,8 @@ final class ActivityStack {
         }
     }
 
+    private final PowerManagerService mPm;
+
     final Handler mHandler;
 
     final class ActivityStackHandler extends Handler {
@@ -441,6 +445,7 @@ final class ActivityStack {
             (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mGoingToSleep = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ActivityManager-Sleep");
         mLaunchingActivity = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ActivityManager-Launch");
+        mPm = (PowerManagerService) ServiceManager.getService("power");
         mLaunchingActivity.setReferenceCounted(false);
     }
 
