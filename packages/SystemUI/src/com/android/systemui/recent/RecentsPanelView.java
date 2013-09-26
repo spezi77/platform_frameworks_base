@@ -56,13 +56,17 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import static com.android.internal.util.aokp.AwesomeConstants.*;
+
 import com.android.systemui.R;
+import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
@@ -94,6 +98,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mWaitingForWindowAnimation;
     private long mWindowAnimationStartTime;
     private boolean mCallUiHiddenBeforeNextReload;
+    private Button mGoogleNowButton;
 
     private RecentTasksLoader mRecentTasksLoader;
     private ArrayList<TaskDescription> mRecentTaskDescriptions;
@@ -104,6 +109,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mHighEndGfx;
     private ImageView mClearRecents;
     private LinearColorBar mRamUsageBar;
+    public boolean mRecentsGoogEnabled;
 
     private long mFreeMemory;
     private long mTotalMemory;
@@ -378,6 +384,10 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mRecentsNoApps.setAlpha(1f);
             mRecentsNoApps.setVisibility(noApps ? View.VISIBLE : View.INVISIBLE);
             mClearRecents.setVisibility(noApps ? View.GONE : View.VISIBLE);
+            if (mGoogleNowButton != null) {
+                mGoogleNowButton.setVisibility(mRecentsGoogEnabled ? View.VISIBLE:View.GONE);
+            }
+
             onAnimationEnd(null);
             setFocusable(true);
             setFocusableInTouchMode(true);
@@ -517,6 +527,17 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                 }
             });
         }
+	
+        mGoogleNowButton = (Button) findViewById(R.id.recents_google_now_button);
+	if (mGoogleNowButton != null) {
+            mGoogleNowButton.setOnClickListener(new OnClickListener() {
+            	@Override
+            	public void onClick(View v) {
+                    AwesomeAction.launchAction(v.getContext(), AwesomeConstant.ACTION_ASSIST.value());
+            	}
+            });
+	}
+
 
         if (mRecentsScrim != null) {
             mHighEndGfx = ActivityManager.isHighEndGfx();
@@ -886,7 +907,9 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
         int mRamBarMode = (Settings.System.getInt(mContext.getContentResolver(),
                              Settings.System.RECENTS_RAM_BAR_MODE, 0));
-
+        mRecentsGoogEnabled = Settings.System.getBoolean(
+		mContext.getContentResolver(),
+	   	Settings.System.RECENT_GOOGLE_ASSIST, false);
         if (mRamBarMode != 0 && mRamUsageBar != null) {
 
             long usedMem = 0;
