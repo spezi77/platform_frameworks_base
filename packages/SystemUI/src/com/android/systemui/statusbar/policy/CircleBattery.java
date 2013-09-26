@@ -89,7 +89,6 @@ public class CircleBattery extends ImageView {
     private int mCircleTextColor;
     private int mCircleAnimSpeed;
     private int mCircleReset;
-    private Paint   mPaintGreen;
 
     // runnable to invalidate view via mHandler.postDelayed() call
     private final Runnable mInvalidate = new Runnable() {
@@ -351,7 +350,7 @@ public class CircleBattery extends ImageView {
         mPaintGray = new Paint(mPaintFont);
         mPaintSystem = new Paint(mPaintFont);
         mPaintRed = new Paint(mPaintFont);
-        mPaintGreen = newPaint(mPaintFont);
+        mPaintGreen = new Paint(mPaintFont);
 
         mPaintSystem.setColor(mCircleColor);
         // could not find the darker definition anywhere in resources
