@@ -320,8 +320,6 @@ public class ActiveDisplayView extends FrameLayout {
                     resolver, Settings.System.ACTIVE_DISPLAY_BRIGHTNESS, 100) / 100f;
             mSunlightModeEnabled = Settings.System.getInt(
                     resolver, Settings.System.ACTIVE_DISPLAY_SUNLIGHT_MODE, 0) == 1;
-            mDisplayTimeout = Settings.System.getLong(
-                    resolver, Settings.System.ACTIVE_DISPLAY_TIMEOUT, 8000L);
 
                 int brightnessMode = Settings.System.getInt(
                         resolver, Settings.System.SCREEN_BRIGHTNESS_MODE, -1);
@@ -336,7 +334,6 @@ public class ActiveDisplayView extends FrameLayout {
                     registerBroadcastReceiver();
                     mAttached = true;
                 }
-            }
 
             if (mAttached && !mDisplayNotifications) {
                 unregisterNotificationListener();
@@ -584,7 +581,6 @@ public class ActiveDisplayView extends FrameLayout {
      */
     private void launchNotificationPendingIntent() {
         if (mNotification != null) {
-            PendingIntent contentIntent = mNotification.getNotification().contentIntent;
             try {
                 PendingIntent contentIntent = mNotification.getNotification().contentIntent;
                 contentIntent.send();
@@ -594,7 +590,6 @@ public class ActiveDisplayView extends FrameLayout {
             } catch (NullPointerException e) {
             } catch (RemoteException re) {
             } catch (CanceledException ce) {
- 
             }
             mNotification = null;
         }
@@ -999,7 +994,9 @@ public class ActiveDisplayView extends FrameLayout {
         try {
             Context pkgContext = mContext.createPackageContext(sbn.getPackageName(), Context.CONTEXT_RESTRICTED);
             mNotificationDrawable = pkgContext.getResources().getDrawable(sbn.getNotification().icon);
-            mCurrentNotificationIcon.setImageDrawable(mNotificationDrawable);
+            if (mNotificationDrawable != null) {
+                mCurrentNotificationIcon.setImageDrawable(mNotificationDrawable);
+            }
             setHandleText(sbn);
             mNotification = sbn;
             mGlowPadView.post(new Runnable() {
