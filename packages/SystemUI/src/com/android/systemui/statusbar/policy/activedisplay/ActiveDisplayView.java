@@ -676,7 +676,7 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     private void handleShowNotification(boolean ping) {
-        if (!mDisplayNotifications) return;
+        if (!mDisplayNotifications || inQuietHours()) return;
         showNotificationView();
         setActiveNotification(mNotification, true);
         inflateRemoteView(mNotification);
@@ -1013,6 +1013,31 @@ public class ActiveDisplayView extends FrameLayout {
     private boolean isCallIncoming() {
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getCallState() == TelephonyManager.CALL_STATE_RINGING;
+}
+
+    /*
+     * Check if device is in Quiet Hours in the moment.
+     */
+    private boolean inQuietHours() {
+        boolean quietHoursEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_ENABLED, 0, UserHandle.USER_CURRENT_OR_SELF) != 0;
+        int quietHoursStart = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_START, 0, UserHandle.USER_CURRENT_OR_SELF);
+        int quietHoursEnd = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_END, 0, UserHandle.USER_CURRENT_OR_SELF);
+        boolean quietHoursDim = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.QUIET_HOURS_DIM, 0, UserHandle.USER_CURRENT_OR_SELF) != 0;
+
+        if (quietHoursEnabled && quietHoursDim && (quietHoursStart != quietHoursEnd)) {
+            Calendar calendar = Calendar.getInstance();
+            int minutes = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+            if (quietHoursEnd < quietHoursStart) {
+                return (minutes > quietHoursStart) || (minutes < quietHoursEnd);
+            } else {
+                return (minutes > quietHoursStart) && (minutes < quietHoursEnd);
+            }
+        }
+        return false;
     }
 
     /**
@@ -1102,7 +1127,7 @@ public class ActiveDisplayView extends FrameLayout {
             if (event.sensor.equals(mProximitySensor)) {
                 if (value >= mProximitySensor.getMaximumRange()) {
                     mProximityIsFar = true;
-                    if (!isScreenOn() && mPocketModeEnabled && !isOnCall()) {
+                    if (!isScreenOn() && mPocketModeEnabled && !isOnCall() && !inQuietHours()) {
                         if (System.currentTimeMillis() >= (mPocketTime + POCKET_THRESHOLD)) {
                             mWakedByPocketMode = true;
                             mNotification = getNextAvailableNotification();
