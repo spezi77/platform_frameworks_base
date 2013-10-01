@@ -190,8 +190,6 @@ public class MobileDataStateTracker implements NetworkStateTracker {
     private class MobileDataStateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Assume this isn't a provisioning network.
-            mNetworkInfo.setIsConnectedToProvisioningNetwork(false);
             if (intent.getAction().equals(TelephonyIntents.
                     ACTION_DATA_CONNECTION_CONNECTED_TO_PROVISIONING_APN)) {
                 String apnName = intent.getStringExtra(PhoneConstants.DATA_APN_KEY);
@@ -207,11 +205,7 @@ public class MobileDataStateTracker implements NetworkStateTracker {
                 // Make us in the connecting state until we make a new TYPE_MOBILE_PROVISIONING
                 mMobileDataState = PhoneConstants.DataState.CONNECTING;
                 updateLinkProperitesAndCapatilities(intent);
-                mNetworkInfo.setIsConnectedToProvisioningNetwork(true);
-
-                // Change state to SUSPENDED so setDetailedState
-                // sends EVENT_STATE_CHANGED to connectivityService
-                setDetailedState(DetailedState.SUSPENDED, "", apnName);
+                setDetailedState(DetailedState.CONNECTED_TO_PROVISIONING_NETWORK, "", apnName);
             } else if (intent.getAction().equals(TelephonyIntents.
                     ACTION_ANY_DATA_CONNECTION_STATE_CHANGED)) {
                 String apnType = intent.getStringExtra(PhoneConstants.DATA_APN_TYPE_KEY);
