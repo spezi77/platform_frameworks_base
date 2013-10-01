@@ -3670,9 +3670,17 @@ public class ConnectivityService extends IConnectivityManager.Stub {
 
     private boolean isMobileDataStateTrackerReady() {
         MobileDataStateTracker mdst =
-                (MobileDataStateTracker) mNetTrackers[ConnectivityManager.TYPE_MOBILE_HIPRI];
+                (MobileDataStateTracker) mNetTrackers[ConnectivityManager.TYPE_MOBILE];
         return (mdst != null) && (mdst.isReady());
     }
+
+    @Override
+    public int checkMobileProvisioning(boolean sendNotification, int suggestedTimeOutMs,
+            final ResultReceiver resultReceiver) {
+        log("checkMobileProvisioning: E sendNotification=" + sendNotification
+                + " suggestedTimeOutMs=" + suggestedTimeOutMs
+                + " resultReceiver=" + resultReceiver);
+        enforceChangePermission();
 
     /**
      * The ResultReceiver resultCode for checkMobileProvisioning (CMP_RESULT_CODE)
