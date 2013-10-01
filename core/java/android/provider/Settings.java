@@ -5412,13 +5412,6 @@ public final class Settings {
         public static final String ALLOW_MOCK_LOCATION = "mock_location";
 
         /**
-         * Setting to allow the use of com.android.internal.telephony.SMSDispatcher#MockSmsReceiver
-         * to simulate the reception of SMS for testing purposes during application development.
-         * @hide
-         */
-         public static final String ALLOW_MOCK_SMS = "mock_sms";
-
-        /**
          * A 64-bit number (as a hex string) that is randomly
          * generated on the device's first boot and should remain
          * constant for the lifetime of the device.  (The value may

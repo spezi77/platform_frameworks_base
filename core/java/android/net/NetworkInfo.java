@@ -84,12 +84,6 @@ public class NetworkInfo implements Parcelable {
         VERIFYING_POOR_LINK,
         /** Checking if network is a captive portal */
         CAPTIVE_PORTAL_CHECK,
-        /**
-         * Network is connected to provisioning network
-         * TODO: Probably not needed when we add TYPE_PROVISIONING_NETWORK
-         * @hide
-         */
-        CONNECTED_TO_PROVISIONING_NETWORK
     }
 
     /**
@@ -114,7 +108,6 @@ public class NetworkInfo implements Parcelable {
         stateMap.put(DetailedState.DISCONNECTED, State.DISCONNECTED);
         stateMap.put(DetailedState.FAILED, State.DISCONNECTED);
         stateMap.put(DetailedState.BLOCKED, State.DISCONNECTED);
-        stateMap.put(DetailedState.CONNECTED_TO_PROVISIONING_NETWORK, State.CONNECTED);
     }
 
     private int mNetworkType;
