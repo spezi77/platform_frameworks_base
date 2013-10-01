@@ -3670,17 +3670,9 @@ public class ConnectivityService extends IConnectivityManager.Stub {
 
     private boolean isMobileDataStateTrackerReady() {
         MobileDataStateTracker mdst =
-                (MobileDataStateTracker) mNetTrackers[ConnectivityManager.TYPE_MOBILE];
+                (MobileDataStateTracker) mNetTrackers[ConnectivityManager.TYPE_MOBILE_HIPRI];
         return (mdst != null) && (mdst.isReady());
     }
-
-    @Override
-    public int checkMobileProvisioning(boolean sendNotification, int suggestedTimeOutMs,
-            final ResultReceiver resultReceiver) {
-        log("checkMobileProvisioning: E sendNotification=" + sendNotification
-                + " suggestedTimeOutMs=" + suggestedTimeOutMs
-                + " resultReceiver=" + resultReceiver);
-        enforceChangePermission();
 
     /**
      * The ResultReceiver resultCode for checkMobileProvisioning (CMP_RESULT_CODE)
@@ -3924,25 +3916,19 @@ public class ConnectivityService extends IConnectivityManager.Stub {
             }
 
             try {
-                // Continue trying to connect until time has run out
-                long endTime = SystemClock.elapsedRealtime() + params.mTimeOutMs;
-
-                if (!mCs.isMobileDataStateTrackerReady()) {
-                    // Wait for MobileDataStateTracker to be ready.
-                    if (DBG) log("isMobileOk: mdst is not ready");
-                    while(SystemClock.elapsedRealtime() < endTime) {
-                        if (mCs.isMobileDataStateTrackerReady()) {
-                            // Enable fail fast as we'll do retries here and use a
-                            // hipri connection so the default connection stays active.
-                            if (DBG) log("isMobileOk: mdst ready, enable fail fast of mobile data");
-                            mCs.setEnableFailFastMobileData(DctConstants.ENABLED);
-                            break;
-                        }
-                        sleep(1);
-                    }
+                if (mCs.isNetworkSupported(ConnectivityManager.TYPE_MOBILE) == false) {
+                    log("isMobileOk: not mobile capable");
+                    result = ConnectivityManager.CMP_RESULT_CODE_NO_CONNECTION;
+                    return result;
                 }
 
+                // Enable fail fast as we'll do retries here and use a
+                // hipri connection so the default connection stays active.
                 log("isMobileOk: start hipri url=" + params.mUrl);
+                mCs.setEnableFailFastMobileData(DctConstants.ENABLED);
+
+                // Continue trying to connect until time has run out
+                long endTime = SystemClock.elapsedRealtime() + params.mTimeOutMs;
 
                 // First wait until we can start using hipri
                 Binder binder = new Binder();
