@@ -91,8 +91,6 @@ public class WifiConfiguration implements Parcelable {
     public EnterpriseField engine = new EnterpriseField("engine");
     /** {@hide} */
     public EnterpriseField engine_id = new EnterpriseField("engine_id");
-    /** {@hide} */
-    public static final int INVALID_NETWORK_ID = -1;
     /**
      * Recognized key management schemes.
      */

@@ -1987,12 +1987,6 @@ public class WifiStateMachine extends StateMachine {
                         setSuspendOptimizations(SUSPEND_DUE_TO_HIGH_PERF, true);
                     }
                     break;
-	        case CMD_GET_IBSS_SUPPORTED:
-                    replyToMessage(message, message.what, mIbssSupported ? 1 : 0);
-                    break;
-                case CMD_GET_SUPPORTED_CHANNELS:
-                    replyToMessage(message, message.what, mSupportedChannels);
-                    break;
                 case CMD_BOOT_COMPLETED:
                     String countryCode = mPersistedCountryCode;
                     if (TextUtils.isEmpty(countryCode) == false) {

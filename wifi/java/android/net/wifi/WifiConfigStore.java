@@ -1412,7 +1412,6 @@ class WifiConfigStore {
             } catch (NumberFormatException ignore) {
             }
         }
-1382
         value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.frequencyVarName);
         config.frequency = 0;
         if (!TextUtils.isEmpty(value)) {
@@ -1420,7 +1419,7 @@ class WifiConfigStore {
                 config.frequency = Integer.parseInt(value);
             } catch (NumberFormatException ignore) {
             }
-        
+	}
 
         value = mWifiNative.getNetworkVariable(netId, WifiConfiguration.ssidVarName);
         if (!TextUtils.isEmpty(value)) {

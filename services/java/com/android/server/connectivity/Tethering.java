@@ -211,7 +211,7 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG, "Exception adding default nw to upstreamIfaceTypes: " + 
+            Log.d(TAG, "Exception adding default nw to upstreamIfaceTypes:" ); 
         }
 
         for (int i : ifaceTypes) {
