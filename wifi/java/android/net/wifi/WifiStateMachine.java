@@ -102,7 +102,7 @@ import java.util.regex.Pattern;
 public class WifiStateMachine extends StateMachine {
 
     private static final String NETWORKTYPE = "WIFI";
-    private static final boolean DBG = false;
+    private static final boolean DBG = true;
 
     private WifiMonitor mWifiMonitor;
     private WifiNative mWifiNative;
