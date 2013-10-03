@@ -345,7 +345,7 @@ public final class WifiService extends IWifiManager.Stub {
         * only CHANGE_WIFI_STATE is enforced
         */
 
-        final long ident = Binder.clearCallingIdentity();
+        long ident = Binder.clearCallingIdentity();
         try {
             if (! mSettingsStore.handleWifiToggled(enable)) {
                 // Nothing to do if wifi cannot be toggled
@@ -551,7 +551,7 @@ public final class WifiService extends IWifiManager.Stub {
         enforceAccessPermission();
         int userId = UserHandle.getCallingUserId();
         int uid = Binder.getCallingUid();
-        final long ident = Binder.clearCallingIdentity();
+        long ident = Binder.clearCallingIdentity();
         if (mAppOps.noteOp(AppOpsManager.OP_WIFI_SCAN, uid, callingPackage)
                 != AppOpsManager.MODE_ALLOWED) {
             return new ArrayList<ScanResult>();
