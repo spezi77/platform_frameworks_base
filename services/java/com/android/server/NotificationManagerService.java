@@ -1479,6 +1479,17 @@ public class NotificationManagerService extends INotificationManager.Stub
                             resources
                                     .getInteger(com.android.internal.R.integer.config_defaultNotificationLedOn));
 
+        mDefaultVibrationPattern = getLongArray(resources,
+                com.android.internal.R.array.config_defaultNotificationVibePattern,
+                VIBRATE_PATTERN_MAXLEN,
+                DEFAULT_VIBRATE_PATTERN);
+
+        mFallbackVibrationPattern = getLongArray(resources,
+                com.android.internal.R.array.config_notificationFallbackVibePattern,
+                VIBRATE_PATTERN_MAXLEN,
+                DEFAULT_VIBRATE_PATTERN);
+
+
             mCustomLedColors.clear();
             parseCustomLedValues(Settings.System.getString(resolver,
                     Settings.System.LED_CUSTOM_VALUES));
@@ -1518,7 +1529,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     {
         super();
         mContext = context;
-        mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        mVibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
         mAm = ActivityManagerNative.getDefault();
         mUserManager = (UserManager)context.getSystemService(Context.USER_SERVICE);
         mToastQueue = new ArrayList<ToastRecord>();
@@ -1536,6 +1547,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         mAttentionLight = lights.getLight(LightsService.LIGHT_ID_ATTENTION);
 
         mCustomLedColors = new HashMap<String, String>();
+
 
         // Don't start allowing notifications until the setup wizard has run
         // once.
@@ -2015,25 +2027,28 @@ public class NotificationManagerService extends INotificationManager.Stub
                         (ProfileManager) mContext.getSystemService(Context.PROFILE_SERVICE);
 
                 ProfileGroup group = profileManager.getActiveProfileGroup(pkg);
-                notification = group.processNotification(notification);
+		if (group != null) {
+                    notification = group.processNotification(notification);
+	        }
             } catch(Throwable th) {
                 Log.e(TAG, "An error occurred profiling the notification.", th);
             }
 
             // If we're not supposed to beep, vibrate, etc. then don't.
-            if (((mDisabledNotifications & StatusBarManager.DISABLE_NOTIFICATION_ALERTS) == 0)
-                    && (!(old != null
-                        && (notification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0 ))
-                        && !notificationIsAnnoying(pkg)
-                    && (r.getUserId() == UserHandle.USER_ALL ||
-                        (r.getUserId() == userId && r.getUserId() == currentUser))
-                    && canInterrupt
-                    && mSystemReady) {
+final boolean alertsDisabled =
+                    (mDisabledNotifications & StatusBarManager.DISABLE_NOTIFICATION_ALERTS) != 0;
+            boolean readyForAlerts = canInterrupt && mSystemReady &&
+                    (r.getUserId() == UserHandle.USER_ALL || r.getUserId() == userId && r.getUserId() == currentUser) &&
+                    (old == null || (notification.flags & Notification.FLAG_ONLY_ALERT_ONCE) == 0);
+            boolean hasValidSound = false;
+
+
+            if (readyForAlerts && !alertsDisabled
+                        && !notificationIsAnnoying(pkg)) {
 
                 final AudioManager audioManager = (AudioManager) mContext
                 .getSystemService(Context.AUDIO_SERVICE);
                 // sound
-
                 // should we use the default notification sound? (indicated either by DEFAULT_SOUND
                 // or because notification.sound is pointing at Settings.System.NOTIFICATION_SOUND)
                 final boolean useDefaultSound =
@@ -2041,8 +2056,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                     || Settings.System.DEFAULT_NOTIFICATION_URI.equals(notification.sound);
 
                 Uri soundUri = null;
-                boolean hasValidSound = false;
-                    
+            try {        
                 if (!(inQuietHours && mQuietHoursMute) && useDefaultSound) {
                     soundUri = Settings.System.DEFAULT_NOTIFICATION_URI;
 
@@ -2080,15 +2094,22 @@ public class NotificationManagerService extends INotificationManager.Stub
                         }
                     }
                 }
+	} catch (NullPointerException NPE) {
+		Slog.e(TAG,"Caught NPE in Audio portion");
+	}
 
                 // vibrate
+        if (readyForAlerts && !alertsDisabled) {
                 // Does the notification want to specify its own vibration?
+        try { 
                 final boolean hasCustomVibrate = notification.vibrate != null;
 
+
+		if (audioManager == null)  Slog.v(TAG,"audioManager is null");
                 // new in 4.2: if there was supposed to be a sound and we're in vibrate mode,
                 // and no other vibration is specified, we fall back to vibration
                 final boolean convertSoundToVibration =
-                           !hasCustomVibrate
+                        !hasCustomVibrate
                         && hasValidSound
                         && (audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE);
 
@@ -2100,26 +2121,44 @@ public class NotificationManagerService extends INotificationManager.Stub
                         && !(audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT)) {
                     mVibrateNotification = r;
 
+                    int repeat = (notification.flags & Notification.FLAG_INSISTENT) != 0 ? 0: -1;
+                    long[] pattern;
+
+                    if (useDefaultVibrate) {
+                        pattern = mDefaultVibrationPattern;
+                    } else if (hasCustomVibrate) {
+                        pattern = notification.vibrate;
+                    } else {
+                        pattern = mFallbackVibrationPattern;
+                    }
+
                     if (useDefaultVibrate || convertSoundToVibration) {
                         // Escalate privileges so we can use the vibrator even if the notifying app
                         // does not have the VIBRATE permission.
                         long identity = Binder.clearCallingIdentity();
                         try {
-                            mVibrator.vibrate(r.sbn.getUid(), r.sbn.getBasePkg(),
-                                useDefaultVibrate ? mDefaultVibrationPattern
-                                    : mFallbackVibrationPattern,
-                                ((notification.flags & Notification.FLAG_INSISTENT) != 0) ? 0: -1);
+			    if (mVibrator != null) {
+                                mVibrator.vibrate(r.sbn.getUid(), r.sbn.getBasePkg(), pattern, repeat);
+			    }
+			} catch (Exception e) {
+			    Slog.e(TAG,"Caught "+e);
                         } finally {
                             Binder.restoreCallingIdentity(identity);
                         }
-                    } else if (notification.vibrate.length > 1) {
+                    } else if (pattern.length > 1) {
                         // If you want your own vibration pattern, you need the VIBRATE permission
-                        mVibrator.vibrate(r.sbn.getUid(), r.sbn.getBasePkg(), notification.vibrate,
-                            ((notification.flags & Notification.FLAG_INSISTENT) != 0) ? 0: -1);
+			if (mVibrator != null) {
+                            mVibrator.vibrate(r.sbn.getUid(), r.sbn.getBasePkg(), notification.vibrate, repeat);
+	  		}
                     }
                 }
+            } catch (NullPointerException NPE) {
+		Slog.e(TAG,"Caught NPE in vibration portion\n "+NPE.getCause());
+            }
+            }
             }
 
+	    try {
             // light
             // the most recent thing gets the light
             mLights.remove(old);
@@ -2131,6 +2170,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             if ((notification.flags & Notification.FLAG_SHOW_LIGHTS) != 0
                     && canInterrupt) {
                 mLights.add(r);
+	        mLedNotification = null;
                 updateLightsLocked();
             } else {
                 if (old != null
@@ -2138,10 +2178,20 @@ public class NotificationManagerService extends INotificationManager.Stub
                     updateLightsLocked();
                 }
             }
+	    } catch (NullPointerException NPE) {
+		Slog.e(TAG,"Caught NPE in light portion");
+            }
         }
 
         idOut[0] = id;
     }
+
+    private boolean shouldConvertSoundToVibration() {
+        return Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.NOTIFICATION_CONVERT_SOUND_TO_VIBRATION,
+                1, UserHandle.USER_CURRENT_OR_SELF) != 0;
+    }
+
 
 	private boolean notificationIsAnnoying(String pkg) {
         if (mAnnoyingNotificationThreshold <= 0)

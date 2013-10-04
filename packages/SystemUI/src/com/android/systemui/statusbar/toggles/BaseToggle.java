@@ -308,8 +308,6 @@ public abstract class BaseToggle
             cr.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.TOGGLES_FLOATING_WINDOW), false, this);
             cr.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QUICK_SETTINGS_TEXT_COLOR), false, this);
-            cr.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QUICK_TOGGLE_VIBRATE), false, this);
             cr.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HAPTIC_FEEDBACK_ENABLED), false, this);
@@ -330,8 +328,6 @@ public abstract class BaseToggle
                 Settings.System.SHADE_COLLAPSE_ALL, false);
         mFloatingPref = Settings.System.getBoolean(resolver,
                 Settings.System.TOGGLES_FLOATING_WINDOW, false);
-        mTextColor = Settings.System.getInt(resolver,
-                Settings.System.QUICK_SETTINGS_TEXT_COLOR, 0xFFFFFFFF);
         mVibratePref = Settings.System.getBoolean(resolver,
                 Settings.System.QUICK_TOGGLE_VIBRATE, false);
         mTactileFeedbackEnabled = Settings.System.getIntForUser(resolver,

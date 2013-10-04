@@ -916,7 +916,6 @@ public class ActiveDisplayView extends FrameLayout {
                         }
                     }    
                 } catch (RemoteException re) {
-                } catch (NameNotFoundException nnfe) {
                 } catch (Resources.NotFoundException e) {
                 } catch (NullPointerException npe) {
                 }
