@@ -239,6 +239,7 @@ public class NetworkController extends BroadcastReceiver {
         // broadcasts
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.aokp.romcontrol.LABEL_CHANGED");
+        filter.addAction("com.android.settings.LABEL_CHANGED");
         filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -425,6 +426,8 @@ public class NetworkController extends BroadcastReceiver {
         } else if (action.equals(Intent.ACTION_AIRPLANE_MODE_CHANGED)) {
             refreshLocale();
             updateAirplaneMode();
+            refreshViews();
+        } else if (action.equals("com.android.settings.LABEL_CHANGED")) {
             refreshViews();
         } else if (action.equals(WimaxManagerConstants.NET_4G_STATE_CHANGED_ACTION) ||
                 action.equals(WimaxManagerConstants.SIGNAL_LEVEL_CHANGED_ACTION) ||
@@ -1260,9 +1263,13 @@ public class NetworkController extends BroadcastReceiver {
             }
         }
 
-        if (customLabel != null && customLabel.length() > 0) {
-            combinedLabel = customLabel;
+        if (customLabel != null && customLabel.trim().length() > 0) {  
+            combinedLabel = customLabel;    
             mobileLabel = customLabel;
+            if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.NOTIFICATION_SHOW_WIFI_SSID, 0) == 0) {
+                wifiLabel = customLabel;
+            }
         }
 
         if (DEBUG) {
