@@ -1306,7 +1306,8 @@ public class ConnectivityManager {
     }
 
     /**
-     * Supply the backend messenger for a network tracker
+     * Signal that the captive portal check on the indicated network
+     * is complete and whether its a captive portal or not.
      *
      * @param info the {@link NetworkInfo} object for the networkType
      *        in question.

@@ -3935,10 +3935,6 @@ public class ConnectivityService extends IConnectivityManager.Stub {
                 }
 
                 log("isMobileOk: start hipri url=" + params.mUrl);
-                mCs.setEnableFailFastMobileData(DctConstants.ENABLED);
-
-                // Continue trying to connect until time has run out
-                long endTime = SystemClock.elapsedRealtime() + params.mTimeOutMs;
 
                 // First wait until we can start using hipri
                 Binder binder = new Binder();
@@ -3951,7 +3947,7 @@ public class ConnectivityService extends IConnectivityManager.Stub {
                             break;
                     }
                     if (VDBG) log("isMobileOk: hipri not started yet");
-                    result = ConnectivityManager.CMP_RESULT_CODE_NO_CONNECTION;
+                    result = CMP_RESULT_CODE_NO_CONNECTION;
                     sleep(1);
                 }
 
