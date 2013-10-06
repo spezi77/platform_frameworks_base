@@ -2769,10 +2769,43 @@ public final class Settings {
         public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
 
         /**
+        * @hide
+        * Shows custom date before clock time
+        * 0 - No Date
+        * 1 - Small Date
+        * 2 - Normal Date
+        */
+        public static final String STATUSBAR_CLOCK_DATE_DISPLAY = "statusbar_clock_date_display";
+
+       /**
+        * @hide
+        * Sets the date string style
+        * 0 - Regular style
+        * 1 - Lowercase
+        * 2 - Uppercase
+        */
+        public static final String STATUSBAR_CLOCK_DATE_STYLE = "statusbar_clock_date_style";
+
+       /**
+        * @hide
+        * Stores the java DateFormat string for the date
+        */
+        public static final String STATUSBAR_CLOCK_DATE_FORMAT = "statusbar_clock_date_format";
+
+
+        /**
          * Show the pending notification counts as overlays on the statusbar
          * @hide
          */
         public static final String STATUSBAR_NOTIF_COUNT = "status_bar_notif_count";
+
+
+	/*
+         * Network speed indicator
+         * @hide
+         */
+        public static final String STATUS_BAR_TRAFFIC = "status_bar_traffic"; 
+
 
         /**
          * Whether to show the battery bar
@@ -4244,30 +4277,6 @@ public final class Settings {
           * @hide
           */
          public static final String KEY_APP_SWITCH_LONG_PRESS_ACTION = "key_app_switch_long_press_action";
-
-        /**
-         * Whether power menu profiles switcher is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_PROFILES_ENABLED = "power_menu_profiles_enabled";
-
-        /**
-         * Whether power menu airplane toggle is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_AIRPLANE_ENABLED = "power_menu_airplane_enabled";
-
-        /**
-         * Whether power menu silent mode is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_SILENT_ENABLED = "power_menu_silent_enabled";
-
-        /**	
-         * Allows to show the background activity back the lockscreen
-         * @hide
-         */
-        public static final String LOCKSCREEN_SEE_THROUGH = "lockscreen_see_through";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
