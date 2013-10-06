@@ -4246,30 +4246,6 @@ public final class Settings {
          public static final String KEY_APP_SWITCH_LONG_PRESS_ACTION = "key_app_switch_long_press_action";
 
         /**
-         * Whether power menu profiles switcher is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_PROFILES_ENABLED = "power_menu_profiles_enabled";
-
-        /**
-         * Whether power menu airplane toggle is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_AIRPLANE_ENABLED = "power_menu_airplane_enabled";
-
-        /**
-         * Whether power menu silent mode is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_SILENT_ENABLED = "power_menu_silent_enabled";
-
-        /**	
-         * Allows to show the background activity back the lockscreen
-         * @hide
-         */
-        public static final String LOCKSCREEN_SEE_THROUGH = "lockscreen_see_through";
-
-        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
