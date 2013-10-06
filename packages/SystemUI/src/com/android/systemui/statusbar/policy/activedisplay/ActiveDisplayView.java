@@ -888,10 +888,6 @@ public class ActiveDisplayView extends FrameLayout {
                 try {
                     // check if other clearable notifications exist and if so display the next one
                     sbns= mNM.getActiveNotificationsFromListener(mNotificationListener);
-                } catch (RemoteException re) {
-                    Log.e(TAG, "updateOtherNoticiations()", re);
-                    return;
-                }
                     mOverflowNotifications.removeAllViews();
                     for (int i = sbns.length - 1; i >= 0; i--) {
                         if (isValidNotification(sbns[i])
@@ -928,7 +924,7 @@ public class ActiveDisplayView extends FrameLayout {
                                 mOverflowNotifications.addView(iv, mOverflowLayoutParams);
                             }
                         }
-                    
+                    }    
                 } catch (RemoteException re) {
                 } catch (NullPointerException npe) {
                 }

@@ -3737,8 +3737,10 @@ public class PackageManagerService extends IPackageManager.Stub {
             mDeferredDexOpt = null;
         }
         if (pkgs != null) {
-            for (int i=0; i<pkgs.size(); i++) {
-                PackageParser.Package p = pkgs.get(i);
+            int i = 0;
+            for (PackageParser.Package pkg : pkgs) {
+                PackageParser.Package p = pkg;
+
                 if (!isFirstBoot()) {
                     i++;
                     try {
