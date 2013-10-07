@@ -499,6 +499,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
 
         addActiveDisplayView();
+	addGestureAnywhereView();
 
         // figure out which pixel-format to use for the status bar.
         updateTranslucentStatus();
