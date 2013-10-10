@@ -22,9 +22,11 @@ import java.util.List;
 
 import android.app.StatusBarManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.gesture.Gesture;
@@ -182,12 +184,15 @@ public class GestureAnywhereView extends TriggerOverlayView implements GestureOv
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mSettingsObserver.observe();
+        mContext.registerReceiver(mBroadcastReceiver,
+                new IntentFilter(Intent.ACTION_SCREEN_OFF));
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mSettingsObserver.unobserve();
+        mContext.unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
@@ -337,6 +342,16 @@ public class GestureAnywhereView extends TriggerOverlayView implements GestureOv
 
         @Override
         public void onAnimationRepeat(Animation animation) {
+        }
+    };
+
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Intent.ACTION_SCREEN_OFF.equals(action) && mState != State.Collapsed) {
+                switchToState(State.Closing);
+            }
         }
     };
 
