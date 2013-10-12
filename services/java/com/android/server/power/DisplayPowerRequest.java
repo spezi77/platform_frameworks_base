@@ -62,7 +62,6 @@ final class DisplayPowerRequest {
     // visible to the user.
     public boolean blockScreenOn;
 
-<<<<<<< HEAD
     // Multiplication factor for delays used in auto-brightness computations
     // Lower values mean faster reaction to changing light conditions, but
     // potentially higher CPU usage and flicker.
@@ -72,11 +71,6 @@ final class DisplayPowerRequest {
     // Eos settings - override config for ElectronBeam on or off
     public boolean electronBeamOnEnabled;
     public boolean electronBeamOffEnabled;    
-=======
-    // Slim settings - override config for ElectronBeam on or off
-    public int electronBeamMode;
-    public boolean electronBeamOffEnabled;
->>>>>>> f24b2a7... CRT screen off animation user defined (1/2)
 
     public DisplayPowerRequest() {
         screenState = SCREEN_STATE_BRIGHT;
@@ -85,13 +79,9 @@ final class DisplayPowerRequest {
         screenAutoBrightnessAdjustment = 0.0f;
         useAutoBrightness = false;
         blockScreenOn = false;
-<<<<<<< HEAD
         responsitivityFactor = 1.0f;
         electronBeamMode = 0;
         electronBeamOnEnabled = false;
-=======
-        electronBeamMode = 0;
->>>>>>> f24b2a7... CRT screen off animation user defined (1/2)
         electronBeamOffEnabled = false;
     }
 
@@ -106,15 +96,10 @@ final class DisplayPowerRequest {
         screenAutoBrightnessAdjustment = other.screenAutoBrightnessAdjustment;
         useAutoBrightness = other.useAutoBrightness;
         blockScreenOn = other.blockScreenOn;
-<<<<<<< HEAD
         responsitivityFactor = other.responsitivityFactor;
         electronBeamMode = other.electronBeamMode;
         electronBeamOffEnabled = other.electronBeamOffEnabled;
 	electronBeamOnEnabled = other.electronBeamOnEnabled;
-=======
-        electronBeamMode = other.electronBeamMode;
-        electronBeamOffEnabled = other.electronBeamOffEnabled;
->>>>>>> f24b2a7... CRT screen off animation user defined (1/2)
     }
 
     public int getElectronBeamMode() {
@@ -135,13 +120,9 @@ final class DisplayPowerRequest {
                 && screenAutoBrightnessAdjustment == other.screenAutoBrightnessAdjustment
                 && useAutoBrightness == other.useAutoBrightness
                 && blockScreenOn == other.blockScreenOn
-<<<<<<< HEAD
                 && Math.abs(responsitivityFactor - other.responsitivityFactor) < 1E-6
                 && electronBeamMode == other.electronBeamMode
                 && electronBeamOnEnabled == other.electronBeamOnEnabled
-=======
-                && electronBeamMode == other.electronBeamMode
->>>>>>> f24b2a7... CRT screen off animation user defined (1/2)
                 && electronBeamOffEnabled == other.electronBeamOffEnabled;
     }
 
@@ -158,13 +139,9 @@ final class DisplayPowerRequest {
                 + ", screenAutoBrightnessAdjustment=" + screenAutoBrightnessAdjustment
                 + ", useAutoBrightness=" + useAutoBrightness
                 + ", blockScreenOn=" + blockScreenOn
-<<<<<<< HEAD
                 + ", responsitivityFactor=" + responsitivityFactor
                 + ", electronBeamMode=" + electronBeamMode
                 + ", electronBeamOnEnabled=" + electronBeamOnEnabled
-=======
-                + ", electronBeamMode=" + electronBeamMode
->>>>>>> f24b2a7... CRT screen off animation user defined (1/2)
                 + ", electronBeamOffEnabled=" + electronBeamOffEnabled;
     }
 }
