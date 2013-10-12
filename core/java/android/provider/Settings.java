@@ -2869,6 +2869,22 @@ public final class Settings {
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
 
         /**
+         * Whether or not to launch default music player when headset is connected
+         * @hide
+         */
+        public static final String HEADSET_CONNECT_PLAYER = "headset_connect_player"; 
+
+        /**
+         * @hide
+         */
+        public static final String SYSTEM_POWER_ENABLE_CRT_OFF = "system_power_enable_crt_off";
+
+        /**
+         * @hide
+         */
+        public static final String SYSTEM_POWER_ENABLE_CRT_ON = "system_power_enable_crt_on";
+
+        /**
          * Sets the alpha of notification wallpaper
          * @hide
          */
