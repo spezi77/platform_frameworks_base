@@ -1632,7 +1632,7 @@ public class NetworkController extends BroadcastReceiver {
                     this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_SIGNAL_SHOW_4G_FOR_LTE),
-                    mContext.getResources().getBoolean(R.bool.config_show4GForLTE),
+                    mContext.getResources().getBoolean(com.android.internal.R.bool.config_show4GForLTE),
                     this);
             updateSettings();
         }
@@ -1651,7 +1651,7 @@ public class NetworkController extends BroadcastReceiver {
                 Settings.System.STATUSBAR_SIGNAL_CLUSTER_ALT, clustdefault));
         mShow4gForLte = (Settings.System.getBoolean(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_SIGNAL_SHOW_4G_FOR_LTE,
-                mContext.getResources().getBoolean(R.bool.config_show4GForLTE)));
+                mContext.getResources().getBoolean(com.android.internal.R.bool.config_show4GForLTE)));
         updateTelephonySignalStrength();
         updateDataNetType();
         updateDataIcon();
