@@ -206,7 +206,7 @@ public class NetworkController extends BroadcastReceiver {
 
         mShowPhoneRSSIForData = res.getBoolean(R.bool.config_showPhoneRSSIForData);
         mShowAtLeastThreeGees = res.getBoolean(R.bool.config_showMin3G);
-        mShow4GforLTE = res.getBoolean(R.bool.config_show4GForLTE);
+        mShow4GforLTE = res.getBoolean(com.android.internal.R.bool.config_show4GForLTE);
         mAlwaysShowCdmaRssi = res.getBoolean(
                 com.android.internal.R.bool.config_alwaysUseCdmaRssi);
 
