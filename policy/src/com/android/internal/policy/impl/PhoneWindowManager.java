@@ -248,6 +248,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mUserUIMode; //User selected UI Mode (Phablet/Tablet, etc)
     int mStockUIMode; // UI Mode as dictated by screen size.
     private Intent closeAppWindow;
+    boolean mBarsAreTranslucent = true;
 
     WindowState mKeyguard = null;
     KeyguardViewMediator mKeyguardMediator;

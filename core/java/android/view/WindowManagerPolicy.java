@@ -1142,6 +1142,13 @@ public interface WindowManagerPolicy {
     public boolean hasNavigationBar();
 
     /**
+     * Specifies whether the on-screen navigation bar and the status bar are translucent
+     */
+    public boolean isBarTranslucent();
+    public void setBarTranslucentAllowed(boolean allowed);
+
+
+    /**
      * Lock the device now.
      */
     public void lockNow(Bundle options);
