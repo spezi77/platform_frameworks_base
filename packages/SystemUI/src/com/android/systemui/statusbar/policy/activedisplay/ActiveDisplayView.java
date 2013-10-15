@@ -59,6 +59,7 @@ import android.provider.Settings;
 import android.service.notification.INotificationListener;
 import android.service.notification.StatusBarNotification;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -79,7 +80,10 @@ import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ActiveDisplayView extends FrameLayout {
     private static final boolean DEBUG = false;
@@ -159,6 +163,8 @@ public class ActiveDisplayView extends FrameLayout {
     private int mBrightnessMode = -1;
     private int mUserBrightnessLevel = -1;
     private boolean mSunlightModeEnabled = false;
+    private Set<String> mExcludedApps = new HashSet<String>();
+    private long mDisplayTimeout = 8000L;
 
     /**
      * Simple class that listens to changes in notifications
@@ -303,6 +309,8 @@ public class ActiveDisplayView extends FrameLayout {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACTIVE_DISPLAY_SUNLIGHT_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ACTIVE_DISPLAY_EXCLUDED_APPS), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
             update();
         }
@@ -363,7 +371,13 @@ public class ActiveDisplayView extends FrameLayout {
                 unregisterSensorListener(mProximitySensor);
                 unregisterBroadcastReceiver();
                 mAttached = false;
-            }
+	    }
+
+            String excludedApps = Settings.System.getString(resolver,
+                    Settings.System.ACTIVE_DISPLAY_EXCLUDED_APPS);
+            mDisplayTimeout = Settings.System.getLong(
+                    resolver, Settings.System.ACTIVE_DISPLAY_TIMEOUT, 8000L);
+
 
             if (!mDisplayNotifications || mRedisplayTimeout <= 0) {
                 cancelRedisplayTimer();
@@ -988,7 +1002,8 @@ public class ActiveDisplayView extends FrameLayout {
      * @return True if it should be used, false otherwise.
      */
     private boolean isValidNotification(StatusBarNotification sbn) {
-        return (!isOnCall() && (sbn.isClearable() || mShowAllNotifications)
+        return (!mExcludedApps.contains(sbn.getPackageName()) && !isOnCall()
+                && (sbn.isClearable() || mShowAllNotifications)
                 && !(mHideLowPriorityNotifications && sbn.getNotification().priority < HIDE_NOTIFICATIONS_BELOW_SCORE));
     }
 
@@ -1264,6 +1279,17 @@ public class ActiveDisplayView extends FrameLayout {
             am.cancel(pi);
         } catch (Exception e) {
         }
+    }
+
+    /**
+     * Create the set of excluded apps given a string of packages delimited with '|'.
+     * @param excludedApps
+     */
+    private void createExcludedAppsSet(String excludedApps) {
+        if (TextUtils.isEmpty(excludedApps))
+            return;
+        String[] appsToExclude = excludedApps.split("\\|");
+        mExcludedApps = new HashSet<String>(Arrays.asList(appsToExclude));
     }
 }
 
