@@ -2567,7 +2567,13 @@ public final class Settings {
         public static final String DESK_UNDOCK_SOUND = Global.DESK_UNDOCK_SOUND;
 
         /**
-         * @deprecated Use {@link android.provider.Settings.Global#CAR_DOCK_SOUND}
+         * Whether lid wakes the device
+         * @hide
+         */
+        public static final String LOCKSCREEN_LID_WAKE = "lockscreen_lid_wake";
+
+        /**
+       * @deprecated Use {@link android.provider.Settings.Global#CAR_DOCK_SOUND}
          * instead
          * @hide
          */
