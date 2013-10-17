@@ -24,7 +24,6 @@ import android.app.ActivityManagerNative;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.app.TaskStackBuilder;
-import android.content.ContentResolver;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -45,7 +44,6 @@ import android.os.Handler;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.provider.Settings;
-import android.text.format.Formatter;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -63,16 +61,13 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import static com.android.internal.util.aokp.AwesomeConstants.*;
 import com.android.systemui.R;
-import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
@@ -86,8 +81,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.Runtime;
 import java.util.ArrayList;
-import java.io.OutputStreamWriter;
-import java.lang.Runtime;
 
 public class RecentsPanelView extends FrameLayout implements OnItemClickListener, RecentsCallback,
         StatusBarPanel, Animator.AnimatorListener {
@@ -107,10 +100,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private long mWindowAnimationStartTime;
     private boolean mCallUiHiddenBeforeNextReload;
 
-    private Button mRecentsKillAllButton;
-    private Button mGoogleNowButton;
-    private LinearColorBar mRamUsageBar;
-
     private RecentTasksLoader mRecentTasksLoader;
     private ArrayList<TaskDescription> mRecentTaskDescriptions;
     private TaskDescriptionAdapter mListAdapter;
@@ -119,17 +108,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private int mRecentItemLayoutId;
     private boolean mHighEndGfx;
 
-    Handler mHandler = new Handler();
-    SettingsObserver mSettingsObserver;
-    ActivityManager mAm;
-    ActivityManager.MemoryInfo mMemInfo;
-
-
-    public static interface OnRecentsPanelVisibilityChangedListener {
-        public void onRecentsPanelVisibilityChanged(boolean visible);
-    }
-
-    private RecentsActivity mRecentsActivity;
     private ImageView mClearRecentsBR;
     private ImageView mClearRecentsBL;
     private ImageView mClearRecentsTR;
@@ -158,7 +136,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
     Handler mHandler = new Handler();
     SettingsObserver mSettingsObserver;
-
+ 
     private RecentsActivity mRecentsActivity;
 
     public static interface RecentsScrollView {
@@ -330,9 +308,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         super(context, attrs, defStyle);
         updateValuesFromResources();
 
-        mAm = (ActivityManager)
-                mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        mMemInfo = new ActivityManager.MemoryInfo();
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RecentsPanelView,
                 defStyle, 0);
 
@@ -886,6 +861,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         ViewHolder holder = (ViewHolder)view.getTag();
         TaskDescription ad = holder.taskDescription;
         final Context context = view.getContext();
+	final ActivityManager am = (ActivityManager) 
+		context.getSystemService(Context.ACTIVITY_SERVICE);
         Bitmap bm = holder.thumbnailViewImageBitmap;
         boolean usingDrawingCache;
         if (bm.getWidth() == holder.thumbnailViewImage.getWidth() &&
@@ -906,7 +883,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         boolean floating = (intent.getFlags() & Intent.FLAG_FLOATING_WINDOW) == Intent.FLAG_FLOATING_WINDOW;
         if (ad.taskId >= 0 && !floating) {
             // This is an active task; it should just go to the foreground.
-            mAm.moveTaskToFront(ad.taskId, ActivityManager.MOVE_TASK_WITH_HOME,
+            am.moveTaskToFront(ad.taskId, ActivityManager.MOVE_TASK_WITH_HOME,
                     opts);
         } else {
             boolean backPressed = mRecentsActivity != null && mRecentsActivity.mBackPressed;
@@ -951,8 +928,10 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
         // Currently, either direction means the same thing, so ignore direction and remove
         // the task.
-        if (mAm != null) {
-            mAm.removeTask(ad.persistentTaskId, ActivityManager.REMOVE_TASK_KILL_PROCESS);
+	final ActivityManager am = (ActivityManager)
+		mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am != null) {
+            am.removeTask(ad.persistentTaskId, ActivityManager.REMOVE_TASK_KILL_PROCESS);
 
             // Accessibility feedback
             setContentDescription(
@@ -1003,10 +982,11 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                     ViewHolder viewHolder = (ViewHolder) selectedView.getTag();
                     if (viewHolder != null) {
                         final TaskDescription ad = viewHolder.taskDescription;
+			dismissAndGoBack();
                         Intent intent = ad.intent;
                         intent.addFlags(Intent.FLAG_FLOATING_WINDOW
                                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        dismissAndGoBack();
+			intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
                         getContext().startActivity(intent);
                     }
                 } else {

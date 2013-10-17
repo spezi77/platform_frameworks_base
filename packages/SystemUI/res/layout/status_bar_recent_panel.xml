@@ -25,11 +25,13 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     systemui:recentItemLayout="@layout/status_bar_recent_item"
+    android:fitsSystemWindows="true"
     >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+	    android:background="@drawable/status_bar_recents_background"
             android:orientation="vertical">
 
             <view class="com.android.systemui.recent.LinearColorBar"
@@ -80,7 +82,6 @@
 
             <FrameLayout
                 android:id="@+id/recents_bg_protect"
-                android:background="@drawable/status_bar_recents_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentBottom="true"
@@ -125,13 +126,6 @@
                     android:scaleType="center"
                     android:layout_gravity="bottom|right"
                     android:src="@drawable/ic_recents_clear" />
-                <ImageView android:id="@+id/recents_clear_BL"
-                    android:clickable="true"
-                    android:layout_width="43dp"
-                    android:layout_height="43dp"
-                    android:scaleType="center"
-                    android:layout_gravity="bottom|left"
-                    android:src="@drawable/ic_recents_clear" />
                 <ImageView android:id="@+id/recents_clear_TR"
                     android:clickable="true"
                     android:layout_width="43dp"
@@ -153,7 +147,14 @@
                     android:layout_gravity="bottom|left"
                     android:orientation="horizontal">
 
-                    <ImageView
+                <ImageView android:id="@+id/recents_clear_BL"
+                        android:clickable="true"
+                        android:layout_width="43dp"
+                        android:layout_height="43dp"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_recents_clear" />
+
+               <ImageView
                         android:id="@+id/recents_google_assist"
                         android:clickable="true"
                         android:layout_width="43dp"
