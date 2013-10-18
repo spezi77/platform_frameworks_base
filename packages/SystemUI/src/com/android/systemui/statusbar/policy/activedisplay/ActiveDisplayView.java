@@ -862,6 +862,7 @@ public class ActiveDisplayView extends FrameLayout {
         if (!mCallbacksRegistered) {
             registerBroadcastReceiver();
             registerNotificationListener();
+            registerSensorListener();
             mCallbacksRegistered = true;
         }
     }
@@ -870,6 +871,7 @@ public class ActiveDisplayView extends FrameLayout {
         if (mCallbacksRegistered) {
             unregisterBroadcastReceiver();
             unregisterNotificationListener();
+            unregisterSensorListener();
             mCallbacksRegistered = false;
         }
     }
