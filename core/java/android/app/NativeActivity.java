@@ -28,7 +28,6 @@ import android.os.Looper;
 import android.os.MessageQueue;
 import android.util.AttributeSet;
 import android.view.InputQueue;
-import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;

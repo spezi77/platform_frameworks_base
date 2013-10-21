@@ -16,11 +16,9 @@
 
 package android.content;
 
-import static android.content.pm.PackageManager.GET_PROVIDERS;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.app.AppOpsManager;
-import android.content.pm.PackageManager;
 import android.content.pm.PathPermission;
 import android.content.pm.ProviderInfo;
 import android.content.res.AssetFileDescriptor;

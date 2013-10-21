@@ -40,7 +40,6 @@ import org.apache.harmony.dalvik.ddmc.ChunkHandler;
 import org.apache.harmony.dalvik.ddmc.DdmServer;
 
 import dalvik.bytecode.OpcodeInfo;
-import dalvik.bytecode.Opcodes;
 import dalvik.system.VMDebug;
 
 

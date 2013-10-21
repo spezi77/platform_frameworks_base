@@ -38,11 +38,11 @@ public class ActivityGroup extends Activity {
      * {@hide}
      */
     protected LocalActivityManager mLocalActivityManager;
-    
+
     public ActivityGroup() {
         this(true);
     }
-    
+
     public ActivityGroup(boolean singleActivityMode) {
         mLocalActivityManager = new LocalActivityManager(this, singleActivityMode);
     }
@@ -95,7 +95,7 @@ public class ActivityGroup extends Activity {
      * {@hide}
      */
     @Override
-    public HashMap<String,Object> onRetainNonConfigurationChildInstances() {
+    public HashMap<String, Object> onRetainNonConfigurationChildInstances() {
         return mLocalActivityManager.dispatchRetainNonConfigurationInstance();
     }
 
