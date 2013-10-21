@@ -16,25 +16,17 @@
 
 package android.net;
 
-import android.app.Activity;
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.database.ContentObserver;
-import android.net.ConnectivityManager;
-import android.net.IConnectivityManager;
 import android.os.Handler;
-import android.os.UserHandle;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 
 import com.android.internal.util.State;
 import com.android.internal.util.StateMachine;
@@ -43,7 +35,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.Inet4Address;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 

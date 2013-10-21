@@ -20,7 +20,6 @@ package android.app;
 import java.lang.reflect.Method;
 
 import android.R;
-import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -187,8 +186,8 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
 
         if (mDrawerIndicatorEnabled) {
             mSetIndicatorInfo = IMPL.setActionBarUpIndicator(mSetIndicatorInfo, mActivity,
-                    mSlider, mDrawerLayout.isDrawerOpen(Gravity.START) ?
-                    mOpenDrawerContentDescRes : mCloseDrawerContentDescRes);
+                    mSlider, mDrawerLayout.isDrawerOpen(Gravity.START) 
+                    ? mOpenDrawerContentDescRes : mCloseDrawerContentDescRes);
         }
     }
 
@@ -206,8 +205,8 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
         if (enable != mDrawerIndicatorEnabled) {
             if (enable) {
                 mSetIndicatorInfo = IMPL.setActionBarUpIndicator(mSetIndicatorInfo,
-                        mActivity, mSlider, mDrawerLayout.isDrawerOpen(Gravity.START) ?
-                        mOpenDrawerContentDescRes : mCloseDrawerContentDescRes);
+                        mActivity, mSlider, mDrawerLayout.isDrawerOpen(Gravity.START) 
+                      ? mOpenDrawerContentDescRes : mCloseDrawerContentDescRes);
             } else {
                 mSetIndicatorInfo = IMPL.setActionBarUpIndicator(mSetIndicatorInfo,
                         mActivity, mThemeImage, 0);

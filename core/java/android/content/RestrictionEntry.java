@@ -19,7 +19,6 @@ package android.content;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.lang.annotation.Inherited;
 
 /**
  * Applications can expose restrictions for a restricted user on a

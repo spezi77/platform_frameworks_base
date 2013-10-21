@@ -76,8 +76,8 @@ public class ResolverActivity extends AlertActivity implements AdapterView.OnIte
     private boolean mAlwaysUseOption;
     private boolean mShowExtended;
     private GridView mGrid;
-    private Button mAlwaysButton;
-    private Button mOnceButton;
+    private RadioButton mAlwaysButton;
+    private RadioButton mOnceButton;
     private CheckBox mAlwaysCheckBox;
     private int mIconDpi;
     private int mIconSize;
@@ -185,8 +185,8 @@ public class ResolverActivity extends AlertActivity implements AdapterView.OnIte
                 if (mUseAltGrid) {
                     mAlwaysCheckBox = (CheckBox) buttonLayout.findViewById(R.id.checkbox_always);
                 } else {
-                    mAlwaysButton = (Button) buttonLayout.findViewById(R.id.button_always);
-                    mOnceButton = (Button) buttonLayout.findViewById(R.id.button_once);
+                    mAlwaysButton = (RadioButton) buttonLayout.findViewById(R.id.button_always);
+                    mOnceButton = (RadioButton) buttonLayout.findViewById(R.id.button_once);
                 }
             } else {
                 mAlwaysUseOption = false;
@@ -294,6 +294,7 @@ public class ResolverActivity extends AlertActivity implements AdapterView.OnIte
                     startSelected(position,mAlwaysCheckBox.isChecked());
                 } else {
                     mGrid.smoothScrollToPosition(checkedPos);
+		    startSelected(position,mAlwaysButton.isChecked());
                 }
             }
             mLastSelected = checkedPos;

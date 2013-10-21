@@ -32,7 +32,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.IPackageManager;
 import android.content.pm.InstrumentationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ProviderInfo;
@@ -127,7 +126,6 @@ import libcore.io.IoUtils;
 
 import dalvik.system.CloseGuard;
 import dalvik.system.VMRuntime;
-import android.os.SystemProperties;
 import java.lang.*;
 
 final class SuperNotCalledException extends AndroidRuntimeException {

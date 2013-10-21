@@ -23,7 +23,6 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.ParcelUuid;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 

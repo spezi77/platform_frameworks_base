@@ -16,8 +16,6 @@
 
 package android.net;
 
-import android.util.Log;
-
 /**
  * Describes the buildtime configuration of a network.
  * Holds settings read from resources.

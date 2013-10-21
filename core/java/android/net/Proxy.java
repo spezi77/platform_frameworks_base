@@ -18,29 +18,17 @@ package android.net;
 
 import android.annotation.SdkConstant;
 import android.annotation.SdkConstant.SdkConstantType;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.ContentObserver;
-import android.net.ProxyProperties;
-import android.os.Handler;
-import android.os.SystemProperties;
 import android.text.TextUtils;
-import android.provider.Settings;
 import android.util.Log;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
-import java.net.SocketAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import junit.framework.Assert;
 
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.routing.HttpRoutePlanner;

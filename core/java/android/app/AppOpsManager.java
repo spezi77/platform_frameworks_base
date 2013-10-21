@@ -16,7 +16,6 @@
 
 package android.app;
 
-import android.Manifest;
 import com.android.internal.app.IAppOpsService;
 import com.android.internal.app.IAppOpsCallback;
 

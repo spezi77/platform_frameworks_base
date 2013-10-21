@@ -18,12 +18,10 @@ package android.content;
 
 import android.content.res.AssetFileDescriptor;
 import android.database.BulkCursorDescriptor;
-import android.database.BulkCursorNative;
 import android.database.BulkCursorToCursorAdaptor;
 import android.database.Cursor;
 import android.database.CursorToBulkCursorAdaptor;
 import android.database.DatabaseUtils;
-import android.database.IBulkCursor;
 import android.database.IContentObserver;
 import android.net.Uri;
 import android.os.Binder;

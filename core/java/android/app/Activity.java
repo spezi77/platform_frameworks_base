@@ -58,7 +58,7 @@ import android.util.AttributeSet;
 import android.util.EventLog;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;  
+import android.util.TypedValue;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.ActionMode;
@@ -66,7 +66,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
-import android.view.Gravity; 
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -99,14 +99,14 @@ import java.util.HashMap;
  * or embedded inside of another activity (using {@link ActivityGroup}).
  *
  * There are two methods almost all subclasses of Activity will implement:
- * 
+ *
  * <ul>
  *     <li> {@link #onCreate} is where you initialize your activity.  Most
  *     importantly, here you will usually call {@link #setContentView(int)}
  *     with a layout resource defining your UI, and using {@link #findViewById}
  *     to retrieve the widgets in that UI that you need to interact with
  *     programmatically.
- * 
+ *
  *     <li> {@link #onPause} is where you deal with the user leaving your
  *     activity.  Most importantly, any changes made by the user should at this
  *     point be committed (usually to the
@@ -117,7 +117,7 @@ import java.util.HashMap;
  * activity classes must have a corresponding
  * {@link android.R.styleable#AndroidManifestActivity &lt;activity&gt;}
  * declaration in their package's <code>AndroidManifest.xml</code>.</p>
- * 
+ *
  * <p>Topics covered here:
  * <ol>
  * <li><a href="#Fragments">Fragments</a>
@@ -160,14 +160,14 @@ import java.util.HashMap;
  * and becomes the running activity -- the previous activity always remains
  * below it in the stack, and will not come to the foreground again until
  * the new activity exits.</p>
- * 
+ *
  * <p>An activity has essentially four states:</p>
  * <ul>
  *     <li> If an activity in the foreground of the screen (at the top of
  *         the stack),
  *         it is <em>active</em> or  <em>running</em>. </li>
  *     <li>If an activity has lost focus but is still visible (that is, a new non-full-sized
- *         or transparent activity has focus on top of your activity), it 
+ *         or transparent activity has focus on top of your activity), it
  *         is <em>paused</em>. A paused activity is completely alive (it
  *         maintains all state and member information and remains attached to
  *         the window manager), but can be killed by the system in extreme
@@ -187,13 +187,13 @@ import java.util.HashMap;
  * The square rectangles represent callback methods you can implement to
  * perform operations when the Activity moves between states.  The colored
  * ovals are major states the Activity can be in.</p>
- * 
+ *
  * <p><img src="../../../images/activity_lifecycle.png"
  *      alt="State diagram for an Android Activity Lifecycle." border="0" /></p>
- * 
+ *
  * <p>There are three key loops you may be interested in monitoring within your
  * activity:
- * 
+ *
  * <ul>
  * <li>The <b>entire lifetime</b> of an activity happens between the first call
  * to {@link android.app.Activity#onCreate} through to a single final call
@@ -202,7 +202,7 @@ import java.util.HashMap;
  * onDestroy().  For example, if it has a thread running in the background
  * to download data from the network, it may create that thread in onCreate()
  * and then stop the thread in onDestroy().
- * 
+ *
  * <li>The <b>visible lifetime</b> of an activity happens between a call to
  * {@link android.app.Activity#onStart} until a corresponding call to
  * {@link android.app.Activity#onStop}.  During this time the user can see the
@@ -214,7 +214,7 @@ import java.util.HashMap;
  * longer sees what you are displaying.  The onStart() and onStop() methods
  * can be called multiple times, as the activity becomes visible and hidden
  * to the user.
- * 
+ *
  * <li>The <b>foreground lifetime</b> of an activity happens between a call to
  * {@link android.app.Activity#onResume} until a corresponding call to
  * {@link android.app.Activity#onPause}.  During this time the activity is
@@ -224,7 +224,7 @@ import java.util.HashMap;
  * intent is delivered -- so the code in these methods should be fairly
  * lightweight.
  * </ul>
- * 
+ *
  * <p>The entire lifecycle of an activity is defined by the following
  * Activity methods.  All of these are hooks that you can override
  * to do appropriate work when the activity changes state.  All
@@ -240,7 +240,7 @@ import java.util.HashMap;
  *     protected void onCreate(Bundle savedInstanceState);
  *
  *     protected void onStart();
- *     
+ *
  *     protected void onRestart();
  *
  *     protected void onResume();
@@ -356,7 +356,7 @@ import java.util.HashMap;
  * {@link #onSaveInstanceState(Bundle)} is called before placing the activity
  * in such a background state, allowing you to save away any dynamic instance
  * state in your activity into the given Bundle, to be later received in
- * {@link #onCreate} if the activity needs to be re-created.  
+ * {@link #onCreate} if the activity needs to be re-created.
  * See the <a href="#ProcessLifecycle">Process Lifecycle</a>
  * section for more information on how the lifecycle of a process is tied
  * to the activities it is hosting.  Note that it is important to save
@@ -380,14 +380,14 @@ import java.util.HashMap;
  *
  * <a name="ConfigurationChanges"></a>
  * <h3>Configuration Changes</h3>
- * 
+ *
  * <p>If the configuration of the device (as defined by the
  * {@link Configuration Resources.Configuration} class) changes,
  * then anything displaying a user interface will need to update to match that
  * configuration.  Because Activity is the primary mechanism for interacting
  * with the user, it includes special support for handling configuration
  * changes.</p>
- * 
+ *
  * <p>Unless you specify otherwise, a configuration change (such as a change
  * in screen orientation, language, input devices, etc) will cause your
  * current activity to be <em>destroyed</em>, going through the normal activity
@@ -397,7 +397,7 @@ import java.util.HashMap;
  * called in that instance then a new instance of the activity will be
  * created, with whatever savedInstanceState the previous instance had generated
  * from {@link #onSaveInstanceState}.</p>
- * 
+ *
  * <p>This is done because any application resource,
  * including layout files, can change based on any configuration value.  Thus
  * the only safe way to handle a configuration change is to re-retrieve all
@@ -405,7 +405,7 @@ import java.util.HashMap;
  * must already know how to save their state and re-create themselves from
  * that state, this is a convenient way to have an activity restart itself
  * with a new configuration.</p>
- * 
+ *
  * <p>In some special cases, you may want to bypass restarting of your
  * activity based on one or more types of configuration changes.  This is
  * done with the {@link android.R.attr#configChanges android:configChanges}
@@ -415,7 +415,7 @@ import java.util.HashMap;
  * a configuration change involves any that you do not handle, however, the
  * activity will still be restarted and {@link #onConfigurationChanged}
  * will not be called.</p>
- * 
+ *
  * <a name="StartingActivities"></a>
  * <h3>Starting Activities and Getting Results</h3>
  *
@@ -430,10 +430,10 @@ import java.util.HashMap;
  * ends.  For example, you may start an activity that lets the user pick
  * a person in a list of contacts; when it ends, it returns the person
  * that was selected.  To do this, you call the
- * {@link android.app.Activity#startActivityForResult(Intent, int)} 
- * version with a second integer parameter identifying the call.  The result 
+ * {@link android.app.Activity#startActivityForResult(Intent, int)}
+ * version with a second integer parameter identifying the call.  The result
  * will come back through your {@link android.app.Activity#onActivityResult}
- * method.</p> 
+ * method.</p>
  *
  * <p>When an activity exits, it can call
  * {@link android.app.Activity#setResult(int)}
@@ -560,17 +560,17 @@ import java.util.HashMap;
  *
  *     protected void onPause() {
  *         super.onPause();
- * 
+ *
  *         SharedPreferences.Editor ed = mPrefs.edit();
  *         ed.putInt("view_mode", mCurViewMode);
  *         ed.commit();
  *     }
  * }
  * </pre>
- * 
+ *
  * <a name="Permissions"></a>
  * <h3>Permissions</h3>
- * 
+ *
  * <p>The ability to start a particular Activity can be enforced when it is
  * declared in its
  * manifest's {@link android.R.styleable#AndroidManifestActivity &lt;activity&gt;}
@@ -591,10 +591,10 @@ import java.util.HashMap;
  *
  * <p>See the <a href="{@docRoot}guide/topics/security/security.html">Security and Permissions</a>
  * document for more information on permissions and security in general.
- * 
+ *
  * <a name="ProcessLifecycle"></a>
  * <h3>Process Lifecycle</h3>
- * 
+ *
  * <p>The Android system attempts to keep application process around for as
  * long as possible, but eventually will need to remove old processes when
  * memory runs low.  As described in <a href="#ActivityLifecycle">Activity
@@ -604,7 +604,7 @@ import java.util.HashMap;
  * listed here in order of importance.  The system will kill less important
  * processes (the last ones) before it resorts to killing more important
  * processes (the first ones).
- * 
+ *
  * <ol>
  * <li> <p>The <b>foreground activity</b> (the activity at the top of the screen
  * that the user is currently interacting with) is considered the most important.
@@ -632,7 +632,7 @@ import java.util.HashMap;
  * context of an activity BroadcastReceiver or Service to ensure that the system
  * knows it needs to keep your process around.
  * </ol>
- * 
+ *
  * <p>Sometimes an Activity may need to do a long-running operation that exists
  * independently of the activity lifecycle itself.  An example may be a camera
  * application that allows you to upload a picture to a web site.  The upload
@@ -691,9 +691,9 @@ public class Activity extends ContextThemeWrapper
     boolean mFinished;
     boolean mStartedActivity;
     private boolean mDestroyed;
-    /** true if the activity is going through a transient pause */
+    /** true if the activity is going through a transient pause. */
     /*package*/ boolean mTemporaryPause = false;
-    /** true if the activity is being destroyed in order to recreate it with a new configuration */
+    /** true if the activity is being destroyed in order to recreate it with a new configuration. */
     /*package*/ boolean mChangingConfigurations = false;
     /*package*/ int mConfigChangeFlags;
     /*package*/ Configuration mCurrentConfig;
@@ -707,7 +707,7 @@ public class Activity extends ContextThemeWrapper
         HashMap<String, LoaderManagerImpl> loaders;
     }
     /* package */ NonConfigurationInstances mLastNonConfigurationInstances;
-    
+
     private Window mWindow;
 
     private WindowManager mWindowManager;
@@ -728,10 +728,10 @@ public class Activity extends ContextThemeWrapper
             return Activity.this.findViewById(id);
         }
     };
-    
+ 
     HashMap<String, LoaderManagerImpl> mAllLoaderManagers;
     LoaderManagerImpl mLoaderManager;
-    
+ 
     private static final class ManagedCursor {
         ManagedCursor(Cursor cursor) {
             mCursor = cursor;
@@ -746,7 +746,7 @@ public class Activity extends ContextThemeWrapper
     private final ArrayList<ManagedCursor> mManagedCursors =
         new ArrayList<ManagedCursor>();
 
-    // protected by synchronized (this) 
+    // protected by synchronized (this)
     int mResultCode = RESULT_CANCELED;
     Intent mResultData = null;
 
@@ -754,7 +754,7 @@ public class Activity extends ContextThemeWrapper
 
     private int mDefaultKeyMode = DEFAULT_KEYS_DISABLE;
     private SpannableStringBuilder mDefaultKeySsb = null;
-    
+ 
     protected static final int[] FOCUSED_STATE_SET = {com.android.internal.R.attr.state_focused};
 
     @SuppressWarnings("unused")
@@ -768,16 +768,16 @@ public class Activity extends ContextThemeWrapper
         return mIntent;
     }
 
-    /** 
-     * Change the intent returned by {@link #getIntent}.  This holds a 
-     * reference to the given intent; it does not copy it.  Often used in 
-     * conjunction with {@link #onNewIntent}. 
-     *  
-     * @param newIntent The new Intent object to return from getIntent 
+    /**
+     * Change the intent returned by {@link #getIntent}.  This holds a
+     * reference to the given intent; it does not copy it.  Often used in
+     * conjunction with {@link #onNewIntent}.
+     *
+     * @param newIntent The new Intent object to return from getIntent
      * 
      * @see #getIntent
      * @see #onNewIntent
-     */ 
+     */
     public void setIntent(Intent newIntent) {
         mIntent = newIntent;
     }
@@ -791,7 +791,7 @@ public class Activity extends ContextThemeWrapper
     public final boolean isChild() {
         return mParent != null;
     }
-    
+ 
     /** Return the parent activity if this view is an embedded child. */
     public final Activity getParent() {
         return mParent;
