@@ -115,7 +115,7 @@ public class ResolverActivity extends AlertActivity implements AdapterView.OnIte
                 == Configuration.UI_INVERTED_MODE_YES) {
             setTheme(R.style.Theme_DeviceDefault_Dialog_Alert);
         } else {
-            setTheme(R.style.Theme_DeviceDefault_Dialog_Alert);
+            setTheme(R.style.Theme_DeviceDefault_Light_Dialog_Alert);
         }
         super.onCreate(savedInstanceState);
         try {
@@ -298,6 +298,12 @@ public class ResolverActivity extends AlertActivity implements AdapterView.OnIte
         } else {
             startSelected(position, false);
         }
+    }
+
+    public void onButtonClick(View v) {
+        final int id = v.getId();
+        startSelected(mGrid.getCheckedItemPosition(), id == R.id.button_always);
+        dismiss();
     }
 
     void startSelected(int which, boolean always) {
@@ -669,12 +675,6 @@ public class ResolverActivity extends AlertActivity implements AdapterView.OnIte
             }
             icon.setImageDrawable(info.displayIcon);
         }
-    }
-
-    public void onButtonClick(View v) {
-        final int id = v.getId();
-        startSelected(mGrid.getCheckedItemPosition(), id == R.id.button_always);
-        dismiss();
     }
 
     class ItemLongClickListener implements AdapterView.OnItemLongClickListener {
