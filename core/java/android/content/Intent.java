@@ -3557,7 +3557,7 @@ public class Intent implements Parcelable, Cloneable {
      * this flag will cause a newly launching task to be resized according to the split
      * view metrics, making it running alongside another app.
      */
-    public static final int FLAG_ACTIVITY_SPLIT_VIEW = 0x00002000;
+    public static final int FLAG_ACTIVITY_SPLIT_VIEW = 0x00003000;
     /**
      * If set, when sending a broadcast only registered receivers will be
      * called -- no BroadcastReceiver components will be launched.
