@@ -4675,6 +4675,10 @@ public final class Settings {
             PHONE_BLACKLIST_PRIVATE_NUMBER_MODE,
             PHONE_BLACKLIST_UNKNOWN_NUMBER_MODE,
             PHONE_BLACKLIST_REGEX_ENABLED,
+            POWER_MENU_SCREENSHOT_ENABLED,
+            POWER_MENU_REBOOT_ENABLED,
+            POWER_MENU_AIRPLANE_ENABLED,
+            POWER_MENU_SILENT_ENABLED,
         };
 
         // Settings moved to Settings.Secure
