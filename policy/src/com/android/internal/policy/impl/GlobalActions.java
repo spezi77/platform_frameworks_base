@@ -355,27 +355,31 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             });
 
         // next: reboot
-                if (Settings.System.getInt(mContext.getContentResolver(),
+        if (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_MENU_REBOOT_ENABLED, 1) == 1) {
                 mItems.add(
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_reboot,
                         com.android.internal.R.string.reboot) {
 
-                @Override
-                public boolean showDuringKeyguard() {
-                    return true;
-                }
+                    @Override
+                    public boolean showDuringKeyguard() {
+                        if (mShowRebootOnLock) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
 
-                @Override
-                public boolean showBeforeProvisioning() {
-                    return true;
-                }
+                    @Override
+                    public boolean showBeforeProvisioning() {
+                        return true;
+                    }
 
-                @Override
-                public void onPress() {
-                    createRebootDialog().show();
-                }
+                    @Override
+                    public void onPress() {
+                        createRebootDialog().show();
+                    }
             });
         }
         
