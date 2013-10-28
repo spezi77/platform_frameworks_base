@@ -954,6 +954,8 @@ public final class Settings {
             MOVED_TO_SECURE.add(Secure.LOCK_BIOMETRIC_WEAK_FLAGS);
             MOVED_TO_SECURE.add(Secure.LOCK_PATTERN_ENABLED);
             MOVED_TO_SECURE.add(Secure.LOCK_PATTERN_VISIBLE);
+            MOVED_TO_SECURE.add(Secure.LOCK_SHOW_ERROR_PATH);
+            MOVED_TO_SECURE.add(Secure.LOCK_DOTS_VISIBLE);
             MOVED_TO_SECURE.add(Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED);
             MOVED_TO_SECURE.add(Secure.LOGGING_ID);
             MOVED_TO_SECURE.add(Secure.PARENTAL_CONTROL_ENABLED);
@@ -3445,7 +3447,27 @@ public final class Settings {
          */
         public static final String SCREENSHOT_TOGGLE_DELAY = "screenshot_toggle_delay";
 
-    	  /**
+        /**
+         * @hide
+         */
+        public static final String START_SCREEN_STATE_SERVICE = "start_screen_state_service";
+
+        /**
+         * @hide
+         */
+        public static final String SCREEN_STATE_TWOG = "screen_state_twog";
+
+        /**
+         * @hide
+         */
+        public static final String SCREEN_STATE_GPS = "screen_state_gps";
+
+        /**
+         * @hide
+         */
+        public static final String SCREEN_STATE_MOBILE_DATA = "screen_state_mobile_data";
+        
+         /**
          * Show the NavBar dialog in Power menu
          * @hide
          */
@@ -4602,6 +4624,16 @@ public final class Settings {
           */
          public static final String KEY_HOME_DOUBLE_TAP_ACTION = "key_home_double_tap_action";
 
+         /**
+          * @hide
+          */
+         public static final String WAKELOCK_BLOCKING_ENABLED = "wakelock_blocking_enabled";
+ 
+         /**
+          * @hide
+          */
+         public static final String WAKELOCK_BLOCKING_LIST = "wakelock_blocking_list";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
@@ -5064,7 +5096,11 @@ public final class Settings {
             MOVED_TO_LOCK_SETTINGS = new HashSet<String>(3);
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_ENABLED);
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_VISIBLE);
+            MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_SHOW_ERROR_PATH);
+            MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_DOTS_VISIBLE);
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED);
+            MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_GESTURE_ENABLED);
+            MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_GESTURE_VISIBLE);
 
             MOVED_TO_GLOBAL = new HashSet<String>();
             MOVED_TO_GLOBAL.add(Settings.Global.ADB_ENABLED);
@@ -5705,6 +5741,28 @@ public final class Settings {
                 LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
 
         /**
+         * Whether lock pattern will show dots (0 = false, 1 = true)
+         */
+        public static final String LOCK_DOTS_VISIBLE = "lock_pattern_dotsvisible";
+
+        /**
+         * Whether lockscreen error pattern is visible (0 = false, 1 = true)
+         */
+        public static final String LOCK_SHOW_ERROR_PATH = "lock_pattern_show_error_path";
+
+        /**
+         * Whether autolock is enabled (0 = false, 1 = true)
+         * @hide
+         */
+        public static final String LOCK_GESTURE_ENABLED = "lock_gesture_autolock";
+
+        /**
+         * Whether lock gesture is visible as user enters (0 = false, 1 = true)
+         * @hide
+         */
+        public static final String LOCK_GESTURE_VISIBLE = "lock_gesture_visible_pattern";
+
+        /**
          * This preference allows the device to be locked given time after screen goes off,
          * subject to current DeviceAdmin policy limits.
          * @hide
@@ -5747,6 +5805,21 @@ public final class Settings {
          */
         public static final String LOCK_SCREEN_OWNER_INFO_ENABLED =
             "lock_screen_owner_info_enabled";
+
+        /**
+         * Whether the unsecure widget screen will be shown before a secure
+         * lock screen
+         * @hide
+         */
+        public static final String LOCK_BEFORE_UNLOCK =
+            "lock_before_unlock";
+
+        /**
+         * Determines the width and height of the LockPatternView widget
+         * @hide
+         */
+        public static final String LOCK_PATTERN_SIZE =
+            "lock_pattern_size";
 
         /**
          * The Logging ID (a unique 64-bit value) as a hex string.
