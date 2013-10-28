@@ -5218,8 +5218,30 @@ public class Activity extends ContextThemeWrapper
         return mParent != null ? mParent.getActivityToken() : mToken;
     }
 
+	    /** @hide */
+    public final void setSplitViewRect(int l, int t, int r, int b) {
+        final IWindowManager wm = (IWindowManager) WindowManagerGlobal.getWindowManagerService();
+        /*try {	
+            wm.setSplitViewRect(l,t,r,b);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Could not update split view rect", e);
+        }*/
+        updateSplitViewMetrics(false);
+    }
+
+    /** @hide */
+    public final boolean isSplitView() {
+        return mIsSplitView;
+    }
+
+
     /** @hide */
     final void updateSplitViewMetrics(boolean shouldReset) {
+        if (mParent != null) {	
+            // Also update the parent activities, don't let the windows hanging 	
+            mParent.updateSplitViewMetrics(shouldReset);	
+        }	
+
         final IWindowManager wm = (IWindowManager) WindowManagerGlobal.getWindowManagerService();
 
         try {

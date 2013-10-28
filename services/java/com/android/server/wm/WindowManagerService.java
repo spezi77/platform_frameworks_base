@@ -10661,6 +10661,7 @@ public class WindowManagerService extends IWindowManager.Stub
     private Map<IBinder, Boolean> mIsTokenSplitted;
     private Map<Integer, Integer> mTaskLocation;
     private IBinder mTaskTouched;
+    private Rect mSplitViewRect = new Rect();
 
     /**
      * Returns whether or not the provided taskId is in split view mode
@@ -10759,6 +10760,14 @@ public class WindowManagerService extends IWindowManager.Stub
         }
     }
 
+    public void setSplitViewRect(int l, int t, int r, int b) {
+        Log.e("XPLOD", "Set split view rect ("+l+","+t+","+r+","+b+")");
+        mSplitViewRect.left = l;
+        mSplitViewRect.top = t;
+        mSplitViewRect.right = r;
+        mSplitViewRect.bottom = b;
+    }
+
     /**
      * Computes and return the final window metrics for the provided
      * taskId. It will automatically set the task to the split mode.
@@ -10768,6 +10777,7 @@ public class WindowManagerService extends IWindowManager.Stub
      * @return A rect of the final window metrics
      */
     public Rect getSplitViewRect(int taskId, boolean resetLocation) {
+      	Log.e("XPLOD", "Debug Activity " + taskId + " asked for split view");
         mSplitViewTasks[mNextSplitViewLocation] = taskId;
         mIsTaskSplitted.put(taskId, true);
 
