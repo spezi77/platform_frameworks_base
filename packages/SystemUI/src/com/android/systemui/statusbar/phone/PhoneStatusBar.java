@@ -261,6 +261,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     private int mCloseViewHeight;
 
     private boolean mShowCarrierInPanel = false;
+    private boolean mShowWifiInPanel = false;
 
     // position
     int[] mPositionTmp = new int[2];
@@ -652,30 +653,29 @@ public class PhoneStatusBar extends BaseStatusBar {
             }
         }
 
-    	mWifiLabel = (TextView)mStatusBarWindow.findViewById(R.id.wifi_text);
-        mNetworkController.addWifiLabelView(mWifiLabel);
+    	mWifiLabel = (TextView)mStatusBarWindow.findViewById(R.id.wifi_text_label);
+	mShowWifiInPanel = (mWifiLabel != null);
+	if (mShowWifiInPanel) {
+            mNetworkController.addWifiLabelView(mWifiLabel);
+            mWifiLabel.addTextChangedListener(new TextWatcher() {
 
-        mWifiLabel.addTextChangedListener(new TextWatcher() {
-
-            public void afterTextChanged(Editable s) {
-            }
-            public void beforeTextChanged(CharSequence s, int start, int count,
+                public void afterTextChanged(Editable s) {
+                }
+                public void beforeTextChanged(CharSequence s, int start, int count,
                     int after) {
-            }
-            public void onTextChanged(CharSequence s, int start, int before,
+            	}
+                public void onTextChanged(CharSequence s, int start, int before,
                     int count) {
-                 if (Settings.System.getInt(mContext.getContentResolver(),
+                     if (Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.NOTIFICATION_SHOW_WIFI_SSID, 0) == 1 &&
                         count > 0) {
-                    mWifiView.setVisibility(View.VISIBLE);
+                         mWifiView.setVisibility(View.VISIBLE);
+                    } else {
+                    	mWifiView.setVisibility(View.GONE);
+                    }
                 }
-                else
-                {
-                    mWifiView.setVisibility(View.GONE);
-                }
-            }
-
-        });
+            });
+ 	}
         
         // set up the dynamic hide/show of the labels
         mPile.setOnSizeChangedListener(new OnSizeChangedListener() {

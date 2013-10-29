@@ -41,7 +41,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1" >
             <TextView
-                android:id="@+id/wifi_text"
+                android:id="@+id/wifi_text_label"
                 android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Network"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
