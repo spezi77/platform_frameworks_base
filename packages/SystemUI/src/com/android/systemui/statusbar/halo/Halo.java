@@ -33,7 +33,6 @@ import android.animation.PropertyValuesHolder;
 import android.content.pm.ApplicationInfo;
 import android.content.Context;
 import android.content.ContentResolver;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -94,9 +93,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
+import android.service.notification.StatusBarNotification;
+
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar.NotificationClicker;
-import android.service.notification.StatusBarNotification;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.NotificationData;
@@ -107,11 +107,11 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
 
     public static final String TAG = "HaloLauncher";
 
+    private static final boolean DEBUG = true;
+
     enum State {
-        FIRST_RUN,
         IDLE,
         HIDDEN,
-        SILENT,
         DRAG,
         GESTURES
     }
@@ -119,70 +119,64 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
     enum Gesture {
         NONE,
         TASK,
-        UP1,
-        UP2,
-        DOWN1,
-        DOWN2
+        UP,
+        DOWN
     }
+
+    private State mState = State.IDLE;
+    private Gesture mGesture = Gesture.NONE;
+
+    private WindowManager.LayoutParams mTriggerPos;
+    private HaloEffect mEffect;
+    private boolean mHideTicker;
+    private INotificationManager mNotificationManager;
+
+	private int id;
+    private String appName;
 
     private Context mContext;
     private PackageManager mPm;
     private Handler mHandler;
     private BaseStatusBar mBar;
     private WindowManager mWindowManager;
-    private Display mDisplay;
+    private View mRoot;
+    private int mIconSize, mIconHalfSize;
+    
+    private boolean isBeingDragged = false;
+    private boolean mHapticFeedback;
     private Vibrator mVibrator;
     private LayoutInflater mInflater;
-    private INotificationManager mNotificationManager;
-    private SettingsObserver mSettingsObserver;
-    private GestureDetector mGestureDetector;
-    private KeyguardManager mKeyguardManager;
 
-    private HaloEffect mEffect;
-    private WindowManager.LayoutParams mTriggerPos;
-    private State mState = State.IDLE;
-    private Gesture mGesture = Gesture.NONE;
-
-    private View mRoot;
+    private Display mDisplay;
     private View mContent, mHaloContent;
     private NotificationData.Entry mLastNotificationEntry = null;
     private NotificationData.Entry mCurrentNotficationEntry = null;
     private NotificationClicker mContentIntent, mTaskIntent;
     private NotificationData mNotificationData;
     private String mNotificationText = "";
+    private GestureDetector mGestureDetector;
 
     private Paint mPaintHoloBlue = new Paint();
     private Paint mPaintWhite = new Paint();
     private Paint mPaintHoloRed = new Paint();
 
-    private boolean mAttached = false;
-    private boolean isBeingDragged = false;
-    private boolean mHapticFeedback;
-    private boolean mHideTicker;
-    private boolean mFirstStart = true;
+	public boolean mExpanded = false;
+    public boolean mSnapped = true;
+
+    public boolean mFirstStart = true;
     private boolean mInitialized = false;
     private boolean mTickerLeft = true;
     private boolean mIsNotificationNew = true;
     private boolean mOverX = false;
-    private boolean mInteractionReversed = true;
-    private boolean hiddenState = false;
 
-    private int mIconSize, mIconHalfSize;
+    private boolean mInteractionReversed = true;
+
     private int mScreenWidth, mScreenHeight;
+
     private int mKillX, mKillY;
     private int mMarkerIndex = -1;
 
-    private int oldIconIndex = -1;
-    private float initialX = 0;
-    private float initialY = 0;
-    private float mHaloSize = 1.0f;
-    
-    // Halo dock position
-    SharedPreferences preferences;
-    private String KEY_HALO_POSITION_Y = "halo_position_y";
-    private String KEY_HALO_POSITION_X = "halo_position_x";
-    private String KEY_HALO_FIRST_RUN = "halo_first_run";
-
+    private SettingsObserver mSettingsObserver;
 
     private final class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -205,33 +199,15 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                     Settings.System.getInt(mContext.getContentResolver(), Settings.System.HALO_REVERSED, 1) == 1;
             mHideTicker =
                     Settings.System.getInt(mContext.getContentResolver(), Settings.System.HALO_HIDE, 0) == 1;
+            mHapticFeedback = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) != 0;
+
             if (!selfChange) {
                 mEffect.wake();
                 mEffect.ping(mPaintHoloBlue, HaloEffect.WAKE_TIME);
                 mEffect.nap(HaloEffect.SNAP_TIME + 1000);
-                if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME, false);
+                if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME);
             }
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        if (!mAttached) {
-            mAttached = true;
-            mSettingsObserver = new SettingsObserver(new Handler());
-            mSettingsObserver.observe();
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (mAttached) {
-            mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
-            mAttached = false;
         }
     }
 
@@ -252,19 +228,16 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         mGestureDetector = new GestureDetector(mContext, new GestureListener());
         mHandler = new Handler();
         mRoot = this;
-        mKeyguardManager = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
+
+        mSettingsObserver = new SettingsObserver(new Handler());
+        mSettingsObserver.observe();
+        mSettingsObserver.onChange(true);
 
         // Init variables
-        mInteractionReversed =
-                Settings.System.getInt(mContext.getContentResolver(), Settings.System.HALO_REVERSED, 1) == 1;
-        mHideTicker =
-                Settings.System.getInt(mContext.getContentResolver(), Settings.System.HALO_HIDE, 0) == 1;
-        mHaloSize = Settings.System.getFloat(mContext.getContentResolver(),
-                Settings.System.HALO_SIZE, 1.0f);
-        mHapticFeedback = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) != 0;
-        mIconSize = (int)(mContext.getResources().getDimensionPixelSize(R.dimen.halo_bubble_size) * mHaloSize);
+        BitmapDrawable bd = (BitmapDrawable) mContext.getResources().getDrawable(R.drawable.halo_bg);
+        mIconSize = bd.getBitmap().getWidth();
         mIconHalfSize = mIconSize / 2;
+
         mTriggerPos = getWMParams();
 
         // Init colors
@@ -302,82 +275,25 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         // Get actual screen size
         mScreenWidth = mEffect.getWidth();
         mScreenHeight = mEffect.getHeight();
-        
-        // Halo dock position
-        preferences = mContext.getSharedPreferences("Halo", 0);
-        int msavePositionX = preferences.getInt(KEY_HALO_POSITION_X, 0);
-        int msavePositionY = preferences.getInt(KEY_HALO_POSITION_Y, mScreenHeight / 2 - mIconHalfSize);
 
-        if (preferences.getBoolean(KEY_HALO_FIRST_RUN, true)) {
-            mState = State.FIRST_RUN;
-            preferences.edit().putBoolean(KEY_HALO_FIRST_RUN, false).apply();
-        }
-        
         mKillX = mScreenWidth / 2;
         mKillY = mIconHalfSize;
 
         if (!mFirstStart) {
-            if (msavePositionY < 0) mEffect.setHaloY(0);
-            float mTmpHaloY = (float) msavePositionY / mScreenWidth * (mScreenHeight);
-            if (msavePositionY > mScreenHeight-mIconSize) {
-                mEffect.setHaloY((int)mTmpHaloY);
-            } else {
-                mEffect.setHaloY(isLandscapeMod() ? msavePositionY : (int)mTmpHaloY);
-            }
- 
-            if (mState == State.HIDDEN || mState == State.SILENT) {
-                mEffect.setHaloX((int)(mTickerLeft ? -mIconSize*0.8f : mScreenWidth - mIconSize*0.2f));
-                final int triggerWidth = (int)(mTickerLeft ? -mIconSize*0.7f : mScreenWidth - mIconSize*0.3f);
-                updateTriggerPosition(triggerWidth, mEffect.mHaloY);
-            } else {
-                mEffect.nap(500);
-                if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME, false);
-            }
+            if (mEffect.getHaloY() < 0) mEffect.setHaloY(0);
+            if (mEffect.getHaloY() > mScreenHeight-mIconSize) mEffect.setHaloY(mScreenHeight-mIconSize);
+            mEffect.nap(500);
+            if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME);
         } else {
             // Do the startup animations only once
             mFirstStart = false;
-            // Halo dock position
-            mTickerLeft = msavePositionX == 0 ? true : false;
-            updateTriggerPosition(msavePositionX, msavePositionY);
-            mEffect.mHaloTextViewL.setVisibility(mTickerLeft ? View.VISIBLE : View.GONE);
-            mEffect.mHaloTextViewR.setVisibility(mTickerLeft ? View.GONE : View.VISIBLE);            
-            mEffect.setHaloY(msavePositionY);         
-
-            if (mState == State.FIRST_RUN) {
-                mEffect.setHaloX(msavePositionX + (mTickerLeft ? -mIconSize : mIconSize));
-                mEffect.setHaloOverlay(HaloProperties.Overlay.MESSAGE, 1f);
-                mHandler.postDelayed(new Runnable() {
-                    public void run() {
-                        mEffect.wake();
-                        tick(mLastNotificationEntry, mContext.getResources().getString(R.string.halo_tutorial1), 0, 3000, true);
-                        mHandler.postDelayed(new Runnable() {
-                            public void run() {
-                                tick(mLastNotificationEntry, mContext.getResources().getString(R.string.halo_tutorial2), 0, 3000, true);
-                                mHandler.postDelayed(new Runnable() {
-                                    public void run() {
-                                        tick(mLastNotificationEntry, mContext.getResources().getString(R.string.halo_tutorial3), 0, 3000, true);
-                                        mHandler.postDelayed(new Runnable() {
-                                            public void run() {
-                                                mState = State.IDLE;                                        
-                                                mEffect.nap(0);
-                                                mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
-                                                if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME
-                                                        + 2500, HaloEffect.SLEEP_TIME, false);                                        
-                                            }}, 6000);
-                                    }}, 6000);
-                            }}, 6000);
-                    }}, 1000);
-            } else {
-                mEffect.setHaloX(msavePositionX);
-                mEffect.nap(500);
-                if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME, false);
-            }
+            updateTriggerPosition(0, mScreenHeight / 2 - mIconHalfSize);
+            mEffect.setHaloX(0);
+            mEffect.setHaloY(mScreenHeight / 2 - mIconHalfSize);
+            mEffect.nap(500);
+            if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME);
         }
-    }
-    
-    private boolean isLandscapeMod() {
-        return mScreenWidth < mScreenHeight;
-    }
+    }    
 
     private void updateTriggerPosition(int x, int y) {
         try {
@@ -391,6 +307,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
 
     private void loadLastNotification(boolean includeCurrentDismissable) {
         if (mNotificationData.size() > 0) {
+            //oldEntry = mLastNotificationEntry;
             mLastNotificationEntry = mNotificationData.get(mNotificationData.size() - 1);
 
             // If the current notification is dismissable we might want to skip it if so desired
@@ -433,9 +350,8 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
 
     void launchTask(NotificationClicker intent) {
 
-        // Do not launch tasks in hidden state or protected lock screen
-        if (mState == State.HIDDEN || mState == State.SILENT
-                || (mKeyguardManager.isKeyguardLocked() && mKeyguardManager.isKeyguardSecure())) return;
+        // Do not launch tasks in hidden state
+        if (mState == State.HIDDEN) return;
 
         try {
             ActivityManagerNative.getDefault().resumeAppSwitches();
@@ -490,11 +406,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         final float originalAlpha = mContext.getResources().getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
         for (int i = 0; i < mNotificationData.size(); i++) {
             NotificationData.Entry entry = mNotificationData.get(i);
-            if (entry.notification.getPackageName().equals("com.paranoid.halo")) {
-                entry.icon.setAlpha(0);
-            } else {
-                entry.icon.setAlpha(originalAlpha);
-            }
+            entry.icon.setAlpha(originalAlpha);
         }
     }
 
@@ -502,364 +414,294 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         float originalAlpha = mContext.getResources().getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
         for (int i = 0; i < mNotificationData.size(); i++) {
             NotificationData.Entry entry = mNotificationData.get(i);
-            if (entry.notification.getPackageName().equals("com.paranoid.halo")) continue;
             entry.icon.setAlpha(index == i ? 1f : originalAlpha);
         }
     }
 
-    private boolean verticalGesture() {
-        return (mGesture == Gesture.UP1
-                || mGesture == Gesture.DOWN1
-                || mGesture == Gesture.UP2
-                || mGesture == Gesture.DOWN2);
-    }
+    private float initialX = 0;
+    private float initialY = 0;        
+    private int oldIconIndex = -1;
+    private boolean hiddenState = false;
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+		@Override
+		public boolean onTouchEvent(MotionEvent event) {
+            mGestureDetector.onTouchEvent(event);
 
-        // Prevent any kind of interaction while HALO explains itself
-        if (mState == State.FIRST_RUN) return true;
+            final int action = event.getAction();
+            switch(action) {
+                case MotionEvent.ACTION_DOWN:
 
-        mGestureDetector.onTouchEvent(event);
+                    // Stop HALO from moving around, unschedule sleeping patterns
+                    if (mState != State.GESTURES) mEffect.unscheduleSleep();
 
-        final int action = event.getAction();
-        switch(action) {
-            case MotionEvent.ACTION_DOWN:
-                // Stop HALO from moving around, unschedule sleeping patterns
-                if (mState != State.GESTURES) mEffect.unscheduleSleep();
-
-                mMarkerIndex = -1;
-                oldIconIndex = -1;
-
-                resetIcons();
-
-                mGesture = Gesture.NONE;
-                hiddenState = (mState == State.HIDDEN || mState == State.SILENT);
-                if (hiddenState) {
-                    mEffect.wake();
-                    if (mHideTicker) {
-                        mEffect.sleep(2500, HaloEffect.SLEEP_TIME, false);
-                    } else {
-                        mEffect.nap(2500);
+                    mMarkerIndex = -1;
+                    oldIconIndex = -1;
+                    mGesture = Gesture.NONE;
+                    hiddenState = mState == State.HIDDEN;
+                    if (mState == State.HIDDEN) {
+                        mEffect.wake();
+                        if (mHideTicker) {
+                            mEffect.sleep(2500, HaloEffect.SLEEP_TIME);
+                        } else {
+                            mEffect.nap(2500);
+                        }
+                        return true;
                     }
-                    return true;
-                }
 
-                initialX = event.getRawX();
-                initialY = event.getRawY(); 
-                break;
+                    initialX = event.getRawX();
+                    initialY = event.getRawY(); 
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    if (hiddenState) break;
 
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                if (hiddenState) break;
+                    resetIcons();
+                    mBar.setHaloTaskerActive(false, true);
+                    mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
+                    updateTriggerPosition(mEffect.getHaloX(), mEffect.getHaloY());
 
-                resetIcons();
-                mBar.setHaloTaskerActive(false, true);
-                mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
-                updateTriggerPosition(mEffect.getHaloX(), mEffect.getHaloY());
+                    mEffect.outro();
+                    mEffect.killTicker();
+                    mEffect.unscheduleSleep();
 
-                mEffect.outro();
-                mEffect.killTicker();
-                mEffect.unscheduleSleep();
-
-                // Do we erase ourselves?
-                if (mOverX) {
-                    Settings.System.putInt(mContext.getContentResolver(),
-                            Settings.System.HALO_ACTIVE, 0);
-                    return true;
-                }
-                
-                // Halo dock position
-                float mTmpHaloY = (float) mEffect.mHaloY / mScreenHeight * mScreenWidth;
-                preferences.edit().putInt(KEY_HALO_POSITION_X, mTickerLeft ?
-                        0 : mScreenWidth - mIconSize).putInt(KEY_HALO_POSITION_Y, isLandscapeMod() ?
-                        mEffect.mHaloY : (int)mTmpHaloY).apply();
+                    // Do we erase ourselves?
+                    if (mOverX) {
+                        Settings.System.putInt(mContext.getContentResolver(),
+                                Settings.System.HALO_ACTIVE, 0);
+                        return true;
+                    }
                     
-                if (mGesture == Gesture.TASK) {
-                    // Launch tasks
-                    if (mTaskIntent != null) {
+                    if (mGesture == Gesture.TASK) {
+                        // Launch tasks
+                        if (mTaskIntent != null) {
+                            playSoundEffect(SoundEffectConstants.CLICK);
+                            launchTask(mTaskIntent);
+                        }
+                        mEffect.nap(0);
+                        if (mHideTicker) mEffect.sleep(HaloEffect.NAP_TIME + 1500, HaloEffect.SLEEP_TIME);
+                    } else if (mGesture == Gesture.DOWN) {
+                        // Hide from sight
                         playSoundEffect(SoundEffectConstants.CLICK);
-                        launchTask(mTaskIntent);
-                    }
-                    mEffect.nap(0);
-                    if (mHideTicker) mEffect.sleep(HaloEffect.NAP_TIME + 1500, HaloEffect.SLEEP_TIME, false);
+                        mEffect.sleep(0, HaloEffect.NAP_TIME / 2);
+                    } else if (mGesture == Gesture.UP) {
+                        // Dismiss notification
+                        playSoundEffect(SoundEffectConstants.CLICK);
 
-                } else if (mGesture == Gesture.DOWN2) {
-                    // Hide & silence
-                    playSoundEffect(SoundEffectConstants.CLICK);
-                    mEffect.sleep(0, HaloEffect.NAP_TIME / 2, true);
-
-                } else if (mGesture == Gesture.DOWN1) {
-                    // Hide from sight
-                    playSoundEffect(SoundEffectConstants.CLICK);
-                    mEffect.sleep(0, HaloEffect.NAP_TIME / 2, false);
-
-                } else if (mGesture == Gesture.UP2) {
-                    // Clear all notifications
-                    playSoundEffect(SoundEffectConstants.CLICK);
-
-                    try {
-                        mBar.getService().onClearAllNotifications();
-                    } catch (RemoteException ex) {
-                        // system process is dead if we're here.
-                    }
-                    
-                    loadLastNotification(false);
-
-                    mEffect.nap(1500);
-                    if (mHideTicker) mEffect.sleep(HaloEffect.NAP_TIME + 3000, HaloEffect.SLEEP_TIME, false);
-
-                } else if (mGesture == Gesture.UP1) {
-                    // Dismiss notification
-                    playSoundEffect(SoundEffectConstants.CLICK);
-
-                    if (mContentIntent != null) {
-                        try {
-                            mBar.getService().onNotificationClear(mContentIntent.mPkg, mContentIntent.mTag, mContentIntent.mId);
-                        } catch (RemoteException ex) {
-                            // system process is dead if we're here.
-                        }
-                    }
-
-                    // Find next entry
-                    NotificationData.Entry entry = null;
-                    if (mNotificationData.size() > 0) {
-                        for (int i = mNotificationData.size() - 1; i >= 0; i--) {
-                            NotificationData.Entry item = mNotificationData.get(i);
-                            if (mCurrentNotficationEntry != null
-                                    && mCurrentNotficationEntry.notification == item.notification) {
-                                continue;
-                            }
-                            boolean cancel = (item.notification.getNotification().flags &
-                                    Notification.FLAG_AUTO_CANCEL) == Notification.FLAG_AUTO_CANCEL;
-                            if (cancel) {
-                                entry = item;
-                                break;
+                        if (mContentIntent != null) {
+                            try {
+                                mBar.getService().onNotificationClear(mContentIntent.mPkg, mContentIntent.mTag, mContentIntent.mId);
+                            } catch (RemoteException ex) {
+                                // system process is dead if we're here.
                             }
                         }
-                    }
 
-                    // When no entry was found, take the last one
-                    if (entry == null && mNotificationData.size() > 0) {
-                        loadLastNotification(false);
+                        // Find next entry
+                        NotificationData.Entry entry = null;
+                    	if (mNotificationData.size() > 0) {
+                            for (int i = mNotificationData.size() - 1; i >= 0; i--) {
+                            	NotificationData.Entry item = mNotificationData.get(i);
+                            	if (mCurrentNotficationEntry != null
+                            	        && mCurrentNotficationEntry.notification == item.notification) {
+                            	    continue;
+                            	}
+                            	boolean cancel = (item.notification.getNotification().flags &
+                            	        Notification.FLAG_AUTO_CANCEL) == Notification.FLAG_AUTO_CANCEL;
+                            	if (cancel) {
+                            	    entry = item;
+                            	    break;
+                            	}
+                            }
+                    	}
+
+                        // When no entry was found, take the last one
+                        if (entry == null && mNotificationData.size() > 0) {
+                            loadLastNotification(false);
+                        } else {
+                            tick(entry, "", 0, 0, false);
+                        }
+
+                        mEffect.nap(1500);
+                        if (mHideTicker) mEffect.sleep(HaloEffect.NAP_TIME + 3000, HaloEffect.SLEEP_TIME);
                     } else {
-                        tick(entry, "", 0, 0, false);
+                        // No gesture, just snap HALO
+                        mEffect.snap(0);
+                        mEffect.nap(HaloEffect.SNAP_TIME + 1000);
+                        if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME);
                     }
 
-                    mEffect.nap(1500);
-                    if (mHideTicker) mEffect.sleep(HaloEffect.NAP_TIME + 3000, HaloEffect.SLEEP_TIME, false);
-                } else {
-                    // No gesture, just snap HALO
-                    mEffect.snap(0);
-                    mEffect.nap(HaloEffect.SNAP_TIME + 1000);
-                    if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME, false);
-                }
+                    mState = State.IDLE;
+                    mGesture = Gesture.NONE;
+                    break;
 
-                mState = State.IDLE;
-                mGesture = Gesture.NONE;
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                if (hiddenState) break;
+                case MotionEvent.ACTION_MOVE:
+                    if (hiddenState) break;
                
-                float distanceX = mKillX-event.getRawX();
-                float distanceY = mKillY-event.getRawY();
-                float distanceToKill = (float)Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+                    float distanceX = mKillX-event.getRawX();
+                    float distanceY = mKillY-event.getRawY();
+                    float distanceToKill = (float)Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 
-                distanceX = initialX-event.getRawX();
-                distanceY = initialY-event.getRawY();
-                float initialDistance = (float)Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+                    distanceX = initialX-event.getRawX();
+                    distanceY = initialY-event.getRawY();
+                    float initialDistance = (float)Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 
-                if (mState != State.GESTURES) {
-                    // Check kill radius
-                    if (distanceToKill < mIconSize) {
-                        // Magnetize X
-                        mEffect.setHaloX((int)mKillX - mIconHalfSize);
-                        mEffect.setHaloY((int)(mKillY - mIconHalfSize));
+                    if (mState != State.GESTURES) {
+                        // Check kill radius
+                        if (distanceToKill < mIconSize) {
+                            // Magnetize X
+                            mEffect.setHaloX((int)mKillX - mIconHalfSize);
+                            mEffect.setHaloY((int)(mKillY - mIconHalfSize));
                             
-                        if (!mOverX) {
-                            if (mHapticFeedback) mVibrator.vibrate(25);
-                            mEffect.ping(mPaintHoloRed, 0);
-                            mEffect.setHaloOverlay(HaloProperties.Overlay.BLACK_X, 1f);
-                            mOverX = true;
+                            if (!mOverX) {
+                                if (mHapticFeedback) mVibrator.vibrate(25);
+                                mEffect.ping(mPaintHoloRed, 0);
+                                mEffect.setHaloOverlay(HaloProperties.Overlay.BLACK_X, 1f);
+                                mOverX = true;
+                            }
+
+                            return false;
+                        } else {
+                            if (mOverX) mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
+                            mOverX = false;
                         }
 
-                        return false;
-                    } else {
-                        if (mOverX) mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
-                        mOverX = false;
-                    }
+                        // Drag
+                        if (mState != State.DRAG) {
+                            if (initialDistance > mIconSize * 0.7f) {
+                                if (mInteractionReversed) {
+                                    mState = State.GESTURES;
+                                    mEffect.wake();
+                                    mBar.setHaloTaskerActive(true, true);
+                                } else {
+                                    mState = State.DRAG;
+                                    mEffect.intro();
+                                    if (mHapticFeedback) mVibrator.vibrate(25);
+                                }
+                            }
+                        } else {
+                            int posX = (int)event.getRawX() - mIconHalfSize;
+                            int posY = (int)event.getRawY() - mIconHalfSize;
+                            if (posX < 0) posX = 0;
+                            if (posY < 0) posY = 0;
+                            if (posX > mScreenWidth-mIconSize) posX = mScreenWidth-mIconSize;
+                            if (posY > mScreenHeight-mIconSize) posY = mScreenHeight-mIconSize;
+                            mEffect.setHaloX(posX);
+                            mEffect.setHaloY(posY);
 
-                    // Drag
-                    if (mState != State.DRAG) {
-                        if (initialDistance > mIconSize * 0.7f) {
-                            if (mInteractionReversed) {
-                                mState = State.GESTURES;
-                                mEffect.wake();
-                                mBar.setHaloTaskerActive(true, true);
-                            } else {
-                                mState = State.DRAG;
-                                mEffect.intro();
-                                if (mHapticFeedback) mVibrator.vibrate(25);
+                            // Update resources when the side changes
+                            boolean oldTickerPos = mTickerLeft;
+                            mTickerLeft = (posX + mIconHalfSize < mScreenWidth / 2);
+                            if (oldTickerPos != mTickerLeft) {
+                                mEffect.updateResources();
                             }
                         }
                     } else {
-                        int posX = (int)event.getRawX() - mIconHalfSize;
-                        int posY = (int)event.getRawY() - mIconHalfSize;
-                        if (posX < 0) posX = 0;
-                        if (posY < 0) posY = 0;
-                        if (posX > mScreenWidth-mIconSize) posX = mScreenWidth-mIconSize;
-                        if (posY > mScreenHeight-mIconSize) posY = mScreenHeight-mIconSize;
-                        mEffect.setHaloX(posX);
-                        mEffect.setHaloY(posY);
+                        // We have three basic gestures, one horizontal for switching through tasks and
+                        // two vertical for dismissing tasks or making HALO fall asleep
 
-                        // Update resources when the side changes
-                        boolean oldTickerPos = mTickerLeft;
-                        mTickerLeft = (posX + mIconHalfSize < mScreenWidth / 2);
-                        if (oldTickerPos != mTickerLeft) {
-                            mEffect.updateResources();
-                            mEffect.mHaloTextViewL.setVisibility(mTickerLeft ? View.VISIBLE : View.GONE);
-                            mEffect.mHaloTextViewR.setVisibility(mTickerLeft ? View.GONE : View.VISIBLE);
-                        }
-                    }
-                } else {
-                    // We have three basic gestures, one horizontal for switching through tasks and
-                    // two vertical for dismissing tasks or making HALO fall asleep
+                        int deltaX = (int)(mTickerLeft ? event.getRawX() : mScreenWidth - event.getRawX());
+                        int deltaY = (int)(mEffect.getHaloY() - event.getRawY() + mIconSize);
+                        int horizontalThreshold = (int)(mIconSize * 1.5f);
+                        int verticalThreshold = mIconSize;
+			String gestureText = mNotificationText;
 
-                    int deltaX = (int)(mTickerLeft ? event.getRawX() : mScreenWidth - event.getRawX());
-                    int deltaY = (int)(mEffect.getHaloY() - event.getRawY() + mIconSize);
-                    int horizontalThreshold = (int)(mIconSize * 1.5f);
-                    int verticalThreshold = (int)(mIconSize * 0.25f);
-                    int verticalSteps = (int)(mIconSize * 0.7f);
-                    String gestureText = mNotificationText;
+                        // Switch icons
+                        if (deltaX > horizontalThreshold) {
+                            if (mGesture != Gesture.TASK) mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
 
-                    // Switch icons
-                    if (deltaX > horizontalThreshold) {
-                        if (mGesture != Gesture.TASK) mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
+                            mGesture = Gesture.TASK;
 
-                        mGesture = Gesture.TASK;
-                        
-                        deltaX -= horizontalThreshold;
-                        if (mNotificationData != null && mNotificationData.size() > 0) {
-                            int items = mNotificationData.size();
+                            deltaX -= horizontalThreshold;
+                            if (mNotificationData != null && mNotificationData.size() > 0) {
+                                int items = mNotificationData.size();
 
-                            // This will be the lenght we are going to use
-                            int indexLength = ((int)(mScreenWidth * 0.85f) - mIconSize) / items;
+                                // This will be the lenght we are going to use
+                                int indexLength = (mScreenWidth - mIconSize * 2) / items;
 
-                            // Calculate index
-                            mMarkerIndex = mTickerLeft ? (items - deltaX / indexLength) - 1 : (deltaX / indexLength);
+                                // Calculate index
+                                mMarkerIndex = mTickerLeft ? (items - deltaX / indexLength) - 1 : (deltaX / indexLength);
 
-                            // Watch out for margins!
-                            if (mMarkerIndex >= items) mMarkerIndex = items - 1;
-                            if (mMarkerIndex < 0) mMarkerIndex = 0;
-                        }
+                                // Watch out for margins!
+                                if (mMarkerIndex >= items) mMarkerIndex = items - 1;
+                                if (mMarkerIndex < 0) mMarkerIndex = 0;
+                            }
+                        } else if (Math.abs(deltaY) > verticalThreshold) {
+                            mMarkerIndex = -1;
 
-                    // Up & down gestures
-                    } else if (Math.abs(deltaY) > verticalThreshold) {
-                        mMarkerIndex = -1;
+                            // Up & down gestures
+                            int newDeltaY = Math.abs(deltaY) - verticalThreshold;
+                            boolean gestureChanged = false;
 
-                        boolean gestureChanged = false;
-                        final int deltaIndex = (Math.abs(deltaY) - verticalThreshold) / verticalSteps;
+                            if (deltaY > 0) {
+                                if (mGesture != Gesture.UP) {
+                                    mGesture = Gesture.UP;
+                                    gestureChanged = true;
+                                    mEffect.setHaloOverlay(HaloProperties.Overlay.DISMISS, 1f);
+                                }
+                            } else {
+                                if (mGesture != Gesture.DOWN) {
+                                    mGesture = Gesture.DOWN;
+                                    gestureChanged = true;
+                                    mEffect.setHaloOverlay(mTickerLeft ? HaloProperties.Overlay.BACK_LEFT
+                                            : HaloProperties.Overlay.BACK_RIGHT, 1f);
+                                }
+                            }
 
-                        if (deltaIndex < 1 && mGesture != Gesture.NONE) {
-                            // Dead zone buffer to prevent accidental notifiction dismissal
-                            gestureChanged = true;
-                            mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
-                            if (verticalGesture()) gestureText = "";
-                            mGesture = Gesture.NONE;
-                        } else if (deltaY > 0) { 
-                            if (deltaIndex == 1 && mGesture != Gesture.UP1) {
-                                mGesture = Gesture.UP1;
-                                gestureChanged = true;
-                                mEffect.setHaloOverlay(HaloProperties.Overlay.DISMISS, 1f);
-                                gestureText = mContext.getResources().getString(R.string.halo_dismiss);
-                            } else if (deltaIndex > 1 && mGesture != Gesture.UP2) {
-                                mGesture = Gesture.UP2;
-                                gestureChanged = true;
-                                mEffect.setHaloOverlay(HaloProperties.Overlay.CLEAR_ALL, 1f);
-                                gestureText = mContext.getResources().getString(R.string.halo_clear_all);
+                            if (gestureChanged) {
+                                mMarkerIndex = -1;
+                                mEffect.killTicker();
+                                if (mHapticFeedback) mVibrator.vibrate(10);
                             }
 
                         } else {
-                            if (deltaIndex == 1 && mGesture != Gesture.DOWN1) {
-                                mGesture = Gesture.DOWN1;
-                                gestureChanged = true;
-                                mEffect.setHaloOverlay(mTickerLeft ? HaloProperties.Overlay.BACK_LEFT
-                                        : HaloProperties.Overlay.BACK_RIGHT, 1f);
-                                gestureText = mContext.getResources().getString(R.string.halo_hide);
-                            } else if (deltaIndex > 1 && mGesture != Gesture.DOWN2) {
-                                mGesture = Gesture.DOWN2;
-                                gestureChanged = true;
-                                mEffect.setHaloOverlay(mTickerLeft ? HaloProperties.Overlay.SILENCE_LEFT
-                                        : HaloProperties.Overlay.SILENCE_RIGHT, 1f);
-                                gestureText = mContext.getResources().getString(R.string.halo_silence);
-                            }
-                        }
-
-                        if (gestureChanged) {
                             mMarkerIndex = -1;
+                            if (mGesture != Gesture.NONE) mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
+                            mGesture = Gesture.NONE;
+                        }
 
-                            // Tasking hasn't changed, we can tick the message here
-                            if (mMarkerIndex == oldIconIndex) {
-                                mEffect.ticker(gestureText, 0, 250);
-                                mEffect.updateResources();
-                                mEffect.invalidate();
+                        // If the marker index changed, tick
+                        if (mMarkerIndex != oldIconIndex) {
+                            oldIconIndex = mMarkerIndex;
+
+                            // Make a tiny pop if not so many icons are present
+                            if (mHapticFeedback && mNotificationData.size() < 10) mVibrator.vibrate(1);
+
+                            try {
+                                if (mMarkerIndex == -1) {
+                                    mTaskIntent = null;
+                                    resetIcons();
+                                    tick(mLastNotificationEntry, gestureText, 0, 250, false);
+
+                                    // Ping to notify the user we're back where we started
+                                    mEffect.ping(mPaintHoloBlue, 0);
+                                } else {
+                                    setIcon(mMarkerIndex);
+                                    NotificationData.Entry entry = mNotificationData.get(mMarkerIndex);
+
+                                    ApplicationInfo ai;
+                                    try {
+                                        ai = mPm.getApplicationInfo( entry.notification.getPackageName(), 0);
+                                    } catch (final NameNotFoundException e) {
+                                        ai = null;
+                                    }
+                                    String text = (String) (ai != null ? mPm.getApplicationLabel(ai) : "...");
+
+                                    if (entry.notification.getNotification().tickerText != null) {
+                                        text = entry.notification.getNotification().tickerText.toString();
+                                    }
+                                    tick(entry, text, 0, 250, false);
+                                    mTaskIntent = entry.getFloatingIntent();
+                                }
+                            } catch (Exception e) {
+                                // IndexOutOfBoundsException
                             }
-                            if (mHapticFeedback) mVibrator.vibrate(10);
                         }
-
-                    } else {
-                        mMarkerIndex = -1;
-                        if (mGesture != Gesture.NONE) {
-                            mEffect.setHaloOverlay(HaloProperties.Overlay.NONE, 0f);
-                            if (verticalGesture()) mEffect.killTicker();
-                        }
-                        mGesture = Gesture.NONE;
                     }
 
-                    // If the marker index changed, tick
-                    if (mMarkerIndex != oldIconIndex) {
-                        oldIconIndex = mMarkerIndex;
-
-                        // Make a tiny pop if not so many icons are present
-                        if (mHapticFeedback && mNotificationData.size() < 10) mVibrator.vibrate(1);
-
-                        try {
-                            if (mMarkerIndex == -1) {
-                                mTaskIntent = null;
-                                resetIcons();
-                                tick(mLastNotificationEntry, gestureText, 0, 250, false);
-
-                                // Ping to notify the user we're back where we started
-                                mEffect.ping(mPaintHoloBlue, 0);
-                            } else {
-                                setIcon(mMarkerIndex);
-                                NotificationData.Entry entry = mNotificationData.get(mMarkerIndex);
-
-                                ApplicationInfo ai;
-                                try {
-                                    ai = mPm.getApplicationInfo( entry.notification.getPackageName(), 0);
-                                } catch (final NameNotFoundException e) {
-                                    ai = null;
-                                }
-                                String text = (String) (ai != null ? mPm.getApplicationLabel(ai) : "...");
-
-                                if (entry.notification.getNotification().tickerText != null) {
-                                    text = entry.notification.getNotification().tickerText.toString();
-                                }
-                                tick(entry, text, 0, 250, false);
-                                mTaskIntent = entry.getFloatingIntent();
-                            }
-                        } catch (Exception e) {
-                            // IndexOutOfBoundsException
-                        }
-                    }
-                }
-                mEffect.invalidate();
-                break;
+                    mEffect.invalidate();
+                    break;
+            }
+            return false;
         }
-        return false;
-    }
 
     public void cleanUp() {
         // Remove pending tasks, if we can
@@ -884,6 +726,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         public static final int PING_TIME = 1500;
         public static final int PULSE_TIME = 1500;
         public static final int TICKER_HIDE_TIME = 2500;
+
         public static final int NAP_DELAY = 4500;
         public static final int SLEEP_DELAY = 6500;  
 
@@ -892,11 +735,14 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         private int pingRadius = 0;
         private int mPingX, mPingY;
         protected int pingMinRadius = 0;
-        protected int pingMaxRadius = 0;        
+        protected int pingMaxRadius = 0;
+        
         private boolean mPingAllowed = true;
 
-        private Bitmap mMarker, mMarkerT, mMarkerB;
+        private Bitmap mMarkerL, mMarkerT, mMarkerR, mMarkerB;
         private Bitmap mBigRed;
+        private Bitmap mPulse;
+        private Paint mPulsePaint = new Paint();
         private Paint mMarkerPaint = new Paint();
         private Paint xPaint = new Paint();
 
@@ -912,25 +758,19 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
 
             mBigRed = BitmapFactory.decodeResource(mContext.getResources(),
                     R.drawable.halo_bigred);
-            mMarker = BitmapFactory.decodeResource(mContext.getResources(),
-                    R.drawable.halo_marker);
+            mPulse = BitmapFactory.decodeResource(mContext.getResources(),
+                    R.drawable.halo_pulse1);
+            mMarkerL = BitmapFactory.decodeResource(mContext.getResources(),
+                    R.drawable.halo_marker_l);
             mMarkerT = BitmapFactory.decodeResource(mContext.getResources(),
                     R.drawable.halo_marker_t);
+            mMarkerR = BitmapFactory.decodeResource(mContext.getResources(),
+                    R.drawable.halo_marker_r);
             mMarkerB = BitmapFactory.decodeResource(mContext.getResources(),
                     R.drawable.halo_marker_b);
 
-            if (mHaloSize != 1.0f) {
-                mBigRed = Bitmap.createScaledBitmap(mBigRed, (int)(mBigRed.getWidth() * mHaloSize),
-                        (int)(mBigRed.getHeight() * mHaloSize), true);
-                mMarker = Bitmap.createScaledBitmap(mMarker, (int)(mMarker.getWidth() * mHaloSize),
-                        (int)(mMarker.getHeight() * mHaloSize), true);
-                mMarkerT = Bitmap.createScaledBitmap(mMarkerT, (int)(mMarkerT.getWidth() * mHaloSize),
-                        (int)(mMarkerT.getHeight() * mHaloSize), true);
-                mMarkerB = Bitmap.createScaledBitmap(mMarkerB, (int)(mMarkerB.getWidth() * mHaloSize),
-                        (int)(mMarkerB.getHeight() * mHaloSize), true);
-            }
-
-
+            mPulsePaint.setAntiAlias(true);
+            mPulsePaint.setAlpha(0);   
             mMarkerPaint.setAntiAlias(true);
             mMarkerPaint.setAlpha(0);
             xPaint.setAntiAlias(true);
@@ -970,14 +810,17 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                 return;
             }
 
+            mHaloTextViewL.setVisibility(mTickerLeft ? View.VISIBLE : View.GONE);
+            mHaloTextViewR.setVisibility(mTickerLeft ? View.GONE : View.VISIBLE);
+
             mHaloTextViewR.setText(tickerText);
             mHaloTextViewL.setText(tickerText);
 
             float total = TICKER_HIDE_TIME + startDuration + 1000;
             PropertyValuesHolder tickerUpFrames = PropertyValuesHolder.ofKeyframe("haloContentAlpha",
                     Keyframe.ofFloat(0f, mHaloTextViewL.getAlpha()),
-                    Keyframe.ofFloat(0.1f, 1f),
-                    Keyframe.ofFloat(0.9f, 1f),
+                    Keyframe.ofFloat(startDuration / total, 1f),
+                    Keyframe.ofFloat((TICKER_HIDE_TIME + startDuration) / total, 1f),
                     Keyframe.ofFloat(1f, 0f));
             tickerAnimator.animate(ObjectAnimator.ofPropertyValuesHolder(this, tickerUpFrames).setDuration((int)total),
                     new DecelerateInterpolator(), null, delay, null);
@@ -993,8 +836,11 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
 
                     mPingX = mHaloX + mIconHalfSize;
                     mPingY = mHaloY + mIconHalfSize;
-
+;
                     mPingPaint = paint;
+
+                    int c = Color.argb(0xff, Color.red(paint.getColor()), Color.green(paint.getColor()), Color.blue(paint.getColor()));
+                    mPulsePaint.setColorFilter(new PorterDuffColorFilter(c, PorterDuff.Mode.SRC_IN));
 
                     CustomObjectAnimator pingAnimator = new CustomObjectAnimator(mEffect);
                     pingAnimator.animate(ObjectAnimator.ofInt(mPingPaint, "alpha", 200, 0).setDuration(PING_TIME),
@@ -1005,6 +851,10 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                                             animation.getAnimatedFraction()) + pingMinRadius;
                                     invalidate();
                                 }});
+
+                    CustomObjectAnimator pulseAnimator = new CustomObjectAnimator(mEffect);
+                    pulseAnimator.animate(ObjectAnimator.ofInt(mPulsePaint, "alpha", 100, 0).setDuration(PULSE_TIME),
+                            new AccelerateInterpolator(), null);
 
                     // prevent ping spam            
                     mHandler.postDelayed(new Runnable() {
@@ -1029,7 +879,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
 
         public void wake() {
             unscheduleSleep();
-            if (mState == State.HIDDEN || mState == State.SILENT) mState = State.IDLE;
+            if (mState == State.HIDDEN) mState = State.IDLE;
             int newPos = mTickerLeft ? 0 : mScreenWidth - mIconSize;
             updateTriggerPosition(newPos, mHaloY);
             snapAnimator.animate(ObjectAnimator.ofInt(this, "haloX", newPos).setDuration(WAKE_TIME),
@@ -1052,12 +902,12 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                         }});
         }
 
-        public void sleep(long delay, int speed, final boolean silent) {
+        public void sleep(long delay, int speed) {
             final int newPos = (int)(mTickerLeft ? -mIconSize*0.8f : mScreenWidth - mIconSize*0.2f);
             snapAnimator.animate(ObjectAnimator.ofInt(this, "haloX", newPos).setDuration(speed),
                     new DecelerateInterpolator(), null, delay, new Runnable() {
                         public void run() {
-                            mState = silent ? State.SILENT : State.HIDDEN;
+                            mState = State.HIDDEN;
                             final int triggerWidth = (int)(mTickerLeft ? -mIconSize*0.7f : mScreenWidth - mIconSize*0.3f);
                             updateTriggerPosition(triggerWidth, mHaloY);
                         }});
@@ -1067,50 +917,37 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
             snapAnimator.cancel(true);
         }
 
-        CustomObjectAnimator contentYAnimator = new CustomObjectAnimator(this);
-
-        @Override        
+        @Override
         protected void onDraw(Canvas canvas) {
             int state;
 
             // Ping
             if (mPingPaint != null) {
                 canvas.drawCircle(mPingX, mPingY, pingRadius, mPingPaint);
+                int w = mPulse.getWidth() + (int)(mIconSize * 1.2f * mPulsePaint.getAlpha() / 100);
+                Rect r = new Rect(mPingX - w / 2, mPingY - w / 2, mPingX + w / 2, mPingY + w / 2);
+                canvas.drawBitmap(mPulse, null, r, mPulsePaint);
             }
 
             // Content
             state = canvas.save();
-            int ch = mGesture == Gesture.TASK ? 0 : mHaloTickerContent.getMeasuredHeight() / 2;
-            int cw = mHaloTickerContent.getMeasuredWidth();
-            int y = mHaloY + mIconHalfSize - ch;
-            if (mGesture == Gesture.TASK) {
-                if (mHaloY < mIconHalfSize) {
-                    y = y + (int)(mIconSize * 0.85f);
-                } else {
-                    y = y - (int)(mIconSize * 0.85f);
+
+            int y = mHaloY - mHaloTickerContent.getMeasuredHeight() + (int)(mIconSize * 0.2);
+            if (y < 0) y = 0;
+
+            int x = mHaloX + (int)(mIconSize * 0.92f);
+            int c = mHaloTickerContent.getMeasuredWidth();
+            if (x > mScreenWidth - c) {
+                x = mScreenWidth - c;
+                if (mHaloX > mScreenWidth - (int)(mIconSize * 1.5f) ) {
+                    x = mHaloX - c + (int)(mIconSize * 0.08f);
                 }
             }
 
-            int x = mHaloX + mIconSize + (int)(mIconSize * 0.1f);
-            if (!mTickerLeft) {
-                x = mHaloX - cw - (int)(mIconSize * 0.1f);
-            }
-
-            if (mState == State.DRAG) {
-                setHaloContentY(y);
-            } else {
-                if (y != getHaloContentY() && !contentYAnimator.isRunning()) {
-                    contentYAnimator.animate(ObjectAnimator.ofInt(this, "HaloContentY", y).setDuration(300),
-                            new DecelerateInterpolator(), null);
-                }
-            }
-
-            if (getHaloContentAlpha() > 0.0f) {
-                state = canvas.save();
-                canvas.translate(x, getHaloContentY());
-                mHaloContentView.draw(canvas);
-                canvas.restoreToCount(state);
-            }
+            state = canvas.save();
+            canvas.translate(x, y);
+            mHaloContentView.draw(canvas);
+            canvas.restoreToCount(state);
 
             // X
             float fraction = 1 - ((float)xPaint.getAlpha()) / 255;
@@ -1120,40 +957,31 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
             // Horizontal Marker
             if (mGesture == Gesture.TASK) {
                 if (y > 0 && mNotificationData != null && mNotificationData.size() > 0) {
-                    int pulseY = mHaloY + mIconHalfSize - mMarker.getHeight() / 2;
+                    int pulseY = mHaloY + mIconHalfSize - mMarkerR.getHeight() / 2;
                     int items = mNotificationData.size();
-                    int indexLength = ((int)(mScreenWidth * 0.85f) - mIconSize) / items;
+                    int indexLength = (mScreenWidth - mIconSize * 2) / items;
 
                     for (int i = 0; i < items; i++) {
-                        float pulseX = mTickerLeft ? (mIconSize * 1.25f + indexLength * i)
-                                : (mScreenWidth - mIconSize * 1.25f - indexLength * i - mMarker.getWidth());
+                        float pulseX = mTickerLeft ? (mIconSize * 1.5f + indexLength * i)
+                                : (mScreenWidth - mIconSize * 1.5f - indexLength * i - mMarkerR.getWidth());
                         boolean markerState = mTickerLeft ? mMarkerIndex >= 0 && i < items-mMarkerIndex : i <= mMarkerIndex;
                         mMarkerPaint.setAlpha(markerState ? 255 : 100);
-                        canvas.drawBitmap(mMarker, pulseX, pulseY, mMarkerPaint);
+                        canvas.drawBitmap(mTickerLeft ? mMarkerR : mMarkerL, pulseX, pulseY, mMarkerPaint);
                     }
                 }
             }
 
-            // Vertical Markers
-            if (verticalGesture()) {
+            // Vertical Marker
+            if (mGesture == Gesture.UP || mGesture == Gesture.DOWN) {
                 int xPos = mHaloX + mIconHalfSize - mMarkerT.getWidth() / 2;
-                                
-                mMarkerPaint.setAlpha(mGesture == Gesture.UP1 ? 255 : 100);
-                int yTop = (int)(mHaloY - (mIconSize * 0.25f) - mMarkerT.getHeight() / 2);
+                int yTop = (int)(mHaloY + mIconHalfSize - mIconSize * 1.2f - mMarkerT.getHeight() / 2);
+                int yButtom = (int)(mHaloY + mIconHalfSize + mIconSize * 1.2f - mMarkerT.getHeight() / 2);
+                mMarkerPaint.setAlpha(mGesture == Gesture.UP ? 255 : 100);
                 canvas.drawBitmap(mMarkerT, xPos, yTop, mMarkerPaint);
-
-                mMarkerPaint.setAlpha(mGesture == Gesture.UP2 ? 255 : 100);
-                yTop = yTop - (int)(mIconSize * 0.7f);
-                canvas.drawBitmap(mMarkerT, xPos, yTop, mMarkerPaint);
-
-                mMarkerPaint.setAlpha(mGesture == Gesture.DOWN1 ? 255 : 100);
-                int yButtom = (int)(mHaloY + mIconSize + (mIconSize * 0.25f) - mMarkerT.getHeight() / 2);
-                canvas.drawBitmap(mMarkerB, xPos, yButtom, mMarkerPaint);
-
-                mMarkerPaint.setAlpha(mGesture == Gesture.DOWN2 ? 255 : 100);
-                yButtom = yButtom + (int)(mIconSize * 0.7f);
+                mMarkerPaint.setAlpha(mGesture == Gesture.DOWN ? 255 : 100);
                 canvas.drawBitmap(mMarkerB, xPos, yButtom, mMarkerPaint);
             }
+
 
             // Bubble
             state = canvas.save();
@@ -1162,7 +990,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
             canvas.restoreToCount(state);
 
             // Number
-            if (mState == State.IDLE || mState == State.GESTURES) {
+            if (mState == State.IDLE || mState == State.GESTURES && !(mGesture == Gesture.UP || mGesture == Gesture.DOWN)) {
                 state = canvas.save();
                 canvas.translate(mTickerLeft ? mHaloX + mIconSize - mHaloNumber.getMeasuredWidth() : mHaloX, mHaloY);
                 mHaloNumberView.draw(canvas);
@@ -1188,7 +1016,6 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
 
     void clearTicker() {
         mEffect.mHaloIcon.setImageDrawable(null);
-        mEffect.msgNumberAlphaAnimator.cancel(true);
         mEffect.mHaloNumber.setAlpha(0f);
         mContentIntent = null;
         mCurrentNotficationEntry = null;
@@ -1213,14 +1040,19 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         // set the avatar
         mEffect.mHaloIcon.setImageDrawable(new BitmapDrawable(mContext.getResources(), entry.getRoundIcon()));
 
+        // Set Number
+        if (n.number > 0) {
+            mEffect.mHaloNumber.setText((n.number < 100) ? String.valueOf(n.number) : "99+");
+            mEffect.mHaloNumber.setAlpha(1f);
+        } else {
+            mEffect.mHaloNumber.setAlpha(0f);
+        }
+
         // Set text
-        if (mState != State.SILENT) mEffect.ticker(text, delay, duration);
+        mEffect.ticker(text, delay, duration);
 
         mEffect.updateResources();
         mEffect.invalidate();
-
-        // Set Number
-        mEffect.setHaloMessageNumber(n.number, alwaysFlip, delay);
     }
 
     // This is the android ticker callback
@@ -1252,17 +1084,16 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                     mNotificationText = text;
                     mLastNotificationEntry = entry;
 
-                    if (allowed && mState != State.FIRST_RUN) {
-                        if (mState == State.IDLE || mState == State.HIDDEN) {
-                            mEffect.wake();
-                            mEffect.nap(HaloEffect.NAP_DELAY + HaloEffect.WAKE_TIME * 2);
-                            if (mHideTicker) mEffect.sleep(HaloEffect.SLEEP_DELAY + HaloEffect.WAKE_TIME * 2, HaloEffect.SLEEP_TIME, false);
-                        }
-
+                    if (allowed) {
                         tick(entry, text, HaloEffect.WAKE_TIME * 3, 1000, true);
 
                         // Pop while not tasking, only if notification is certified fresh
-                        if (mGesture != Gesture.TASK && mState != State.SILENT) mEffect.ping(mPaintHoloBlue, HaloEffect.WAKE_TIME * 2);
+                        if (mGesture != Gesture.TASK) mEffect.ping(mPaintHoloBlue, HaloEffect.WAKE_TIME);
+                        if (mState == State.IDLE || mState == State.HIDDEN) {
+                            mEffect.wake();
+                            mEffect.nap(HaloEffect.NAP_DELAY);
+                            if (mHideTicker) mEffect.sleep(HaloEffect.SLEEP_DELAY, HaloEffect.SLEEP_TIME);
+                        }
                     }
                 }
                 break;

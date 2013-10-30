@@ -2750,12 +2750,6 @@ public final class Settings {
          */
         public static final String HALO_HIDE = "halo_hide"; 
 
-	/**
-         * HALO size fraction, default is 1.0f (normal)
-         * @hide
-         */
-        public static final String HALO_SIZE = "halo_size";
-
         /**
          * Pie menu, should default to 0 (no, show only when needed)
          * Restart Launcher
