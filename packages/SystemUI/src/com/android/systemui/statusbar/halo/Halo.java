@@ -560,7 +560,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
 
             mStatusTextSize = mContext.getResources().getDimensionPixelSize(R.dimen.halo_status_text_size) * mHaloSize;
 
-            if (mState == State.IDLE) {
+            if (expanded) {
                 mEffect.mHaloStatusText.setTextAlign(Paint.Align.CENTER);
                 mEffect.statusBubblesShow();
                 statusAnimation = true;
@@ -1771,7 +1771,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                                 if (mHideTicker) mEffect.sleep(HaloEffect.SLEEP_DELAY + HaloEffect.WAKE_TIME * 2, HaloEffect.SLEEP_TIME, false);
                                 boolean showMsgBox = Settings.System.getInt(mContext.getContentResolver(), Settings.System.HALO_MSGBOX, 1) == 1;
                                 tick(entry, HaloEffect.WAKE_TIME * 2, 1000, false, showMsgBox, false);
-                                mEffect.ping(mPaintHolo, HaloEffect.WAKE_TIME * 2);
+                                mEffect.ping(mPaintHoloBlue, HaloEffect.WAKE_TIME * 2);
                                 mPingNewcomer = false;
                             }
                     }
