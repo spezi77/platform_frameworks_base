@@ -40,7 +40,6 @@ import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.view.PieStatusPanel;
 import com.android.systemui.statusbar.view.PieExpandPanel;
 import com.android.systemui.statusbar.WidgetView;
-import com.android.systemui.aokp.AppWindow;
 
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
