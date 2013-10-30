@@ -387,6 +387,7 @@ public class HaloProperties extends FrameLayout {
     }
 
     public void updateResources(boolean contentLeft) {
+        android.util.Log.d("PARANOID", "-- updateResources");
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, mHaloContentHeight);
