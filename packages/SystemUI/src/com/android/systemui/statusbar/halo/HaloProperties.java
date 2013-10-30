@@ -189,7 +189,6 @@ public class HaloProperties extends FrameLayout {
         mHaloPinned.setLayoutParams(layoutParams3);
 
         updateResources();
-        updateColorView();
     }
 
     public void setHaloX(int value) {
