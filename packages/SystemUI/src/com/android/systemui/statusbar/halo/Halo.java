@@ -1058,8 +1058,12 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                 return;
             }
 
+<<<<<<< HEAD
             flipContent(0, 0);
             setHaloContentHeight((int)(mContext.getResources().getDimensionPixelSize(R.dimen.notification_min_height) * 0.6f));
+=======
+            setHaloContentHeight((int)(mContext.getResources().getDimensionPixelSize(R.dimen.notification_min_height) * 0.7f));
+>>>>>>> parent of 4b403cc... halo, tweaking
             mHaloTickerContent.setVisibility(View.GONE);
             mHaloTextView.setVisibility(View.VISIBLE);
             mHaloTextView.setText(tickerText);

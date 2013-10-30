@@ -440,9 +440,6 @@
     <!-- Notification text: when GPS has found a fix [CHAR LIMIT=50] -->
     <string name="gps_notification_found_text">Location set by GPS</string>
 
-    <!-- Content description of the halo button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
-    <string name="accessibility_halo">Create notification halo.</string> 
-
     <!-- Content description of the clear button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_clear_all">Clear all notifications.</string>
 
@@ -664,5 +661,27 @@
 
     <!-- Title shown in recents popup for adding an application to the split view -->
     <string name="status_bar_recent_add_to_split_view">Add to Split View</string>
+    <string name="service_foreground_processes"><xliff:g id="memory">%1$s</xliff:g> used</string>
+    <!-- Text to label a process entry with the process name. -->
+    <string name="service_process_name"><xliff:g id="process">%1$s</xliff:g></string>
+    <!-- Running services, description for a service in the started state -->
+    <string name="service_client_name"><xliff:g id="client_name">%1$s</xliff:g></string>
+    <!-- Running services, description for a service in the started state -->
+    <string name="service_started_by_app">Started by app.</string>
+    <!-- Descriptive text of a running process: singular process, singular service. -->
+    <string name="running_processes_item_description_s_s"><xliff:g id="numprocess">%1$d</xliff:g>
+        process and <xliff:g id="numservices">%2$d</xliff:g> service</string>
+    <!-- Descriptive text of a running process: singular process, plural service. -->
+    <string name="running_processes_item_description_s_p"><xliff:g id="numprocess">%1$d</xliff:g>
+        process and <xliff:g id="numservices">%2$d</xliff:g> services</string>
+     <!-- Descriptive text of a running process: plural process, singular service. -->
+    <string name="running_processes_item_description_p_s"><xliff:g id="numprocess">%1$d</xliff:g>
+        processes and <xliff:g id="numservices">%2$d</xliff:g> service</string>
+    <!-- Descriptive text of a running process: plural process, plural service. -->
+    <string name="running_processes_item_description_p_p"><xliff:g id="numprocess">%1$d</xliff:g>
+        processes and <xliff:g id="numservices">%2$d</xliff:g> services</string>
+    <!-- [CHAR LIMIT=NONE] Label of a running process that represents another user -->
+    <string name="running_process_item_user_label">User: <xliff:g id="user_name">%1$s</xliff:g></string>
+
 
 </resources>
