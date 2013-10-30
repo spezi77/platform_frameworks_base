@@ -1016,15 +1016,15 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         @Override
         public boolean onTouchEvent(MotionEvent event) {
 
-            int index = event.getActionIndex();
             if (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP
-                    && index != 0 ) {
+                    && event.getActionIndex() == 1 ) {
+
                 if (mCurrentNotficationEntry != null && mCurrentNotficationEntry.haloContent != null) {
                     Rect rootRect = new Rect();
                     mHaloTickerContent.getHitRect(rootRect); 
                     
                     PointF point = new PointF();
-                    getRawPoint(event, index, point);
+                    getRawPoint(event, 1, point);
                     browseView(point, rootRect, mCurrentNotficationEntry.haloContent);
                 }
             }
