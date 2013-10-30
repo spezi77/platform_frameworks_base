@@ -4206,10 +4206,6 @@ public class Activity extends ContextThemeWrapper
         }
     }
 
-    public void finishFloating() {
-        mMainThread.performFinishFloating();
-    }
-
     /**
      * Finish this activity as well as all activities immediately below it
      * in the current task that have the same affinity.  This is typically
