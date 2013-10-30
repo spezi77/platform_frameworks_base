@@ -69,7 +69,7 @@ public class CustomObjectAnimator {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     final float value = animation.getAnimatedFraction();
-                    if (value != oldValue) rootView.postInvalidate();
+                    if (value != oldValue) rootView.invalidate();
                     oldValue = value;
                 }});
         } else {
