@@ -1198,20 +1198,6 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         }
 
         CustomObjectAnimator contentYAnimator = new CustomObjectAnimator(this);
-        public void slideContent(int duration, int y) {
-            contentYAnimator.animate(ObjectAnimator.ofInt(this, "HaloContentY", y).setDuration(duration),
-                    new DecelerateInterpolator(), null);
-        }
-
-        CustomObjectAnimator contentFlipAnimator = new CustomObjectAnimator(this);        
-        public void flipContent(int duration, int delay) {
-
-            // Make sure the animation does not stutter by letting it finish
-            if (contentFlipAnimator.isRunning()) return;
-
-            contentFlipAnimator.animate(ObjectAnimator.ofFloat(mHaloTickerWrapper, "rotationY",
-                    mTickerLeft ? -180 : 180, 0).setDuration(duration), new DecelerateInterpolator(), null, delay, null);
-        }
 
         int tickerX, tickerY;
 
@@ -1298,9 +1284,14 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                 if (y != getHaloContentY() && (!contentYAnimator.isRunning() || verticalGesture())) {
                     setHaloContentBackground(mTickerLeft, mGesture == Gesture.TASK && mHaloY > mIconHalfSize
                             ? HaloProperties.ContentStyle.CONTENT_DOWN : HaloProperties.ContentStyle.CONTENT_UP);
+<<<<<<< HEAD
                     int duration = !verticalGesture() ? 300 : 0;
                     slideContent(duration, y);
                     flipContent(duration, 0);
+=======
+                    contentYAnimator.animate(ObjectAnimator.ofInt(this, "HaloContentY", y).setDuration(300),
+                            new DecelerateInterpolator(), null);
+>>>>>>> parent of c5c5a13... halo, fancy flip
                 }
             }
 
