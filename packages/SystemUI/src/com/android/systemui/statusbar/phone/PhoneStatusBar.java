@@ -48,6 +48,7 @@ import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.NullPointerException;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
@@ -653,6 +654,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
 
     	mWifiLabel = (TextView)mStatusBarWindow.findViewById(R.id.wifi_text);
+	try {
         mNetworkController.addWifiLabelView(mWifiLabel);
 
         mWifiLabel.addTextChangedListener(new TextWatcher() {
@@ -684,6 +686,9 @@ public class PhoneStatusBar extends BaseStatusBar {
                 updateCarrierAndWifiLabelVisibility(false);
             }
         });
+        } catch (NullPointerException npe) {
+         // good luck with this!
+        }
 
         // Quick Settings (where available, some restrictions apply)
         if (mHasSettingsPanel) {
