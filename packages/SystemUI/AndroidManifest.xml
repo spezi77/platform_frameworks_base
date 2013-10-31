@@ -75,9 +75,6 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     
-    <!--Halo-->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/> 
-
     <!-- Secure Screenshot -->
     <protected-broadcast android:name="android.permission.SCREENSHOT" />
     <protected-broadcast android:name="android.intent.action.SCREENSHOT" />
@@ -417,9 +414,5 @@
             android:exported="true"
             android:theme="@style/Theme.DummyActivity">
         </activity>
-
-		<activity android:name="com.android.systemui.Transparent"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
     </application>
 </manifest>

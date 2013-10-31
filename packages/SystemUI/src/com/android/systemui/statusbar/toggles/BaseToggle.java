@@ -204,9 +204,6 @@ public abstract class BaseToggle
 
     protected final void startActivity(Intent intent) {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        if (mFloatingPref) {
-            intent.addFlags(Intent.FLAG_FLOATING_WINDOW);
-        }
         collapseStatusBar();
         dismissKeyguard();
         mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
