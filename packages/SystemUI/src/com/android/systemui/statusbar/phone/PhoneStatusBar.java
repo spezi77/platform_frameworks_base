@@ -48,7 +48,7 @@ import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.NullPointerException;
+import java.lang.NullPointerException;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
