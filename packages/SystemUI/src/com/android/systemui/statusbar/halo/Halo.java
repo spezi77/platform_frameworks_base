@@ -558,9 +558,12 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         public void onLongPress(MotionEvent event){
             if(statusAnimation) return;
 
+            boolean expanded = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
+
             mStatusTextSize = mContext.getResources().getDimensionPixelSize(R.dimen.halo_status_text_size) * mHaloSize;
 
-            if (mState == State.IDLE) {
+            if (expanded && mState == State.IDLE) {
                 mEffect.mHaloStatusText.setTextAlign(Paint.Align.CENTER);
                 mEffect.statusBubblesShow();
                 statusAnimation = true;
