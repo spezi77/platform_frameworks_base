@@ -2591,14 +2591,14 @@ ResourceTable::validateLocalizations(void)
 
         // Look for strings with no default localization
         if (configSet.count(defaultLocale) == 0) {
-            fprintf(stdout, "aapt: warning: string '%s' has no default translation in %s; found:",
-                    String8(nameIter->first).string(), mBundle->getResourceSourceDirs()[0]);
-            for (set<String8>::const_iterator locales = configSet.begin();
-                 locales != configSet.end();
-                 locales++) {
-                fprintf(stdout, " %s", (*locales).string());
-            }
-            fprintf(stdout, "\n");
+//            fprintf(stdout, "aapt: warning: string '%s' has no default translation in %s; found:",
+//                    String8(nameIter->first).string(), mBundle->getResourceSourceDirs()[0]);
+//            for (set<String8>::const_iterator locales = configSet.begin();
+//                 locales != configSet.end();
+//                 locales++) {
+//                fprintf(stdout, " %s", (*locales).string());
+//            }
+//            fprintf(stdout, "\n");
             // !!! TODO: throw an error here in some circumstances
         }
 
