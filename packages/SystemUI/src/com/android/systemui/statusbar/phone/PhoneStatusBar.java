@@ -139,6 +139,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
     private static final int STATUS_OR_NAV_TRANSIENT =
             View.STATUS_BAR_TRANSIENT | View.NAVIGATION_BAR_TRANSIENT;
     private static final long AUTOHIDE_TIMEOUT_MS = 3000;
+    private static final float BRIGHTNESS_CONTROL_PADDING = 0.15f;
+    private static final int BRIGHTNESS_CONTROL_LONG_PRESS_TIMEOUT = 750; // ms
+    private static final int BRIGHTNESS_CONTROL_LINGER_THRESHOLD = 20;
 
     // fling gesture tuning parameters, scaled to display density
     private float mSelfExpandVelocityPx; // classic value: 2000px/s
@@ -255,6 +258,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
 
     int[] mAbsPos = new int[2];
     Runnable mPostCollapseCleanup = null;
+
+    private Animator mLightsOutAnimation;
+    private Animator mLightsOnAnimation;
+
+    private boolean mBrightnessControl = true;
+    private float mScreenWidth;
+    private int mMinBrightness;
+    int mLinger;
+    int mInitialTouchX;
+    int mInitialTouchY;
+    private int mPeekHeight;
+    private boolean mJustPeeked;
 
     // for disabling the status bar
     int mDisabled = 0;
