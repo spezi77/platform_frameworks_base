@@ -320,6 +320,9 @@
          note that empty fields can be ommitted: "name,apn,,,,,,,,,310,260,,DUN" -->
     <string translatable="false" name="config_tether_apndata"></string>
 
+    <!-- Boolean indicating whether Softap requires reloading AP firmware -->
+    <bool name="config_wifiApFirmwareReload">true</bool>
+
     <!-- Boolean indicating whether the wifi chipset has dual frequency band support -->
     <bool translatable="false" name="config_wifi_dual_band_support">false</bool>
 
@@ -590,6 +593,9 @@
 
     <!-- Enable translucent decor by default -->
     <bool name="config_enableTranslucentDecor">true</bool>
+
+    <!-- Is the device capable of hot swapping an UICC Card -->
+    <bool name="config_hotswapCapable">false</bool>
 
     <!-- Enable puk unlockscreen by default.
          If unlock screen is disabled, the puk should be unlocked through Emergency Dialer -->
@@ -1175,6 +1181,22 @@
          provisioning on some carriers, working around a bug (7305641)
          where if the preferred is used we don't try the others. -->
     <bool name="config_dontPreferApn">false</bool>
+
+    <!-- The list of ril radio technologies (see ServiceState.java) which only support
+         a single data connection at one time.  This may change by carrier via
+         overlays (some don't support multiple pdp on UMTS).  All unlisted radio
+         tech types support unlimited types (practically only 2-4 used). -->
+    <integer-array name="config_onlySingleDcAllowed">
+        <item>4</item>  <!-- IS95A -->
+        <item>5</item>  <!-- IS95B -->
+        <item>6</item>  <!-- 1xRTT -->
+        <item>7</item>  <!-- EVDO_0 -->
+        <item>8</item>  <!-- EVDO_A -->
+        <item>12</item> <!-- EVDO_B -->
+    </integer-array>
+
+    <!-- Set to true if after a provisioning apn the radio should be restarted -->
+    <bool name="config_restartRadioAfterProvisioning">false</bool>
 
     <!-- Vibrator pattern to be used as the default for notifications
          that specify DEFAULT_VIBRATE.
