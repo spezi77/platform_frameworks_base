@@ -529,6 +529,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             /* ChaosLab: GestureAnywhere - END */
         }
 
+        if (mRecreating) {
+        } else {
+            addActiveDisplayView();
+        }
+
         // figure out which pixel-format to use for the status bar.
         mPixelFormat = PixelFormat.OPAQUE;
 

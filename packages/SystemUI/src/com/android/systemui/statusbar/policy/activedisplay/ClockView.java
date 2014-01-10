@@ -57,7 +57,6 @@ public class ClockView extends RelativeLayout {
     private TextView mTimeView;
     private TextView mDateView;
     private AmPm mAmPm;
-    private boolean showAmPm = false;
     private SettingsObserver mSettingsObserver;
     private ContentObserver mFormatChangeObserver;
     private int mAttached = 0; // for debugging - tells us whether attach/detach is unbalanced
@@ -185,12 +184,12 @@ public class ClockView extends RelativeLayout {
             ContentResolver resolver =
                     ClockView.this.mContext.getContentResolver();
 
-            showAmPm = Settings.System.getInt(
+            boolean showAmPm = Settings.System.getInt(
                     resolver, Settings.System.ACTIVE_DISPLAY_SHOW_AMPM, 0) == 1;
             boolean showDate = Settings.System.getInt(
                     resolver, Settings.System.ACTIVE_DISPLAY_SHOW_DATE, 0) == 1;
 
-            setDateFormat();
+            mAmPm.setShowAmPm(showAmPm);
             mDateView.setVisibility(showDate ? View.VISIBLE : View.INVISIBLE);
         }
     }
@@ -284,6 +283,6 @@ public class ClockView extends RelativeLayout {
 
     private void setDateFormat() {
         mFormat = android.text.format.DateFormat.is24HourFormat(getContext()) ? M24 : M12;
-        mAmPm.setShowAmPm(mFormat.equals(M12) && showAmPm);
+        mAmPm.setShowAmPm(mFormat.equals(M12));
     }
 }
