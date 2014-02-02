@@ -2744,6 +2744,12 @@ public final class Settings {
         public static final String ACTIVE_NOTIFICATIONS_PRIVACY_MODE = "active_notifications_privacy_mode";
 
         /**
+         * Set a custom notification background color
+         * @hide
+         */
+        public static final String LOCKSCREEN_NOTIFICATIONS_COLOR = "lockscreen_notifications_color";
+
+        /**
          * Whether to use gesture anywhere feature.
          * @hide
          */
