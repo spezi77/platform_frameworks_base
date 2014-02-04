@@ -3049,6 +3049,12 @@ public final class Settings {
          */
         public static final String STATUS_BAR_IME_SWITCHER = "status_bar_ime_switcher";
 
+       /**
+         * Wakes the device when a new notifications is received
+         * @hide
+         */
+        public static final String LOCKSCREEN_NOTIFICATIONS_WAKE_ON_NOTIFICATION = "lockscreen_notifications_wake_on_notification";
+
         /**
          * Automatic keyboard rotation timeout.  0 to disable completely.
          * @hide
