@@ -2621,12 +2621,6 @@ public final class Settings {
                 "active_display_hide_low_priority_notifications";
 
         /**
-         * Whether to display AM/PM after time when in 12h format
-         * @hide
-         */
-        public static final String ACTIVE_DISPLAY_SHOW_AMPM = "active_display_show_ampm";
-
-        /**
          * Whether to display the date above the time
          * @hide
          */
@@ -2675,12 +2669,6 @@ public final class Settings {
          * @hide
         */
         public static final String LOCKSCREEN_NOTIFICATIONS_EXCLUDED_APPS = "lockscreen_notifications_excluded_apps";
-
-        /**
-         * Allows lockscreen notifications based on security type present
-         * @hide
-         */
-        public static final String LOCKSCREEN_NOTIFICATIONS_ALLOWED = "lockscreen_notifications_allowed";
 
         /**
          * Turn screen on when device is pulled out of pocket
