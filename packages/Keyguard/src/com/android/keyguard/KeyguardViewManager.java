@@ -149,22 +149,29 @@ public class KeyguardViewManager {
 
         @Override
         public void onChange(boolean selfChange) {
-            updateSettings();
-            setKeyguardParams();
-            mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
+            synchronized (this) {
+                updateSettings();
+                setKeyguardParams();
+                mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
+            }
         }
     }
 
     private void updateSettings() {
         boolean mNotOverridden;
-        mNotOverridden = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1;
         mLockscreenNotifications = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_NOTIFICATIONS, 0) == 1;
 
-        if (!mNotOverridden) mLockscreenNotifications = false;
-        if(mLockscreenNotifications && mNotificationViewManager == null) {
-            mNotificationViewManager = new NotificationViewManager(mContext, this);
+        if (mLockscreenNotifications) {
+            mNotOverridden = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1;
+            if (!mNotOverridden) {
+                mLockscreenNotifications = false;
+            } else {
+                if(mNotificationViewManager == null) {
+                    mNotificationViewManager = new NotificationViewManager(mContext, this);
+                }
+            }
         }
         if (!mLockscreenNotifications) {
             if (mNotificationViewManager != null) {
