@@ -151,7 +151,6 @@ public class KeyguardViewManager {
         public void onChange(boolean selfChange) {
             synchronized (this) {
                 updateSettings();
-                setKeyguardParams();
                 mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
             }
         }

@@ -2658,6 +2658,12 @@ public final class Settings {
         public static final String ACTIVE_DISPLAY_EXCLUDED_APPS = "active_display_excluded_apps";
 
         /**
+         * active notifications
+         *@hide
+         */
+        public static final String ACTIVE_NOTIFICATIONS = "active_notifications";
+
+        /**
          * Enables/disables lockscreen notifications
          * @hide
          */
